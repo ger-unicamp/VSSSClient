@@ -1,4 +1,4 @@
-SRCDIR = net pb util
+SRCDIR = net pb util strategy
 
 CPPFILES = $(shell find $(SRCDIR) -name '*.cpp')
 CPPFILES += main.cpp

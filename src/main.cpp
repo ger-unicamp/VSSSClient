@@ -7,10 +7,10 @@
  * 
  */
 #include <stdio.h>
-#include <cmath>
 #include "net/robocup_ssl_client.h"
 #include "net/vss_client.h"
 #include "util/timer.h"
+#include "strategy/controller.h"
 
 #include "pb/command.pb.h"
 #include "pb/common.pb.h"
@@ -64,19 +64,10 @@ int main(int argc, char *argv[])
                     printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
                     printRobotInfo(robot);
 
-                    double x = ball.x() - robot.x();
-                    double y = ball.y() - robot.y();
-                    double ball_angle = atan2(y, x);
-                    double w = robot.orientation() - ball_angle; 
-                    
-                    if (w != 0 && w != 3.1415 && w != -3.1415)
+                    if (i == 0)
                     {
-                        if (w > 3.1415 || w < -3.145)
-                            sim_client.sendCommand(i, -w, w);
-
-                        else
-                            sim_client.sendCommand(i, w, -w);
-                        
+                        ctrl::vec2 w = ctrl::get_speed_to(robot, ball);
+                        sim_client.sendCommand(i, w[0], w[1]);
                     }
                     
                 }
