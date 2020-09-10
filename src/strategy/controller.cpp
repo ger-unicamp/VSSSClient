@@ -3,7 +3,7 @@
 
 ctrl::vec2 ctrl::get_speed_to(const fira_message::Robot &robot, const ctrl::vec2 &ball)
 {
-    double kp = 10.0, kt = 50.0, kv = 50.0;
+    double kp = 10.0, kt = 50.0, kv = 30.0;
     const double eps = 0.1;
 
     vec2 set_point = ball - vec2(robot);

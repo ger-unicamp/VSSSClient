@@ -11,6 +11,7 @@
 #include "net/vss_client.h"
 #include "util/timer.h"
 #include "strategy/controller.h"
+#include "strategy/APF.h"
 
 #include "pb/command.pb.h"
 #include "pb/common.pb.h"
@@ -57,6 +58,7 @@ int main(int argc, char *argv[])
                 fira_message::Ball ball = detection.ball();
                 printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
 
+                bool tmp = false;
                 //Blue robot info:
                 for (int i = 0; i < robots_blue_n; i++)
                 {
@@ -64,10 +66,46 @@ int main(int argc, char *argv[])
                     printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
                     printRobotInfo(robot);
 
-                    if (i == 0)
+                    if (i == 2)
                     {
-                        ctrl::vec2 w = ctrl::get_speed_to(robot, ball);
-                        sim_client.sendCommand(i, w[0], w[1]);
+                        ctrl::vec2 apf_vec = apf::goal_field(robot);
+                        apf_vec += apf::ball_field(robot, ball);
+
+                        for (int j = 0; j < robots_yellow_n; j++)
+                            {
+                                fira_message::Robot enemy = detection.robots_yellow(j);
+                                apf_vec += apf::enemies_field(robot, enemy);
+                            }
+
+                        for (int j = 0; j < robots_blue_n; j++)
+                            {
+                                if (j != i)
+                                {    
+                                    fira_message::Robot bro = detection.robots_blue(j);
+                                    apf_vec += apf::bros_field(robot, bro);
+                                }
+                            }
+
+                        std::cout << apf_vec.x << apf_vec.y << std::endl;
+
+                        ctrl::vec2 command = apf::move_robot(robot, apf_vec);
+                        sim_client.sendCommand(i, command[0], command[1]);
+
+                        // ctrl::vec2 w = ctrl::get_speed_to(robot, ball);
+                        // ctrl::vec2 robot_vel(robot.vx(), robot.vy());
+                        // if (robot_vel.abs() < 0.01 && tmp == false)
+                        // {                    
+                        //     w = {-50.0, -50.0};
+                        //     tmp = true;1.0
+                        // }
+
+                        // if (robot_vel.abs() < 0.01 && tmp == true)
+                        // {                    
+                        //     w = {50.0, 50.0};
+                        //     tmp = false;
+                        // }
+
+                        // sim_client.sendCommand(i, w[0], w[1]);
                     }
                     
                 }
