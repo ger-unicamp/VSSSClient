@@ -66,15 +66,14 @@ int main(int argc, char *argv[])
                     printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
                     printRobotInfo(robot);
 
-                    if (i == 2)
+                    if (i == 0 || i == 1)
                     {
-                        ctrl::vec2 apf_vec = apf::goal_field(robot);
-                        apf_vec += apf::ball_field(robot, ball);
+                        ctrl::vec2 apf_vec = apf::enemy_goal_field(robot);
 
                         for (int j = 0; j < robots_yellow_n; j++)
                             {
                                 fira_message::Robot enemy = detection.robots_yellow(j);
-                                apf_vec += apf::enemies_field(robot, enemy);
+                                apf_vec += apf::robots_field(robot, enemy);
                             }
 
                         for (int j = 0; j < robots_blue_n; j++)
@@ -82,7 +81,7 @@ int main(int argc, char *argv[])
                                 if (j != i)
                                 {    
                                     fira_message::Robot bro = detection.robots_blue(j);
-                                    apf_vec += apf::bros_field(robot, bro);
+                                    apf_vec += apf::robots_field(robot, bro);
                                 }
                             }
 
