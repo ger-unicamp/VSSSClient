@@ -8,14 +8,14 @@ ctrl::vec2 ctrl::get_speed_to(const fira_message::Robot &robot, const ctrl::vec2
 
     vec2 set_point = ball - vec2(robot);
     double set_angle = set_point.theta() - robot.orientation();
-    if (set_angle < PI/2.0+eps && set_angle > PI/2.0-eps)
+    if (set_angle < PI / 2.0 + eps && set_angle > PI / 2.0 - eps)
     {
-        set_angle = PI/2.0;
+        set_angle = PI / 2.0;
         kv = 0.0;
     }
-    else if (set_angle < -PI/2.0+eps && set_angle > -PI/2.0-eps)
+    else if (set_angle < -PI / 2.0 + eps && set_angle > -PI / 2.0 - eps)
     {
-        set_angle = -PI/2.0;
+        set_angle = -PI / 2.0;
         kv = 0.0;
     }
     else if (set_angle > PI / 2.0)
