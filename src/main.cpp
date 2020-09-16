@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
                     if (i == 0 || i == 1)
                     {
                         // ctrl::vec2 apf_vec = apf::ball_field(robot, ball);
-                        ctrl::vec2 apf_vec += apf::uniform_goal_field();
+                        ctrl::vec2 apf_vec = apf::uniform_goal_field();
                         apf_vec += apf::uniform_walls_field(robot);
                         
                         for (int j = 0; j < robots_yellow_n; j++)
