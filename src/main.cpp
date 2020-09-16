@@ -58,7 +58,6 @@ int main(int argc, char *argv[])
                 fira_message::Ball ball = detection.ball();
                 printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
 
-                bool tmp = false;
                 //Blue robot info:
                 for (int i = 0; i < robots_blue_n; i++)
                 {
@@ -68,8 +67,10 @@ int main(int argc, char *argv[])
 
                     if (i == 0 || i == 1)
                     {
-                        ctrl::vec2 apf_vec = apf::enemy_goal_field(robot);
-
+                        ctrl::vec2 apf_vec = apf::ball_field(robot, ball);
+                        apf_vec += apf::uniform_goal_field();
+                        apf_vec += apf::uniform_walls_field(robot);
+                        
                         for (int j = 0; j < robots_yellow_n; j++)
                             {
                                 fira_message::Robot enemy = detection.robots_yellow(j);
@@ -85,8 +86,9 @@ int main(int argc, char *argv[])
                                 }
                             }
 
-                        std::cout << apf_vec.x << apf_vec.y << std::endl;
+                        // std::cout << apf_vec.x << apf_vec.y << std::endl;
 
+                        
                         ctrl::vec2 command = apf::move_robot(robot, apf_vec);
                         sim_client.sendCommand(i, command[0], command[1]);
 
