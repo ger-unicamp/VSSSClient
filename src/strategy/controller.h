@@ -120,7 +120,7 @@ namespace ctrl
          * 
          * @return double 
          */
-        double theta() const { return std::atan2(y, x); }
+        double theta() const { return std::atan2(-y, x); }
         /**
          * @brief Returns z-coordinate of cross product
          * 
