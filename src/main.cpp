@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
                     printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
                     printRobotInfo(robot);
 
+                    // attackers
                     if (i == 0 || i == 1)
                     {
                         ctrl::vec2 apf_vec = apf::ball_field(robot, ball, 0.0737, 0.0415);
@@ -109,6 +110,15 @@ int main(int argc, char *argv[])
 
                         // sim_client.sendCommand(i, w[0], w[1]);
                     }
+
+                    // goalkeeper
+                    // else if (i == 2)
+                    // {
+                    //     ctrl::vec2 apf_vec = apf::goalkeeper(robot, ball, 0.0737, 0.0415);
+
+                    //     ctrl::vec2 command = apf::move_robot(robot, apf_vec, 0.4, 5);
+                    //     sim_client.sendCommand(i, 10*command[0], 10*command[1]);
+                    // }
                     
                 }
 
