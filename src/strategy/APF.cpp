@@ -66,22 +66,20 @@ ctrl::vec2 apf::robots_field(fira_message::Robot &robot1, fira_message::Robot &r
 
 //  ----------> BALL FIELD <-----------
 /**
- * @brief 
+ * @brief Calculates a spiral field arround (0, 0)
  * 
  * @param pos 
- * @param target 
  * @param radius 
  * @param k 
- * @param cw char indicating spiral orientation ('-' to clockwise and '+' to counterclockwise)
+ * @param cw char indicating spiral orientation ('+' to clockwise and '-' to counterclockwise)
  * @return double 
  */
-double spiral_field(ctrl::vec2 pos, ctrl::vec2 target, double radius, double k, char cw)
+double spiral_field(ctrl::vec2 pos, double radius, double k, char cw)
 {
     double phi, dist, theta;
     double sgn = (cw == '-') ? -1.0 : 1.0;
-    ctrl::vec2 v = pos - target;
-    dist = v.abs();
-    theta = v.theta();
+    dist = pos.abs();
+    theta = pos.theta();
 
     if (dist > radius)
         phi = theta + (sgn) * (PI / 2.0) * (2.0 - ((radius + k) / (dist + k)));
@@ -91,14 +89,14 @@ double spiral_field(ctrl::vec2 pos, ctrl::vec2 target, double radius, double k, 
     return phi;
 }
 
-double apf::spiral_field_cw(ctrl::vec2 pos, ctrl::vec2 target, double radius, double k)
+double apf::spiral_field_cw(ctrl::vec2 pos, double radius, double k)
 {
-    return spiral_field(pos, target, radius, k, '+');
+    return spiral_field(pos, radius, k, '+');
 }
 
-double apf::spiral_field_ccw(ctrl::vec2 pos, ctrl::vec2 target, double radius, double k)
+double apf::spiral_field_ccw(ctrl::vec2 pos, double radius, double k)
 {
-    return spiral_field(pos, target, radius, k, '-');
+    return spiral_field(pos, radius, k, '-');
 }
 
 double apf::move_to_goal(ctrl::vec2 pos, ctrl::vec2 target, double radius, double k)
@@ -113,25 +111,25 @@ double apf::move_to_goal(ctrl::vec2 pos, ctrl::vec2 target, double radius, doubl
 
     if (-radius <= translated.y && translated.y < radius)
     {
-        double phicw = apf::spiral_field_cw(posr, target, radius, k);
-        double phiccw = apf::spiral_field_ccw(posl, target, radius, k);
+        double phicw = apf::spiral_field_cw(posr, radius, k);
+        double phiccw = apf::spiral_field_ccw(posl, radius, k);
         ctrl::vec2 Ncw = ctrl::vec2(cos(phicw), sin(phicw));
         ctrl::vec2 Nccw = ctrl::vec2(cos(phiccw), sin(phiccw));
         ctrl::vec2 tmp = (yl * Nccw + yr * Ncw) * (1.0 / (2.0 * radius));
         phi = tmp.theta();
     }
     else if (translated.y < -radius)
-        phi = apf::spiral_field_cw(posl, target, radius, k);
+        phi = apf::spiral_field_cw(posl, radius, k);
     else
-        phi = apf::spiral_field_ccw(posr, target, radius, k);
+        phi = apf::spiral_field_ccw(posr, radius, k);
 
     return phi;
 }
 
 ctrl::vec2 apf::ball_field(fira_message::Robot &robot, fira_message::Ball &ball, double radius, double k)
 {
-    ctrl::vec2 pos = ctrl::vec2(robot.x(), robot.y());
-    ctrl::vec2 target = ctrl::vec2(ball.x(), ball.y());
+    ctrl::vec2 pos = ctrl::vec2(robot);
+    ctrl::vec2 target = ctrl::vec2(ball);
 
     double phi = move_to_goal(pos, target, radius, k);
 
