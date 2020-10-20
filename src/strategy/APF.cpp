@@ -116,7 +116,7 @@ double apf::move_to_goal(ctrl::vec2 pos, ctrl::vec2 target, double radius, doubl
         ctrl::vec2 Ncw = ctrl::vec2(cos(phicw), sin(phicw));
         ctrl::vec2 Nccw = ctrl::vec2(cos(phiccw), sin(phiccw));
         ctrl::vec2 tmp = (yl * Nccw + yr * Ncw) * (1.0 / (2.0 * radius));
-        phi = tmp.theta();
+        phi = tmp.theta() + PI/2;
     }
     else if (translated.y < -radius)
         phi = apf::spiral_field_cw(posl, radius, k);

@@ -65,9 +65,9 @@ int main(int argc, char *argv[])
                     printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
                     printRobotInfo(robot);
 
-                    if (i == 0)
+                    if (i == 0 || i == 1)
                     {
-                        ctrl::vec2 apf_vec = apf::ball_field(robot, ball, 0.0537, 0.03);
+                        ctrl::vec2 apf_vec = apf::ball_field(robot, ball, 0.0737, 0.0415);
                         // ctrl::vec2 apf_vec = apf::test_control(robot, ball);
                         // ctrl::vec2 apf_vec = apf::uniform_goal_field();
                         // apf_vec += apf::uniform_walls_field(robot);
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
                         // std::cout << apf_vec.x << apf_vec.y << std::endl;
 
                         
-                        ctrl::vec2 command = apf::move_robot(robot, apf_vec, 0.4, 3);
+                        ctrl::vec2 command = apf::move_robot(robot, apf_vec, 0.4, 5);
                         sim_client.sendCommand(i, 10*command[0], 10*command[1]);
 
                         // ctrl::vec2 w = ctrl::get_speed_to(robot, ball);
