@@ -12,7 +12,7 @@ OBJFILES += $(CCFILES:.cc=.o)
 
 CFLAGS = -g -std=c++11 -march=native -Ofast -Wall -Wextra -I./
 
-LDFLAGS = -lprotobuf -lpthread -L/usr/local/lib/
+LDFLAGS = -lprotobuf -lpthread -lm -L/usr/local/lib/
 
 TARGET = vss.exe
 
