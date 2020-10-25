@@ -33,7 +33,7 @@ void printRobotInfo(const fira_message::Robot &robot)
 int main(int argc, char *argv[])
 {
 
-    RoboCupSSLClient client(10020, "127.0.0.1");
+    RoboCupSSLClient client(10002, "224.0.0.1");
     VSSClient sim_client(20011, "127.0.0.1");
 
     client.open(false);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
                     // attackers
                     if (i == 0 || i == 1)
                     {
-                        ctrl::vec2 apf_vec = apf::ball_field(robot, ball, 0.0737, 0.0415);
+                        ctrl::vec2 apf_vec = apf::ball_field(robot, ball, 0.0537, 0.0415);
                         // ctrl::vec2 apf_vec = apf::test_control(robot, ball);
                         // ctrl::vec2 apf_vec = apf::uniform_goal_field();
                         // apf_vec += apf::uniform_walls_field(robot);
