@@ -13,10 +13,10 @@ ctrl::vec2 apf::uniform_goal_field()
     return apf_vector;
 }
 
-ctrl::vec2 apf::uniform_walls_field(fira_message::Robot &robot)
+ctrl::vec2 apf::uniform_walls_field(ctrl::vec2 robot)
 {
-    double y = robot.y();  // force proportional to y and
-    double x = -robot.x(); // inversely proportional to x coord of robot
+    double y = robot.y;  // force proportional to y and
+    double x = -robot.x; // inversely proportional to x coord of robot
     double ky = 5;         // force strength in y axis
     double kx = 2;         // force strength in x axis
 
@@ -25,13 +25,20 @@ ctrl::vec2 apf::uniform_walls_field(fira_message::Robot &robot)
     return apf_vector;
 }
 
-ctrl::vec2 apf::robots_field(fira_message::Robot &robot1, fira_message::Robot &robot2)
+/**
+ * @brief Returns robot2 repulsive field for robot1
+ * 
+ * @param robot1 
+ * @param robot2 
+ * @param k robot2 field strength scale
+ * @return ctrl::vec2 
+ */
+ctrl::vec2 apf::robots_field(ctrl::vec2 robot1, ctrl::vec2 robot2, double k)
 {
     ctrl::vec2 apf_vector; // potential field vector at robot position
-    ctrl::vec2 tr = ctrl::vec2(robot2) - ctrl::vec2(robot1);
+    ctrl::vec2 tr = robot2 - robot1;
     double dist = tr.abs();    // distance to robot2
-    double angle = tr.theta(); // angle to robot2
-    double k = 0.20;           // robot2 field strength scale
+    double angle = tr.theta(); // angle to robot
 
     apf_vector = (-k / (dist * dist)) * ctrl::vec2(cos(angle), sin(angle));
     return apf_vector;
@@ -55,9 +62,9 @@ double spiral_field(ctrl::vec2 pos, double radius, double k, char cw)
     theta = pos.theta();
 
     if (dist > radius)
-        phi = theta + (sgn) * (PI / 2.0) * (2.0 - ((radius + k) / (dist + k)));
+        phi = theta + (sgn) * HALF_PI * (2.0 - ((radius + k) / (dist + k)));
     else
-        phi = theta + (sgn) * (PI / 2.0) * std::sqrt(dist / radius);
+        phi = theta + (sgn) * HALF_PI * std::sqrt(dist / radius);
 
     return phi;
 }
@@ -72,6 +79,15 @@ double apf::spiral_field_ccw(ctrl::vec2 pos, double radius, double k)
     return spiral_field(pos, radius, k, '+');
 }
 
+/**
+ * @brief 
+ * 
+ * @param pos 
+ * @param target 
+ * @param radius 
+ * @param k 
+ * @return double 
+ */
 double apf::move_to_goal(ctrl::vec2 pos, ctrl::vec2 target, double radius, double k)
 {
     double phi;
@@ -84,10 +100,13 @@ double apf::move_to_goal(ctrl::vec2 pos, ctrl::vec2 target, double radius, doubl
 
     if (-radius <= translated.y && translated.y < radius)
     {
+        double sin_phi, cos_phi;
         double phicw = apf::spiral_field_cw(posr, radius, k);
         double phiccw = apf::spiral_field_ccw(posl, radius, k);
-        ctrl::vec2 Ncw = ctrl::vec2(cos(phicw), sin(phicw));
-        ctrl::vec2 Nccw = ctrl::vec2(cos(phiccw), sin(phiccw));
+        sincos(phicw, &sin_phi, &cos_phi); // Get sin & cosin at once
+        ctrl::vec2 Ncw = ctrl::vec2(cos_phi, sin_phi);
+        sincos(phiccw, &sin_phi, &cos_phi);
+        ctrl::vec2 Nccw = ctrl::vec2(cos_phi, sin_phi);
         ctrl::vec2 tmp = (yl * Nccw - yr * Ncw) * (1.0 / (2.0 * radius));
         phi = tmp.theta();
     }
@@ -99,23 +118,21 @@ double apf::move_to_goal(ctrl::vec2 pos, ctrl::vec2 target, double radius, doubl
     return phi;
 }
 
-ctrl::vec2 apf::ball_field(fira_message::Robot &robot, fira_message::Ball &ball, double radius, double k)
+ctrl::vec2 apf::ball_field(ctrl::vec2 robot, ctrl::vec2 ball, double radius, double k)
 {
-    ctrl::vec2 pos = ctrl::vec2(robot);
-    ctrl::vec2 target = ctrl::vec2(ball);
-
-    double phi = move_to_goal(pos, target, radius, k);
-
-    ctrl::vec2 apf_vector = ctrl::vec2(cos(phi), sin(phi));
+    double phi = move_to_goal(robot, ball, radius, k);
+    double sin_phi, cos_phi;
+    sincos(phi, &sin_phi, &cos_phi);
+    ctrl::vec2 apf_vector = ctrl::vec2(cos_phi, sin_phi);
 
     std::cout << "vec theta: " << apf_vector.theta() * 180 / PI << std::endl;
 
     return apf_vector;
 }
 
-ctrl::vec2 apf::test_control(fira_message::Robot &robot, fira_message::Ball &ball)
+ctrl::vec2 apf::test_control(ctrl::vec2 robot, ctrl::vec2 ball)
 {
-    double angle = atan2(-(ball.y() - robot.y()), ball.x() - robot.x());
+    double angle = (ball - robot).theta();
     ctrl::vec2 apf = ctrl::vec2(cos(angle), sin(angle));
     return apf;
 }
