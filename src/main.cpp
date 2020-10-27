@@ -33,7 +33,8 @@ void printRobotInfo(const fira_message::Robot &robot)
 int main(int argc, char *argv[])
 {
 
-    RoboCupSSLClient client(10002, "224.0.0.1");
+    RoboCupSSLClient client(10020, "224.0.0.1");
+
     VSSClient sim_client(20011, "127.0.0.1");
 
     client.open(false);
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
                     printRobotInfo(robot);
 
                     // attackers
-                    if (i == 0 || i == 1)
+                    if (i == 0)
                     {
                         ctrl::vec2 apf_vec = apf::ball_field(robot, ball, 0.0537, 0.0415);
                         // ctrl::vec2 apf_vec = apf::test_control(robot, ball);
@@ -88,27 +89,11 @@ int main(int argc, char *argv[])
                         //         }
                         //     }
 
-                        // std::cout << apf_vec.x << apf_vec.y << std::endl;
+                        std::cout << apf_vec.x << apf_vec.y << std::endl;
 
                         
                         ctrl::vec2 command = apf::move_robot(robot, apf_vec, 0.4, 5);
                         sim_client.sendCommand(i, 10*command[0], 10*command[1]);
-
-                        // ctrl::vec2 w = ctrl::get_speed_to(robot, ball);
-                        // ctrl::vec2 robot_vel(robot.vx(), robot.vy());
-                        // if (robot_vel.abs() < 0.01 && tmp == false)
-                        // {                    
-                        //     w = {-50.0, -50.0};
-                        //     tmp = true;1.0
-                        // }
-
-                        // if (robot_vel.abs() < 0.01 && tmp == true)
-                        // {                    
-                        //     w = {50.0, 50.0};
-                        //     tmp = false;
-                        // }
-
-                        // sim_client.sendCommand(i, w[0], w[1]);
                     }
 
                     // goalkeeper
