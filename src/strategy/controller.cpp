@@ -1,33 +1,26 @@
 #include "strategy/controller.h"
 #include <iostream>
 
-ctrl::vec2 ctrl::get_speed_to(const fira_message::Robot &robot, const ctrl::vec2 &ball)
+/**
+ * @brief Set motor speed (left, right) to move into vector (x,y) direction
+ * 
+ * @param robot 
+ * @param vector Indicates speed and orientation to follow
+ * @param k 
+ * @param v 
+ * @return ctrl::vec2 
+ */
+ctrl::vec2 ctrl::move_robot(fira_message::Robot &robot, ctrl::vec2 vector, double k, double v)
 {
-    double kp = 10.0, kt = 50.0, kv = 30.0;
-    const double eps = 0.1;
+    // k is the turning gain constant and v is the velocity constant
+    double vel = v * vector.abs();
+    double angle_diff = math::wrap_to_pi(vector.theta() - robot.orientation());
 
-    vec2 set_point = ball - vec2(robot);
-    double set_angle = set_point.theta() - robot.orientation();
-    if (set_angle < PI / 2.0 + eps && set_angle > PI / 2.0 - eps)
-    {
-        set_angle = PI / 2.0;
-        kv = 0.0;
-    }
-    else if (set_angle < -PI / 2.0 + eps && set_angle > -PI / 2.0 - eps)
-    {
-        set_angle = -PI / 2.0;
-        kv = 0.0;
-    }
-    else if (set_angle > PI / 2.0)
-    {
-        set_angle -= PI;
-        kv *= -1.0;
-    }
-    else if (set_angle < -PI / 2.0)
-    {
-        set_angle += PI;
-        kv *= -1.0;
-    }
-    std::cout << set_angle << std::endl;
-    return kt * vec2(-set_angle, set_angle) + kv * vec2(1);
+    ctrl::vec2 motors_speed = vel * cos(angle_diff) * ctrl::vec2(1.0);
+    if (angle_diff >= HALF_PI || angle_diff <= -HALF_PI)
+        motors_speed += vel * k * sin(angle_diff) * ctrl::vec2(1.0, -1.0);
+    else
+        motors_speed += vel * k * sin(angle_diff) * ctrl::vec2(-1.0, 1.0);
+
+    return motors_speed;
 }

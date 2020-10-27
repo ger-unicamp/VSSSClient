@@ -6,25 +6,11 @@
 #include "pb/packet.pb.h"
 #include "pb/replacement.pb.h"
 
+#include "util/mathutil.h"
 #include <cmath>
-
-#define PI (3.14159265359)
 
 namespace ctrl
 {
-    /**
-     * @brief Returns the signal of number 
-     * 
-     * @tparam T could be a long, a short, a double, a float, ...
-     * @param val 
-     * @return int -1, 0 or 1
-     */
-    template <typename T>
-    int sgn(T val)
-    {
-        return (T(0) < val) - (val < T(0));
-    }
-
     /**
      * @brief Defines a 2D point with double precision
      * 
@@ -44,7 +30,12 @@ namespace ctrl
         /**
          * @param r x and y coordinates
          */
-        vec2(double r): x(r), y(r) {}
+        vec2(double r) : x(r), y(r) {}
+        /**
+         * @brief Construct a new vec2 object at (0.0,0.0)
+         * 
+         */
+        vec2() : x(0.0), y(0.0) {}
         /**
          * @param b fira_message::Ball position x,y
          */
@@ -120,7 +111,7 @@ namespace ctrl
          * 
          * @return double 
          */
-        double theta() const { return std::atan2(-y, x); }
+        double theta() const { return std::atan2(y, x); }
         /**
          * @brief Returns z-coordinate of cross product
          * 
@@ -128,9 +119,21 @@ namespace ctrl
          * @return double x * p.y - y * p.x
          */
         double cross(const vec2 &p) const { return (x * p.y - y * p.x); }
+        /**
+         * @brief Returns the normalized vector (safe to x,y range)
+         * 
+         * @return vec2 
+         */
+        vec2 normalized() const
+        {
+            double s, c;
+            sincos(this->theta(), &s, &c);
+            return vec2(c, s);
+        }
+        
     };
 
-    vec2 get_speed_to(const fira_message::Robot &robot, const vec2 &ball);
+    ctrl::vec2 move_robot(fira_message::Robot &robot, ctrl::vec2 vector, double k, double v);
 
 }; // namespace ctrl
 
