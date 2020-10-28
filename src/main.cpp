@@ -30,6 +30,28 @@ void printRobotInfo(const fira_message::Robot &robot)
     printf("ANGLE VEL=%6.3f \n", robot.vorientation());
 }
 
+fira_message::Ball invertBall(fira_message::Ball ball)
+{
+    ball.set_x(-ball.x());
+    ball.set_y(-ball.y());
+    ball.set_vx(-ball.vx());
+    ball.set_vy(-ball.vy());
+
+    return ball;
+}
+
+fira_message::Robot invertRobot(fira_message::Robot robot)
+{
+    robot.set_x(-robot.x());
+    robot.set_y(-robot.y());
+    robot.set_vx(-robot.vx());
+    robot.set_vy(-robot.vy());
+    robot.set_orientation(robot.orientation() + PI);
+    robot.set_vorientation(-robot.vorientation());
+
+    return robot;
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -53,15 +75,20 @@ int main(int argc, char *argv[])
                 int robots_blue_n = detection.robots_blue_size();
                 int robots_yellow_n = detection.robots_yellow_size();
 
+                
                 //Ball info:
 
                 fira_message::Ball ball = detection.ball();
+                ball = invertBall(ball);
+                
                 printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
 
                 //Blue robot info:
                 for (int i = 0; i < robots_blue_n; i++)
                 {
                     fira_message::Robot robot = detection.robots_blue(i);
+                    robot = invertRobot(robot);
+
                     printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
                     printRobotInfo(robot);
 
@@ -110,6 +137,7 @@ int main(int argc, char *argv[])
                 for (int i = 0; i < robots_yellow_n; i++)
                 {
                     fira_message::Robot robot = detection.robots_yellow(i);
+                    robot = invertRobot(robot);
                     printf("-Robot(Y) (%2d/%2d): ", i + 1, robots_yellow_n);
                     printRobotInfo(robot);
                 }
