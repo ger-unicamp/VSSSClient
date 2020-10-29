@@ -1,4 +1,5 @@
 #include "strategy/APF.h"
+#include "util/mathutil.h"
 #include <iostream>
 
 #define GOAL_X 0.75
@@ -25,7 +26,7 @@
 //     return apf_vector;
 // }
 
-ctrl::vec2 apf::repulsion_field(fira_message::Robot &robot, fira_message::Robot &obstacle, double k)
+double apf::repulsion_field(fira_message::Robot &robot, fira_message::Robot &obstacle, double k)
 {
     ctrl::vec2 apf_vector;
     ctrl::vec2 v_robot = ctrl::vec2(robot.vx(), robot.vy());
@@ -49,9 +50,7 @@ ctrl::vec2 apf::repulsion_field(fira_message::Robot &robot, fira_message::Robot 
 
     phi = (p_robot - p_virtual_obstacle).theta();
 
-    apf_vector = ctrl::vec2(cos(phi), sin(phi));
-
-    return apf_vector;
+    return phi;
 }
 
 //  ----------> BALL FIELD <-----------
@@ -139,3 +138,29 @@ ctrl::vec2 apf::ball_field(ctrl::vec2 robot, ctrl::vec2 ball, double radius, dou
 
     return apf_vector;
 }
+
+ctrl::vec2 apf::composite_field(fira_message::Robot &robot, fira_message::Ball &target, fira_message::Robot &obstacle, double radius, double k_spiral, double k_virtual_obj, double d_min, double sigma)
+{
+    ctrl::vec2 apf_vector;
+    ctrl::vec2 p_robot = ctrl::vec2(robot.x(), robot.y());
+    ctrl::vec2 p_obstacle = ctrl::vec2(obstacle.x(), obstacle.y());
+    double R = p_robot.distance(p_obstacle);
+
+    double phi_composed, phi_target, phi_repulsion;
+
+    if (R <= d_min)
+    {
+        phi_composed = apf::repulsion_field(robot, obstacle, k_virtual_obj);
+    }
+
+    else
+    {
+        phi_target = apf::move_to_goal(ctrl::vec2(robot), ctrl::vec2(target), radius, k_spiral);
+        phi_repulsion = apf::repulsion_field(robot, obstacle, k_virtual_obj);
+        phi_composed = (phi_repulsion * math::gaussian(R - d_min, sigma)) + (phi_target * (1-math::gaussian(R - d_min, sigma)));
+    }
+    
+    apf_vector = ctrl::vec2(cos(phi_composed), sin(phi_composed));
+
+    return apf_vector;
+} 
