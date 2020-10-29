@@ -4,43 +4,53 @@
 #define GOAL_X 0.75
 #define GOAL_Y 0.0
 
-ctrl::vec2 apf::uniform_goal_field()
+// ctrl::vec2 apf::uniform_goal_field()
+// {
+//     double apf_intensity = 10;
+
+//     ctrl::vec2 apf_vector = ctrl::vec2(apf_intensity, 0.0); // potential field vector at robot position
+
+//     return apf_vector;
+// }
+
+// ctrl::vec2 apf::uniform_walls_field(fira_message::Robot &robot)
+// {
+//     double y = robot.y();  // force proportional to y and
+//     double x = -robot.x(); // inversely proportional to x coord of robot
+//     double ky = 5;         // force strength in y axis
+//     double kx = 2;         // force strength in x axis
+
+//     ctrl::vec2 apf_vector = ctrl::vec2(x > 0 ? -kx : kx, y > 0 ? ky : -ky);
+
+//     return apf_vector;
+// }
+
+ctrl::vec2 apf::repulsion_field(fira_message::Robot &robot, fira_message::Robot &obstacle, double k)
 {
-    double apf_intensity = 10;
+    ctrl::vec2 apf_vector;
+    ctrl::vec2 v_robot = ctrl::vec2(robot.vx(), robot.vy());
+    ctrl::vec2 v_obstacle = ctrl::vec2(obstacle.vx(), obstacle.vy());   
+    ctrl::vec2 p_robot = ctrl::vec2(robot.x(), robot.y());
+    ctrl::vec2 p_real_obstacle = ctrl::vec2(obstacle.x(), obstacle.y());
+    ctrl::vec2 s = k*(v_obstacle - v_robot);
+    double dist = p_real_obstacle.distance(p_robot);
 
-    ctrl::vec2 apf_vector = ctrl::vec2(apf_intensity, 0.0); // potential field vector at robot position
+    double phi;
+    ctrl::vec2 p_virtual_obstacle;
 
-    return apf_vector;
-}
+    if (dist > s.abs())
+    {
+        p_virtual_obstacle = p_real_obstacle + s;
+    }
+    else
+    {
+        p_virtual_obstacle = p_real_obstacle + (dist/s.abs())*s;
+    }
 
-ctrl::vec2 apf::uniform_walls_field(ctrl::vec2 robot)
-{
-    double y = robot.y;  // force proportional to y and
-    double x = -robot.x; // inversely proportional to x coord of robot
-    double ky = 5;         // force strength in y axis
-    double kx = 2;         // force strength in x axis
+    phi = (p_robot - p_virtual_obstacle).theta();
 
-    ctrl::vec2 apf_vector = ctrl::vec2(x > 0 ? -kx : kx, y > 0 ? ky : -ky);
+    apf_vector = ctrl::vec2(cos(phi), sin(phi));
 
-    return apf_vector;
-}
-
-/**
- * @brief Returns robot2 repulsive field for robot1
- * 
- * @param robot1 
- * @param robot2 
- * @param k robot2 field strength scale
- * @return ctrl::vec2 
- */
-ctrl::vec2 apf::robots_field(ctrl::vec2 robot1, ctrl::vec2 robot2, double k)
-{
-    ctrl::vec2 apf_vector; // potential field vector at robot position
-    ctrl::vec2 tr = robot2 - robot1;
-    double dist = tr.abs();    // distance to robot2
-    double angle = tr.theta(); // angle to robot
-
-    apf_vector = (-k / (dist * dist)) * ctrl::vec2(cos(angle), sin(angle));
     return apf_vector;
 }
 
@@ -128,11 +138,4 @@ ctrl::vec2 apf::ball_field(ctrl::vec2 robot, ctrl::vec2 ball, double radius, dou
     //std::cout << "vec theta: " << apf_vector.theta() * 180 / PI << std::endl;
 
     return apf_vector;
-}
-
-ctrl::vec2 apf::test_control(ctrl::vec2 robot, ctrl::vec2 ball)
-{
-    double angle = (ball - robot).theta();
-    ctrl::vec2 apf = ctrl::vec2(cos(angle), sin(angle));
-    return apf;
 }

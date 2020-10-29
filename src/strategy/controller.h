@@ -124,6 +124,9 @@ namespace ctrl
          * 
          * @return vec2 
          */
+
+        double distance(vec2 &p) { return sqrt(pow(x - p.x, 2) + pow(y - p.y, 2)); }
+        
         vec2 normalized() const
         {
             double s, c;
