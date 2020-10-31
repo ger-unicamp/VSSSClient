@@ -125,7 +125,7 @@ ctrl::vec2 apf::ball_field(ctrl::vec2 robot, ctrl::vec2 ball, double radius, dou
     sincos(phi, &sin_phi, &cos_phi);
     ctrl::vec2 apf_vector = ctrl::vec2(cos_phi, sin_phi);
 
-    std::cout << "vec theta: " << apf_vector.theta() * 180 / PI << std::endl;
+    //std::cout << "vec theta: " << apf_vector.theta() * 180 / PI << std::endl;
 
     return apf_vector;
 }
