@@ -119,20 +119,20 @@ namespace ctrl
          * @return double x * p.y - y * p.x
          */
         double cross(const vec2 &p) const { return (x * p.y - y * p.x); }
+
         /**
          * @brief Returns the normalized vector (safe to x,y range)
          * 
          * @return vec2 
          */
-
-        double distance(vec2 &p) { return sqrt(pow(x - p.x, 2) + pow(y - p.y, 2)); }
-        
         vec2 normalized() const
         {
             double s, c;
             sincos(this->theta(), &s, &c);
             return vec2(c, s);
         }
+
+        double distance(vec2 &p) { return ((*this - p).abs()); }
         
         double distance(const vec2 &p) { return ((*this - p).abs()); }
     };

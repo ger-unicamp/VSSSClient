@@ -48,7 +48,7 @@ double apf::repulsion_field(fira_message::Robot &robot, fira_message::Robot &obs
         p_virtual_obstacle = p_real_obstacle + (dist/s.abs())*s;
     }
 
-    phi = (p_robot - p_virtual_obstacle).theta();
+    phi = (p_real_obstacle - p_virtual_obstacle).theta();
 
     return phi;
 }
