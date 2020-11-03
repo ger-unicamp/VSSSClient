@@ -55,7 +55,7 @@ fira_message::Robot invertRobot(fira_message::Robot robot)
 int main(int argc, char *argv[])
 {
 
-    RoboCupSSLClient client(10020, "224.0.0.1");
+    RoboCupSSLClient client(10002, "224.0.0.1");
     VSSClient sim_client(20011, "127.0.0.1");
 
     client.open(false);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
                 //Ball info:
 
                 fira_message::Ball ball = detection.ball();
-                ball = invertBall(ball);
+                // ball = invertBall(ball);
                 
                 printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
 
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
                 for (int i = 0; i < robots_blue_n; i++)
                 {
                     fira_message::Robot robot = detection.robots_blue(i);
-                    robot = invertRobot(robot);
+                    // robot = invertRobot(robot);
 
                     printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
                     printRobotInfo(robot);
@@ -95,7 +95,8 @@ int main(int argc, char *argv[])
                     // attackers
                     if (i == 0)
                     {
-                        ctrl::vec2 apf_vec = apf::ball_field(robot, ball, 0.0737, 0.0415);
+                        // G0:0.284209 G1:0.648986 G2:0.502952 G3:3.51489
+                        ctrl::vec2 apf_vec = apf::ball_field(robot, ball, 0.284209, 0.648986);
                         // ctrl::vec2 apf_vec = apf::test_control(robot, ball);
                         // ctrl::vec2 apf_vec = apf::uniform_goal_field();
                         // apf_vec += apf::uniform_walls_field(robot);
@@ -118,7 +119,7 @@ int main(int argc, char *argv[])
                         std::cout << apf_vec.x << apf_vec.y << std::endl;
 
                         
-                        ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, 0.4, 5);
+                        ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, 0.502952, 3.51489);
                         sim_client.sendCommand(i, 10*command[0], 10*command[1]);
                     }
 
