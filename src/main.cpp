@@ -99,14 +99,19 @@ void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots,
 }
 
 void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
-                    vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, 
-                    int robots_blue_n, int robots_yellow_n, bool yellow=false)
+                    vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow=false)
 {
+    int robots_blue_n = detection.robots_blue_size();
+    int robots_yellow_n = detection.robots_yellow_size();
+    
     ball = detection.ball();
 
     // playing with blue team
     if (!yellow)
     {
+        my_robots.resize(robots_blue_n);
+        enemy_robots.resize(robots_yellow_n);
+
         for (int i = 0; i < robots_blue_n; ++i)
         {
             my_robots[i] = detection.robots_blue(i);
@@ -121,6 +126,9 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
     // playing with yellow team
     else
     {
+        enemy_robots.resize(robots_blue_n);
+        my_robots.resize(robots_yellow_n);
+
         for (int i = 0; i < robots_blue_n; ++i)
         {
             enemy_robots[i] = detection.robots_blue(i);
@@ -153,13 +161,17 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
 
 int main(int argc, char *argv[])
 {
+    bool yellow = false;
 
     RoboCupSSLClient client(10002, "224.0.0.1");
-    VSSClient sim_client(20011, "127.0.0.1", true);
+    VSSClient sim_client(20011, "127.0.0.1", yellow);
 
     client.open(false);
 
     fira_message::sim_to_ref::Environment packet;
+
+    vector<fira_message::Robot> my_robots;
+    vector<fira_message::Robot> enemy_robots;
 
     while (true)
     {
@@ -171,23 +183,14 @@ int main(int argc, char *argv[])
             {
                 fira_message::Frame detection = packet.frame();
 
-                int robots_blue_n = detection.robots_blue_size();
-                int robots_yellow_n = detection.robots_yellow_size();
-
                 fira_message::Ball ball;
-                vector<fira_message::Robot> my_robots(robots_blue_n);
-                vector<fira_message::Robot> enemy_robots(robots_yellow_n);
 
-                detect_objects(detection, ball, my_robots, enemy_robots, robots_blue_n, robots_yellow_n, true);
-                
+                detect_objects(detection, ball, my_robots, enemy_robots, yellow);
             
                 // G0:0.284209 G1:0.648986 G2:0.502952 G3:3.51489
                 ctrl::vec2 apf_vec = apf::ball_field(my_robots[0], ball, 0.284209, 0.648986);
-                
                 ctrl::vec2 command = ctrl::move_robot(my_robots[0], apf_vec, 0.502952, 3.51489);
-
-                sim_client.sendCommand(0, 10*command[0], 10*command[1]);
-                    
+                sim_client.sendCommand(0, command[0], command[1]);    
             }
 
             //see if packet contains geometry data:
