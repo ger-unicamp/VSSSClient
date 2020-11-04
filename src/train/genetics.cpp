@@ -131,6 +131,10 @@ void Population::evaluate(std::function<double(DNA &)> callable)
  */
 void Population::select()
 {
+    std::random_device rd;
+    auto rng = std::default_random_engine(rd());
+    std::shuffle(this->population.begin(), this->population.end(), rng);
+
     int total = this->population.size();
     for (int i = 0; i < total; i++)
     {
