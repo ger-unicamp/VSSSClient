@@ -82,6 +82,7 @@ int main(int argc, char *argv[])
                 // ball = invertBall(ball);
                 
                 printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
+                printf("-Ball:  VEL=<%9.2f,%9.2f> \n", ball.vx(), ball.vy());
 
                 //Blue robot info:
                 for (int i = 0; i < robots_blue_n; i++)
