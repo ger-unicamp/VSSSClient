@@ -7,6 +7,7 @@
  * 
  */
 #include <stdio.h>
+#include <algorithm>
 #include "net/robocup_ssl_client.h"
 #include "net/vss_client.h"
 #include "util/timer.h"
@@ -30,7 +31,7 @@ void printRobotInfo(const fira_message::Robot &robot)
     printf("ANGLE VEL=%6.3f \n", robot.vorientation());
 }
 
-fira_message::Ball invertBall(fira_message::Ball ball)
+fira_message::Ball invert_ball(fira_message::Ball ball)
 {
     ball.set_x(-ball.x());
     ball.set_y(-ball.y());
@@ -40,7 +41,7 @@ fira_message::Ball invertBall(fira_message::Ball ball)
     return ball;
 }
 
-fira_message::Robot invertRobot(fira_message::Robot robot)
+fira_message::Robot invert_robot(fira_message::Robot robot)
 {
     robot.set_x(-robot.x());
     robot.set_y(-robot.y());
@@ -52,11 +53,109 @@ fira_message::Robot invertRobot(fira_message::Robot robot)
     return robot;
 }
 
+void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots, 
+                vector<fira_message::Robot> enemy_robots, bool yellow=false)
+{
+    //Ball info:
+    printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
+    printf("-Ball:  VEL=<%9.2f,%9.2f> \n", ball.vx(), ball.vy());
+
+    // playing with blue robots
+    if (!yellow)
+    {
+        //Blue robot info:
+        for (auto robot : my_robots)
+        {
+            printf("-Robot(B) (%2d/%2d): ", robot.robot_id()+1, my_robots.size());
+            printRobotInfo(robot);
+        }
+
+        //Yellow robot info:
+        for (auto robot : enemy_robots)
+        {
+            printf("-Robot(Y) (%2d/%2d): ", robot.robot_id()+1, enemy_robots.size());
+            printRobotInfo(robot);
+        }
+    }
+
+    // playing with yellow robots
+    else
+    {
+        //Blue robot info:
+        for (auto robot : enemy_robots)
+        {
+            printf("-Robot(B) (%2d/%2d): ", robot.robot_id()+1, enemy_robots.size());
+            printRobotInfo(robot);
+        }
+
+        //Yellow robot info:
+        for (auto robot : my_robots)
+        {
+            printf("-Robot(Y) (%2d/%2d): ", robot.robot_id()+1, my_robots.size());
+            printRobotInfo(robot);
+        }
+    }
+    
+}
+
+void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
+                    vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, 
+                    int robots_blue_n, int robots_yellow_n, bool yellow=false)
+{
+    ball = detection.ball();
+
+    // playing with blue robots
+    if (!yellow)
+    {
+        for (int i = 0; i < robots_blue_n; ++i)
+        {
+            my_robots[i] = detection.robots_blue(i);
+        }
+
+        for (int i = 0; i < robots_yellow_n; ++i)
+        {
+            enemy_robots[i] = detection.robots_yellow(i);
+        }
+    }
+
+    // playing with yellow robots
+    else
+    {
+        for (int i = 0; i < robots_blue_n; ++i)
+        {
+            enemy_robots[i] = detection.robots_blue(i);
+        }
+
+        for (int i = 0; i < robots_yellow_n; ++i)
+        {
+            my_robots[i] = detection.robots_yellow(i);
+        }
+
+        // invert ball and robots
+        ball = invert_ball(ball);
+        std::for_each(my_robots.begin(), my_robots.end(), 
+            [](fira_message::Robot &robot) 
+            {
+                robot = invert_robot(robot);    
+            }
+        );
+
+        std::for_each(enemy_robots.begin(), enemy_robots.end(), 
+            [](fira_message::Robot &robot) 
+            {
+                robot = invert_robot(robot);    
+            }
+        );
+    }
+
+    print_info(ball, my_robots, enemy_robots, yellow);
+}
+
 int main(int argc, char *argv[])
 {
 
     RoboCupSSLClient client(10002, "224.0.0.1");
-    VSSClient sim_client(20011, "127.0.0.1");
+    VSSClient sim_client(20011, "127.0.0.1", true);
 
     client.open(false);
 
@@ -75,74 +174,20 @@ int main(int argc, char *argv[])
                 int robots_blue_n = detection.robots_blue_size();
                 int robots_yellow_n = detection.robots_yellow_size();
 
+                fira_message::Ball ball;
+                vector<fira_message::Robot> my_robots(robots_blue_n);
+                vector<fira_message::Robot> enemy_robots(robots_yellow_n);
+
+                detect_objects(detection, ball, my_robots, enemy_robots, robots_blue_n, robots_yellow_n, true);
                 
-                //Ball info:
-
-                fira_message::Ball ball = detection.ball();
-                // ball = invertBall(ball);
+            
+                // G0:0.284209 G1:0.648986 G2:0.502952 G3:3.51489
+                ctrl::vec2 apf_vec = apf::ball_field(my_robots[0], ball, 0.284209, 0.648986);
                 
-                printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
-                printf("-Ball:  VEL=<%9.2f,%9.2f> \n", ball.vx(), ball.vy());
+                ctrl::vec2 command = ctrl::move_robot(my_robots[0], apf_vec, 0.502952, 3.51489);
 
-                //Blue robot info:
-                for (int i = 0; i < robots_blue_n; i++)
-                {
-                    fira_message::Robot robot = detection.robots_blue(i);
-                    // robot = invertRobot(robot);
-
-                    printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
-                    printRobotInfo(robot);
-
-                    // attackers
-                    if (i == 0)
-                    {
-                        // G0:0.284209 G1:0.648986 G2:0.502952 G3:3.51489
-                        ctrl::vec2 apf_vec = apf::ball_field(robot, ball, 0.284209, 0.648986);
-                        // ctrl::vec2 apf_vec = apf::test_control(robot, ball);
-                        // ctrl::vec2 apf_vec = apf::uniform_goal_field();
-                        // apf_vec += apf::uniform_walls_field(robot);
-                        
-                        // for (int j = 0; j < robots_yellow_n; j++)
-                        //     {
-                        //         fira_message::Robot enemy = detection.robots_yellow(j);
-                        //         apf_vec += apf::robots_field(robot, enemy);
-                        //     }
-
-                        // for (int j = 0; j < robots_blue_n; j++)
-                        //     {
-                        //         if (j != i)
-                        //         {    
-                        //             fira_message::Robot bro = detection.robots_blue(j);
-                        //             apf_vec += apf::robots_field(robot, bro);
-                        //         }
-                        //     }
-
-                        std::cout << apf_vec.x << apf_vec.y << std::endl;
-
-                        
-                        ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, 0.502952, 3.51489);
-                        sim_client.sendCommand(i, 10*command[0], 10*command[1]);
-                    }
-
-                    // goalkeeper
-                    // else if (i == 2)
-                    // {
-                    //     ctrl::vec2 apf_vec = apf::goalkeeper(robot, ball, 0.0737, 0.0415);
-
-                    //     ctrl::vec2 command = apf::move_robot(robot, apf_vec, 0.4, 5);
-                    //     sim_client.sendCommand(i, 10*command[0], 10*command[1]);
-                    // }
+                sim_client.sendCommand(0, 10*command[0], 10*command[1]);
                     
-                }
-
-                //Yellow robot info:
-                for (int i = 0; i < robots_yellow_n; i++)
-                {
-                    fira_message::Robot robot = detection.robots_yellow(i);
-                    robot = invertRobot(robot);
-                    printf("-Robot(Y) (%2d/%2d): ", i + 1, robots_yellow_n);
-                    printRobotInfo(robot);
-                }
             }
 
             //see if packet contains geometry data:
