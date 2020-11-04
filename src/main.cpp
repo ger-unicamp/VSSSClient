@@ -60,7 +60,7 @@ void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots,
     printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
     printf("-Ball:  VEL=<%9.2f,%9.2f> \n", ball.vx(), ball.vy());
 
-    // playing with blue robots
+    // playing with blue team
     if (!yellow)
     {
         //Blue robot info:
@@ -78,7 +78,7 @@ void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots,
         }
     }
 
-    // playing with yellow robots
+    // playing with yellow team
     else
     {
         //Blue robot info:
@@ -104,7 +104,7 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
 {
     ball = detection.ball();
 
-    // playing with blue robots
+    // playing with blue team
     if (!yellow)
     {
         for (int i = 0; i < robots_blue_n; ++i)
@@ -118,7 +118,7 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
         }
     }
 
-    // playing with yellow robots
+    // playing with yellow team
     else
     {
         for (int i = 0; i < robots_blue_n; ++i)
