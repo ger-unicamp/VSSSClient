@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include "net/udpsocket.h"
 
 Datagram::Datagram()
@@ -96,12 +97,11 @@ std::string UDPSocket::_resolve_hostname(const std::string &host)
         throw UDPSocketRuntimeError(e.c_str());
     }
     char ip[16];
-    unsigned char *a = (unsigned char *) hp->h_addr_list[0];
+    unsigned char *a = (unsigned char *)hp->h_addr_list[0];
     sprintf(ip, "%d.%d.%d.%d", a[0], a[1], a[2], a[3]);
 
     return std::string(ip);
 }
-
 
 /**
  * @brief Bind socket to local IP adress and specified port
@@ -118,6 +118,38 @@ void UDPSocket::serve(std::string &my_ip, unsigned int my_port)
     }
 }
 
+/**
+ * @brief Set socket to blocking or not
+ * 
+ * @param blocking 
+ */
+void UDPSocket::setBlocking(bool blocking)
+{
+    int flags = fcntl(this->sockfd, F_GETFL, 0);
+    if (flags < 0) flags = 0;
+    fcntl(this->sockfd, F_SETFL, flags | (blocking ? 0 : O_NONBLOCK));
+}
+
+/**
+ * @brief Join to multicast group after serve port
+ * 
+ * @return true 
+ * @return false 
+ */
+bool UDPSocket::joinMulticastGroup(std::string &addr)
+{
+    ip_mreq mreq;
+    mreq.imr_multiaddr.s_addr = inet_addr(addr.c_str());
+    mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+    int r1 = setsockopt(this->sockfd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
+    int r2 = setsockopt(this->sockfd, IPPROTO_IP, IP_MULTICAST_IF, &mreq.imr_interface.s_addr, sizeof(mreq.imr_interface.s_addr));
+    if (r1 < 0 || r2 < 0)
+    {
+        throw UDPSocketRuntimeError("Fail to join to multicast UDP");
+    }
+
+    return true;
+}
 
 /**
  * @brief Send a datagram to a remote host
@@ -146,10 +178,9 @@ int UDPSocket::sendData(Datagram &d, const std::string &remote_ip, const unsigne
  */
 int UDPSocket::sendDataHostname(Datagram &d, const std::string &remote_name, const unsigned int remote_port)
 {
-   std::string ip = this->_resolve_hostname(remote_name);
-   return this->sendData(d, ip, remote_port);
+    std::string ip = this->_resolve_hostname(remote_name);
+    return this->sendData(d, ip, remote_port);
 }
-
 
 /**
  * @brief Receive a datagram
@@ -187,8 +218,8 @@ int UDPSocket::receiveData(Datagram &d, std::string &ip, unsigned int *port)
 bool UDPSocket::hasPendingData()
 {
     fd_set rfds;
-    // Wait 42 microseconds
-    struct timeval tv = {0, 42};
+    // Wait 1 millisecond
+    struct timeval tv = {0, 1000};
     FD_ZERO(&rfds);
     FD_SET(this->sockfd, &rfds);
 

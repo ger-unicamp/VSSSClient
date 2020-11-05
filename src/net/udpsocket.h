@@ -57,6 +57,8 @@ public:
     int sendDataHostname(Datagram &d, const std::string &remote_name, const unsigned int port);
     int receiveData(Datagram &d, std::string &remote_ip, unsigned int *port);
     bool hasPendingData();
+    void setBlocking(bool blocking);
+    bool joinMulticastGroup(std::string &addr);
 
 private:
     void _pre_bind(struct sockaddr_in *addr, const std::string &ip, unsigned int port);
