@@ -8,6 +8,7 @@
 #include "train/genetics.h"
 #include "train/vss_replacer.h"
 #include "util/timer.h"
+#include "util/mathutil.h"
 
 #include "pb/command.pb.h"
 #include "pb/common.pb.h"
@@ -16,17 +17,19 @@
 
 extern Random randr;
 const size_t MAX_GEN = 200;
-const size_t N_POP = 10;
+const size_t N_POP = 20;
 const size_t N_GENES = 4;
 const double min_value = 0.0;
-const double max_value = 2.0;
+const double max_value = 1.0;
 const double mr = 0.15; 
 
 struct measure
 {
     double time;
+    double x_error;
     double y_error;
     double t_error;
+    double vy_error;
 
     /**
      * @brief Returns evaluation function (Kim et al.)
@@ -41,8 +44,10 @@ struct measure
             tmp /= 10.0;
         }
         double eval = 10.0 * tmp * tmp;
-        eval += 5.0 * this->t_error * this->t_error;
+        eval += 10.0 * this->t_error * this->t_error;
+        eval += 2.0 * this->x_error * this->x_error;
         eval += 2.0 * this->y_error * this->y_error;
+        eval += 5.0 * this->vy_error * this->vy_error;
         return eval;
     }
 };
@@ -87,21 +92,34 @@ int main()
             {
                 auto ball = packet.frame().ball();
                 auto robot = packet.frame().robots_blue(0);
+                
                 // Update measure
-                res->t_error = robot.orientation();
+                double tmp = robot.orientation();
+                if (tmp > HALF_PI)
+                {
+                    tmp -= HALF_PI;
+                }
+                else if (tmp < -HALF_PI)
+                {
+                    tmp += HALF_PI;
+                }
+                
+                res->t_error = tmp;
                 res->y_error = robot.y();
+                res->x_error = robot.x() + 0.059;
+                res->vy_error = ball.vy();
 
                 /**
                  * @brief This comparisson may change
                  * 
                  */
-                if ((ctrl::vec2(ball) - robot).abs() <= 0.075 && robot.x() < -0.0 && ball.vx() > 0.0)
+                if ((ctrl::vec2(ball) - robot).abs() <= 0.075 && robot.x() - ball.x() < -0.0 && ball.vx() > 0.0)
                 {
                     res->time = (time() - start) / 1000.0;
                     break;
                 }
                 ctrl::vec2 apf_vec = apf::ball_field(robot, ball, d.genes[0], d.genes[1]);
-                ctrl::vec2 command = 10.0 * ctrl::move_robot(robot, apf_vec, d.genes[2], 2.5*d.genes[3] + 1.0);
+                ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, d.genes[2], 40.0*d.genes[3] + 10.0);
                 sim_client.sendCommand(0, command[0], command[1]);
             }
         }
