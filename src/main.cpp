@@ -69,6 +69,7 @@ void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots,
             printf("-Robot(B) (%2d/%2d): ", robot.robot_id()+1, my_robots.size());
             printRobotInfo(robot);
         }
+
         //Yellow robot info:
         for (auto robot : enemy_robots)
         {
