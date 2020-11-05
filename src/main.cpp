@@ -66,14 +66,14 @@ void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots,
         //Blue robot info:
         for (auto robot : my_robots)
         {
-            printf("-Robot(B) (%2d/%2d): ", robot.robot_id()+1, my_robots.size());
+            printf("-Robot(B) (%2d/%2lu): ", robot.robot_id()+1, my_robots.size());
             printRobotInfo(robot);
         }
 
         //Yellow robot info:
-        for (auto robot : enemy_robots)
+        for (auto robot : enemy_robots) 
         {
-            printf("-Robot(Y) (%2d/%2d): ", robot.robot_id()+1, enemy_robots.size());
+            printf("-Robot(Y) (%2d/%2lu): ", robot.robot_id()+1, enemy_robots.size());
             printRobotInfo(robot);
         }
     }
@@ -84,14 +84,14 @@ void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots,
         //Blue robot info:
         for (auto robot : enemy_robots)
         {
-            printf("-Robot(B) (%2d/%2d): ", robot.robot_id()+1, enemy_robots.size());
+            printf("-Robot(B) (%2d/%2lu): ", robot.robot_id()+1, enemy_robots.size());
             printRobotInfo(robot);
         }
 
         //Yellow robot info:
         for (auto robot : my_robots)
         {
-            printf("-Robot(Y) (%2d/%2d): ", robot.robot_id()+1, my_robots.size());
+            printf("-Robot(Y) (%2d/%2lu): ", robot.robot_id()+1, my_robots.size());
             printRobotInfo(robot);
         }
     }
