@@ -132,17 +132,17 @@ void Population::evaluate(std::function<double(DNA &)> callable)
 void Population::select()
 {
     std::random_device rd;
-    auto rng = std::default_random_engine(rd());
-    std::shuffle(this->population.begin(), this->population.end(), rng);
+    auto rng = std::mt19937_64(rd());
 
     int total = this->population.size();
     for (int i = 0; i < total; i++)
     {
+        std::shuffle(this->population.begin(), this->population.end(), rng);
         DNA *best = NULL;
         // Take three turns, with reposition
         for (int j = 0; j < 3; j++)
         {
-            DNA *d = this->population[int(randr(total))];
+            DNA *d = this->population[j % total];
             if (best == NULL or d->fitness > best->fitness)
                 best = d;
         }
