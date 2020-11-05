@@ -10,6 +10,7 @@
 #include <algorithm>
 #include "net/robocup_ssl_client.h"
 #include "net/vss_client.h"
+#include "net/referee_client.h"
 #include "util/timer.h"
 #include "strategy/controller.h"
 #include "strategy/APF.h"
@@ -19,6 +20,9 @@
 #include "pb/common.pb.h"
 #include "pb/packet.pb.h"
 #include "pb/replacement.pb.h"
+#include "pb/vssref_command.pb.h"
+#include "pb/vssref_common.pb.h"
+#include "pb/vssref_placement.pb.h"
 
 void printRobotInfo(const fira_message::Robot &robot)
 {
@@ -166,16 +170,24 @@ int main(int argc, char *argv[])
 
     RoboCupSSLClient client(10002, "224.0.0.1");
     VSSClient sim_client(20011, "127.0.0.1", yellow);
+    RefereeClient referee(10003, 10004, "224.5.23.2");
 
     client.open(false);
+    referee.open();
 
     fira_message::sim_to_ref::Environment packet;
+    VSSRef::ref_to_team::VSSRef_Command ref_packet;
 
     vector<fira_message::Robot> my_robots;
     vector<fira_message::Robot> enemy_robots;
 
     while (true)
     {
+        if(referee.receive(ref_packet))
+        {
+            std::cout << "Referee Foul: " << ref_packet.foul() << std::endl;
+        }
+        std::cout << "------------- Will receive ---------" << std::endl;
         if (client.receive(packet))
         {
             printf("-----Received Wrapper Packet---------------------------------------------\n");
