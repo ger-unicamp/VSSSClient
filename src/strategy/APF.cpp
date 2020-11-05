@@ -26,31 +26,13 @@
 //     return apf_vector;
 // }
 
-double apf::repulsion_field(fira_message::Robot &robot, fira_message::Robot &obstacle, double k)
+ctrl::vec2 apf::repulsion_field(ctrl::vec2 robot, ctrl::vec2 obstacle, double k)
 {
-    ctrl::vec2 apf_vector;
-    ctrl::vec2 v_robot = ctrl::vec2(robot.vx(), robot.vy());
-    ctrl::vec2 v_obstacle = ctrl::vec2(obstacle.vx(), obstacle.vy());   
-    ctrl::vec2 p_robot = ctrl::vec2(robot.x(), robot.y());
-    ctrl::vec2 p_real_obstacle = ctrl::vec2(obstacle.x(), obstacle.y());
-    ctrl::vec2 s = k*(v_obstacle - v_robot);
-    double dist = p_real_obstacle.distance(p_robot);
+    ctrl::vec2 apf_vec = ctrl::vec2();
+    apf_vec = (robot - obstacle);
+    // sincos(theta, &apf_vec.y, &apf_vec.x);
 
-    double phi;
-    ctrl::vec2 p_virtual_obstacle;
-
-    if (dist > s.abs())
-    {
-        p_virtual_obstacle = p_real_obstacle + s;
-    }
-    else
-    {
-        p_virtual_obstacle = p_real_obstacle + (dist/s.abs())*s;
-    }
-
-    phi = (p_real_obstacle - p_virtual_obstacle).theta();
-
-    return phi;
+    return k*apf_vec;
 }
 
 //  ----------> BALL FIELD <-----------
@@ -139,28 +121,28 @@ ctrl::vec2 apf::ball_field(ctrl::vec2 robot, ctrl::vec2 ball, double radius, dou
     return apf_vector;
 }
 
-ctrl::vec2 apf::composite_field(fira_message::Robot &robot, fira_message::Ball &target, fira_message::Robot &obstacle, double radius, double k_spiral, double k_virtual_obj, double d_min, double sigma)
-{
-    ctrl::vec2 apf_vector;
-    ctrl::vec2 p_robot = ctrl::vec2(robot.x(), robot.y());
-    ctrl::vec2 p_obstacle = ctrl::vec2(obstacle.x(), obstacle.y());
-    double R = p_robot.distance(p_obstacle);
+// ctrl::vec2 apf::composite_field(fira_message::Robot &robot, fira_message::Ball &target, fira_message::Robot &obstacle, double radius, double k_spiral, double k_virtual_obj, double d_min, double sigma)
+// {
+//     ctrl::vec2 apf_vector;
+//     ctrl::vec2 p_robot = ctrl::vec2(robot.x(), robot.y());
+//     ctrl::vec2 p_obstacle = ctrl::vec2(obstacle.x(), obstacle.y());
+//     double R = p_robot.distance(p_obstacle);
 
-    double phi_composed, phi_target, phi_repulsion;
+//     double phi_composed, phi_target, phi_repulsion;
 
-    if (R <= d_min)
-    {
-        phi_composed = apf::repulsion_field(robot, obstacle, k_virtual_obj);
-    }
+//     if (R <= d_min)
+//     {
+//         phi_composed = apf::repulsion_field(robot, obstacle, k_virtual_obj);
+//     }
 
-    else
-    {
-        phi_target = apf::move_to_goal(ctrl::vec2(robot), ctrl::vec2(target), radius, k_spiral);
-        phi_repulsion = apf::repulsion_field(robot, obstacle, k_virtual_obj);
-        phi_composed = (phi_repulsion * math::gaussian(R - d_min, sigma)) + (phi_target * (1-math::gaussian(R - d_min, sigma)));
-    }
+//     else
+//     {
+//         phi_target = apf::move_to_goal(ctrl::vec2(robot), ctrl::vec2(target), radius, k_spiral);
+//         phi_repulsion = apf::repulsion_field(robot, obstacle, k_virtual_obj);
+//         phi_composed = (phi_repulsion * math::gaussian(R - d_min, sigma)) + (phi_target * (1-math::gaussian(R - d_min, sigma)));
+//     }
     
-    apf_vector = ctrl::vec2(cos(phi_composed), sin(phi_composed));
+//     apf_vector = ctrl::vec2(cos(phi_composed), sin(phi_composed));
 
-    return apf_vector;
-} 
+//     return apf_vector;
+// } 

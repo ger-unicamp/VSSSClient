@@ -6,7 +6,7 @@ namespace apf
 {
     // ctrl::vec2 uniform_goal_field();
     // ctrl::vec2 uniform_walls_field(fira_message::Robot &robot);
-    double repulsion_field(fira_message::Robot &robot, fira_message::Robot &obstacle, double k);
+    ctrl::vec2 repulsion_field(ctrl::vec2 robot, ctrl::vec2 obstacle, double k);
  
     double spiral_field_cw(ctrl::vec2 pos, double radius, double k);
     double spiral_field_ccw(ctrl::vec2 pos, double radius, double k);
