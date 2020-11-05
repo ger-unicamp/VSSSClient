@@ -69,7 +69,6 @@ void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots,
             printf("-Robot(B) (%2d/%2d): ", robot.robot_id()+1, my_robots.size());
             printRobotInfo(robot);
         }
-
         //Yellow robot info:
         for (auto robot : enemy_robots)
         {
@@ -188,8 +187,9 @@ int main(int argc, char *argv[])
                 detect_objects(detection, ball, my_robots, enemy_robots, yellow);
             
                 // G0:0.284209 G1:0.648986 G2:0.502952 G3:3.51489
-                ctrl::vec2 apf_vec = apf::ball_field(my_robots[0], ball, 0.284209, 0.648986);
-                ctrl::vec2 command = ctrl::move_robot(my_robots[0], apf_vec, 0.502952, 3.51489);
+                // G0: 0.125666 G1:0.0695225 G2:0.392803 G3:0.822646
+                ctrl::vec2 apf_vec = apf::ball_field(my_robots[0], ball, 0.125666, 0.0695225);
+                ctrl::vec2 command = ctrl::move_robot(my_robots[0], apf_vec, 0.392803, 40.0 * 0.822646 + 10.0);
                 sim_client.sendCommand(0, command[0], command[1]);    
             }
 
