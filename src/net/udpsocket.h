@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cstdio>
 #include <stdexcept>
+#include <vector>
 
 #include <netdb.h>
 #include <unistd.h> 
@@ -26,15 +27,14 @@ public:
     Datagram(uint8_t *bytes, size_t n);
     ~Datagram();
 
-    uint8_t *data() {return this->bytes;}
-    size_t size() {return this->byte_size;}
+    uint8_t *data() {return this->bytes.data();}
+    size_t size() {return this->bytes.size();}
     uint8_t *resize(size_t n);
     void setdata(uint8_t *bytes, size_t n);
     void fill(uint8_t val);
 
 private:
-    uint8_t *bytes;
-    size_t byte_size;
+    std::vector<uint8_t> bytes;
 };
 
 class UDPSocketRuntimeError: public std::runtime_error {
@@ -52,12 +52,11 @@ public:
     UDPSocket();
     ~UDPSocket();
 
-    void serve(std::string &my_ip, unsigned int my_port = 0);
+    void listen(std::string my_ip, unsigned int my_port = 0, bool blocking = true, bool multicast_share=false, bool multicast_loopback=false);
     int sendData(Datagram &d, const std::string &remote_ip, const unsigned int port);
     int sendDataHostname(Datagram &d, const std::string &remote_name, const unsigned int port);
     int receiveData(Datagram &d, std::string &remote_ip, unsigned int *port);
     bool hasPendingData();
-    void setBlocking(bool blocking);
     bool joinMulticastGroup(std::string &addr);
 
 private:

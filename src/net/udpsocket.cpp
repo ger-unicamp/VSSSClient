@@ -6,35 +6,24 @@ Datagram::Datagram()
     Datagram(1);
 }
 
-Datagram::Datagram(size_t n)
+Datagram::Datagram(size_t n) : bytes(n, 0)
 {
-    n = std::max(size_t(1), n);
-    this->byte_size = n;
-    this->bytes = new uint8_t[n];
-    this->fill(0);
 }
 
 Datagram::Datagram(uint8_t *bytes, size_t n)
 {
-    this->bytes = NULL;
-    this->setdata(bytes, n);
+    this->bytes.insert(this->bytes.begin(), bytes, bytes + n);
 }
 
 Datagram::~Datagram()
 {
-    delete[] this->bytes;
+    this->bytes.clear();
 }
 
 uint8_t *Datagram::resize(size_t n)
 {
-    uint8_t *b = this->bytes;
-    size_t old_size = this->byte_size;
-    this->bytes = new uint8_t[n];
-    this->byte_size = n;
-    this->fill(0);
-    std::memcpy(this->bytes, b, (std::min(old_size, this->byte_size)) * sizeof(uint8_t));
-    delete[] b;
-    return this->bytes;
+    this->bytes.resize(n, 0);
+    return this->data();
 }
 
 /**
@@ -45,10 +34,8 @@ uint8_t *Datagram::resize(size_t n)
  */
 void Datagram::setdata(uint8_t *bytes, size_t n)
 {
-    delete[] this->bytes;
-    this->byte_size = n;
-    this->bytes = new uint8_t[n];
-    std::memcpy(this->bytes, bytes, n * sizeof(uint8_t));
+    this->bytes.clear();
+    this->bytes.insert(this->bytes.begin(), bytes, bytes + n);
 }
 
 /**
@@ -58,7 +45,7 @@ void Datagram::setdata(uint8_t *bytes, size_t n)
  */
 void Datagram::fill(uint8_t var)
 {
-    std::memset(this->bytes, var, (this->byte_size) * sizeof(uint8_t));
+    this->bytes = std::vector<uint8_t>(this->bytes.size(), var);
 }
 
 UDPSocket::UDPSocket()
@@ -104,30 +91,36 @@ std::string UDPSocket::_resolve_hostname(const std::string &host)
 }
 
 /**
- * @brief Bind socket to local IP adress and specified port
+ * @brief Bind a socket to listen on my_ip:my_port
  * 
- * @param my_ip Local IP. Change if UDPSocket Object must be a server. 
- * @param my_port Default is zero (any port number). Change if UDPSocket Object must be a server.
+ * @param my_ip 
+ * @param my_port 
+ * @param blocking Set IO as blocking or not
+ * @param multicast_share Set socket to reuse addr
+ * @param multicast_loopback Set socket to receive packets on this host
  */
-void UDPSocket::serve(std::string &my_ip, unsigned int my_port)
+void UDPSocket::listen(std::string my_ip, unsigned int my_port, bool blocking, bool multicast_share, bool multicast_loopback)
 {
+
     this->_pre_bind(&(this->my_addr), my_ip, my_port);
+
+    int flags = fcntl(this->sockfd, F_GETFL, 0);
+    if (flags < 0)
+        flags = 0;
+    fcntl(this->sockfd, F_SETFL, flags | (blocking ? 0 : O_NONBLOCK));
+
+    int reuse = 1;
+    if (multicast_share && setsockopt(this->sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)))
+        std::cerr << "Error to set SO_REUSEADDR on UDP socket" << std::endl;
+
+    int yes = 1;
+    if (multicast_loopback && setsockopt(this->sockfd, IPPROTO_IP, IP_MULTICAST_LOOP, &yes, sizeof(yes)))
+        std::cerr << "Error to set IP_MULTICAST_LOOP on UDP socket" << std::endl;
+
     if (bind(this->sockfd, (struct sockaddr *)&(this->my_addr), sizeof(this->my_addr)) < 0)
     {
         throw UDPSocketRuntimeError("Bind Failed.");
     }
-}
-
-/**
- * @brief Set socket to blocking or not
- * 
- * @param blocking 
- */
-void UDPSocket::setBlocking(bool blocking)
-{
-    int flags = fcntl(this->sockfd, F_GETFL, 0);
-    if (flags < 0) flags = 0;
-    fcntl(this->sockfd, F_SETFL, flags | (blocking ? 0 : O_NONBLOCK));
 }
 
 /**
@@ -141,9 +134,10 @@ bool UDPSocket::joinMulticastGroup(std::string &addr)
     ip_mreq mreq;
     mreq.imr_multiaddr.s_addr = inet_addr(addr.c_str());
     mreq.imr_interface.s_addr = htonl(INADDR_ANY);
-    int r1 = setsockopt(this->sockfd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
-    int r2 = setsockopt(this->sockfd, IPPROTO_IP, IP_MULTICAST_IF, &mreq.imr_interface.s_addr, sizeof(mreq.imr_interface.s_addr));
-    if (r1 < 0 || r2 < 0)
+    if (
+        setsockopt(this->sockfd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0 || 
+        setsockopt(this->sockfd, IPPROTO_IP, IP_MULTICAST_IF, &mreq.imr_interface.s_addr, sizeof(mreq.imr_interface.s_addr)) < 0
+    )
     {
         throw UDPSocketRuntimeError("Fail to join to multicast UDP");
     }
@@ -195,11 +189,7 @@ int UDPSocket::receiveData(Datagram &d, std::string &ip, unsigned int *port)
     struct sockaddr_in recv_addr;
     socklen_t slen = sizeof(recv_addr);
     this->recv_len = recvfrom(this->sockfd, this->recv_buffer, this->BUF_LEN, 0, (struct sockaddr *)&recv_addr, &slen);
-    if (this->recv_len == -1)
-    {
-        std::cerr << "Error receiveing message" << std::endl;
-    }
-    else
+    if (this->recv_len > 0)
     {
         d.setdata(this->recv_buffer, this->recv_len);
         ip = std::string(inet_ntoa(recv_addr.sin_addr));
