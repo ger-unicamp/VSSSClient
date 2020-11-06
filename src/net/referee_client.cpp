@@ -23,15 +23,13 @@ void RefereeClient::close()
 
 bool RefereeClient::open(bool blocking)
 {
-    std::string serve_ip = "0.0.0.0";
-    this->recv_sock->serve(serve_ip, this->recv_port);
-    this->recv_sock->setBlocking(blocking);
+    this->recv_sock->listen("0.0.0.0", this->recv_port, blocking, true, true);
     this->recv_sock->joinMulticastGroup(this->udp_addr);
     return true;
 }
 
 /**
- * @brief Non-blocking call to receive a oackage from referee
+ * @brief Non-blocking call to receive a package from referee
  * 
  * @param cmd 
  * @return true Receive a package and updates cmd
@@ -39,16 +37,12 @@ bool RefereeClient::open(bool blocking)
  */
 bool RefereeClient::receive(VSSRef::ref_to_team::VSSRef_Command &cmd)
 {
-    if (this->recv_sock->hasPendingData())
+    Datagram dgram;
+    std::string recv_ip;
+    unsigned int recv_port;
+    if (this->recv_sock->receiveData(dgram, recv_ip, &recv_port) > 0)
     {
-        Datagram dgram;
-        std::string recv_ip;
-        unsigned int recv_port;
-        if (this->recv_sock->receiveData(dgram, recv_ip, &recv_port) > 0)
-        {
-            return cmd.ParseFromArray(dgram.data(), dgram.size());
-        }
-        std::cerr << "Error receiving Referee command" << std::endl;
+        return cmd.ParseFromArray(dgram.data(), dgram.size());
     }
     return false;
 }
