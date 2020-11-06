@@ -97,11 +97,11 @@ int main()
                 double tmp = robot.orientation();
                 if (tmp > HALF_PI)
                 {
-                    tmp -= HALF_PI;
+                    tmp = math::wrap_to_pi(tmp - PI);
                 }
                 else if (tmp < -HALF_PI)
                 {
-                    tmp += HALF_PI;
+                    tmp = math::wrap_to_pi(tmp + PI);
                 }
                 
                 res->t_error = tmp;
