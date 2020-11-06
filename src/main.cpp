@@ -201,6 +201,7 @@ int main(int argc, char *argv[])
                 // G0: 0.125666 G1:0.0695225 G2:0.392803 G3:0.822646
                 ctrl::vec2 apf_vec = apf::ball_field(my_robots[0], ball, 0.125666, 0.0695225);
                 ctrl::vec2 command = ctrl::move_robot(my_robots[0], apf_vec, 0.392803, 40.0 * 0.822646 + 10.0);
+                
                 if (game_on)
                     sim_client.sendCommand(0, command[0], command[1]);
                 else
@@ -210,50 +211,8 @@ int main(int argc, char *argv[])
                     sim_client.sendCommand(2, 0.0, 0.0);
                 else if (ctrl::vec2(my_robots[2]).distance(ball) < 0.08)
                 {
-<<<<<<< HEAD
                     ctrl::vec2 spin = gpk::kick(my_robots[2], ball);
                     sim_client.sendCommand(2, spin[0], spin[1]);
-=======
-                    fira_message::Robot robot = detection.robots_blue(i);
-                    // robot = invertRobot(robot);
-
-                    printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
-                    printRobotInfo(robot);
-
-                    // attackers
-                    if (i <= 1)
-                    {
-
-                        fira_message::Robot obstacle = detection.robots_blue(1);
-
-                        ctrl::vec2 command_vec = ctrl::vec2();
-
-                        ctrl::vec2 spiral_vec = apf::ball_field(robot, ball, 0.125666, 0.0695225);
-
-                        ctrl::vec2 repulsion_vec = ctrl::vec2();
-                        for (int j = 0; j < robots_yellow_n; j++)
-                        {
-                            fira_message::Robot enemy = detection.robots_yellow(j);
-                            repulsion_vec += apf::repulsion_field(robot, enemy, 0.001);
-                        }
-
-                        for (int j = 0; j < robots_blue_n; j++)
-                        {
-                            if (j != i)
-                            {    
-                                fira_message::Robot bro = detection.robots_blue(j);
-                                repulsion_vec += apf::repulsion_field(robot, bro, 0.001);
-                            }
-                        }
-
-                        double phi_composed = apf::composite_field(repulsion_vec, spiral_vec, 0.0457);
-                        sincos(phi_composed, &command_vec.y, &command_vec.x);
-
-                        ctrl::vec2 command = ctrl::move_robot(robot, command_vec, 0.392803, 40 * 0.822646 + 10);
-                        sim_client.sendCommand(i, command[0], command[1]);
-                    }
-                    
->>>>>>> finished repulsion field implementation
                 }
                 else
                 {
@@ -261,6 +220,7 @@ int main(int argc, char *argv[])
                     command = ctrl::move_robot(my_robots[2], apf_vec, 0.4, 5);
                     sim_client.sendCommand(2, 10 * command[0], 10 * command[1]);
                 }
+                sim_client.sendCommand(0, command[0], command[1]);    
             }
 
             //see if packet contains geometry data:
