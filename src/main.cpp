@@ -58,8 +58,8 @@ fira_message::Robot invert_robot(fira_message::Robot robot)
     return robot;
 }
 
-void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots, 
-                vector<fira_message::Robot> enemy_robots, bool yellow=false)
+void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots,
+                vector<fira_message::Robot> enemy_robots, bool yellow = false)
 {
     //Ball info:
     printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
@@ -71,14 +71,14 @@ void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots,
         //Blue robot info:
         for (auto robot : my_robots)
         {
-            printf("-Robot(B) (%2d/%2lu): ", robot.robot_id()+1, my_robots.size());
+            printf("-Robot(B) (%2d/%2lu): ", robot.robot_id() + 1, my_robots.size());
             printRobotInfo(robot);
         }
 
         //Yellow robot info:
-        for (auto robot : enemy_robots) 
+        for (auto robot : enemy_robots)
         {
-            printf("-Robot(Y) (%2d/%2lu): ", robot.robot_id()+1, enemy_robots.size());
+            printf("-Robot(Y) (%2d/%2lu): ", robot.robot_id() + 1, enemy_robots.size());
             printRobotInfo(robot);
         }
     }
@@ -89,26 +89,25 @@ void print_info(fira_message::Ball ball, vector<fira_message::Robot> my_robots,
         //Blue robot info:
         for (auto robot : enemy_robots)
         {
-            printf("-Robot(B) (%2d/%2lu): ", robot.robot_id()+1, enemy_robots.size());
+            printf("-Robot(B) (%2d/%2lu): ", robot.robot_id() + 1, enemy_robots.size());
             printRobotInfo(robot);
         }
 
         //Yellow robot info:
         for (auto robot : my_robots)
         {
-            printf("-Robot(Y) (%2d/%2lu): ", robot.robot_id()+1, my_robots.size());
+            printf("-Robot(Y) (%2d/%2lu): ", robot.robot_id() + 1, my_robots.size());
             printRobotInfo(robot);
         }
     }
-    
 }
 
 void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
-                    vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow=false)
+                    vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow = false)
 {
     int robots_blue_n = detection.robots_blue_size();
     int robots_yellow_n = detection.robots_yellow_size();
-    
+
     ball = detection.ball();
 
     // playing with blue team
@@ -146,22 +145,18 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
 
         // invert ball and robots
         ball = invert_ball(ball);
-        std::for_each(my_robots.begin(), my_robots.end(), 
-            [](fira_message::Robot &robot) 
-            {
-                robot = invert_robot(robot);    
-            }
-        );
+        std::for_each(my_robots.begin(), my_robots.end(),
+                      [](fira_message::Robot &robot) {
+                          robot = invert_robot(robot);
+                      });
 
-        std::for_each(enemy_robots.begin(), enemy_robots.end(), 
-            [](fira_message::Robot &robot) 
-            {
-                robot = invert_robot(robot);    
-            }
-        );
+        std::for_each(enemy_robots.begin(), enemy_robots.end(),
+                      [](fira_message::Robot &robot) {
+                          robot = invert_robot(robot);
+                      });
     }
 
-    print_info(ball, my_robots, enemy_robots, yellow);
+    //print_info(ball, my_robots, enemy_robots, yellow);
 }
 
 int main(int argc, char *argv[])
@@ -170,24 +165,27 @@ int main(int argc, char *argv[])
 
     RoboCupSSLClient client(10002, "224.0.0.1");
     VSSClient sim_client(20011, "127.0.0.1", yellow);
-    RefereeClient referee(10003, 10004, "224.5.23.2");
+    RefereeClient referee(10003, 10004, "224.0.0.1");
 
     client.open(false);
     referee.open();
 
     fira_message::sim_to_ref::Environment packet;
     VSSRef::ref_to_team::VSSRef_Command ref_packet;
+    bool game_on = true;
 
     vector<fira_message::Robot> my_robots;
     vector<fira_message::Robot> enemy_robots;
 
     while (true)
     {
-        if(referee.receive(ref_packet))
+        if (referee.receive(ref_packet))
         {
-            std::cout << "Referee Foul: " << ref_packet.foul() << std::endl;
+            unsigned int foul = ref_packet.foul();
+            std::cout << "-----Referee Foul: " << foul << std::endl;
+            game_on = foul == 6;
         }
-        std::cout << "------------- Will receive ---------" << std::endl;
+
         if (client.receive(packet))
         {
             printf("-----Received Wrapper Packet---------------------------------------------\n");
@@ -199,8 +197,7 @@ int main(int argc, char *argv[])
                 fira_message::Ball ball;
 
                 detect_objects(detection, ball, my_robots, enemy_robots, yellow);
-            
-                // G0:0.284209 G1:0.648986 G2:0.502952 G3:3.51489
+
                 // G0: 0.125666 G1:0.0695225 G2:0.392803 G3:0.822646
                 ctrl::vec2 apf_vec = apf::ball_field(my_robots[0], ball, 0.125666, 0.0695225);
                 ctrl::vec2 command = ctrl::move_robot(my_robots[0], apf_vec, 0.392803, 40.0 * 0.822646 + 10.0);
@@ -210,7 +207,6 @@ int main(int argc, char *argv[])
                 int robots_yellow_n = detection.robots_yellow_size();
 
                 //Ball info:
-
                 fira_message::Ball ball = detection.ball();
 
                 //Blue robot info:
@@ -222,21 +218,19 @@ int main(int argc, char *argv[])
                         auto robot = my_robots[i];
                         ctrl::vec2 pos_robot = ctrl::vec2(robot);
                         ctrl::vec2 pos_ball = ctrl::vec2(ball);
-                        
-                        if (sqrt(pow((pos_robot[0]-pos_ball[0]),2) + pow((pos_robot[1]-pos_ball[1]),2)) < 0.08)
+
+                        if (sqrt(pow((pos_robot[0] - pos_ball[0]), 2) + pow((pos_robot[1] - pos_ball[1]), 2)) < 0.08)
                         {
-                            ctrl::vec2 spin = gpk::kick(robot,ball);
+                            ctrl::vec2 spin = gpk::kick(robot, ball);
                             sim_client.sendCommand(i, spin[0], spin[1]);
                         }
                         else
                         {
-                            ctrl::vec2 apf_vec = gpk::follow(robot,ball);
+                            ctrl::vec2 apf_vec = gpk::follow(robot, ball);
                             ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, 0.4, 5);
-                            sim_client.sendCommand(i, 10*command[0], 10*command[1]);
+                            sim_client.sendCommand(i, 10 * command[0], 10 * command[1]);
                         }
-                        
                     }
-                    
                 }
 
                 //Yellow robot info:
@@ -249,7 +243,7 @@ int main(int argc, char *argv[])
             }
 
             //see if packet contains geometry data:
-            if (packet.has_field())
+            if (packet.has_field() && false)
             {
                 printf("-[Geometry Data]-------\n");
 
