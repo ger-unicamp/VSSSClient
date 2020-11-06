@@ -29,10 +29,11 @@
 ctrl::vec2 apf::repulsion_field(ctrl::vec2 robot, ctrl::vec2 obstacle, double k)
 {
     ctrl::vec2 apf_vec = ctrl::vec2();
-    apf_vec = (robot - obstacle);
-    // sincos(theta, &apf_vec.y, &apf_vec.x);
+    double dist = robot.distance(obstacle);
+    double theta = (robot - obstacle).theta();
+    sincos(theta, &apf_vec.y, &apf_vec.x);
 
-    return k*apf_vec;
+    return k * (1 / (dist*dist)) * apf_vec;
 }
 
 //  ----------> BALL FIELD <-----------

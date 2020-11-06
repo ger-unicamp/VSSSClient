@@ -219,7 +219,6 @@ int main(int argc, char *argv[])
                     command = ctrl::move_robot(my_robots[2], apf_vec, 0.4, 5);
                     sim_client.sendCommand(2, 10 * command[0], 10 * command[1]);
                 }
->>>>>>> started new repulsive field
             }
 
             //see if packet contains geometry data:
