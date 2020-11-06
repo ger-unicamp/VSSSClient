@@ -47,7 +47,7 @@ fira_message::Robot invert_robot(fira_message::Robot robot)
     robot.set_y(-robot.y());
     robot.set_vx(-robot.vx());
     robot.set_vy(-robot.vy());
-    robot.set_orientation(robot.orientation() + PI);
+    robot.set_orientation(math::wrap_to_pi(robot.orientation() + PI));
     robot.set_vorientation(-robot.vorientation());
 
     return robot;
