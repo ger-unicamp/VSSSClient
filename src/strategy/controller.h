@@ -135,8 +135,6 @@ namespace ctrl
     };
 
     ctrl::vec2 move_robot(fira_message::Robot &robot, ctrl::vec2 vector, double k, double v);
-    ctrl::vec2 future_position(fira_message::Robot &r, double dt);
-    ctrl::vec2 future_position(fira_message::Ball &b, double dt);
     ctrl::vec2 future_position(fira_message::Robot &r1, fira_message::Robot &r2, double dt);
     ctrl::vec2 future_position(fira_message::Ball &b, fira_message::Robot &r, double dt);
 
