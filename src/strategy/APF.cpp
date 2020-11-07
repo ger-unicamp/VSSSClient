@@ -107,7 +107,7 @@ double apf::move_to_goal(ctrl::vec2 pos, ctrl::vec2 target, double radius, doubl
         ctrl::vec2 Ncw = ctrl::vec2(cos_phi, sin_phi);
         sincos(phiccw, &sin_phi, &cos_phi);
         ctrl::vec2 Nccw = ctrl::vec2(cos_phi, sin_phi);
-        ctrl::vec2 tmp = (yl * Nccw - yr * Ncw) * (1.0 / (2.0 * radius));
+        ctrl::vec2 tmp = (yl * Nccw + yr * Ncw) * (1.0 / (2.0 * radius));
         phi = tmp.theta();
     }
     else if (translated.y < -radius)

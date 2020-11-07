@@ -131,6 +131,7 @@ namespace ctrl
             return vec2(c, s);
         }
         
+        double distance(const vec2 &p) { return ((*this - p).abs()); }
     };
 
     ctrl::vec2 move_robot(fira_message::Robot &robot, ctrl::vec2 vector, double k, double v);
