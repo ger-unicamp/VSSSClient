@@ -132,7 +132,7 @@ namespace ctrl
             return vec2(c, s);
         }
 
-        double distance(vec2 &p) { return ((*this - p).abs()); }
+        double distance(const vec2 &p) { return ((*this - p).abs()); }
         
         double distance(const vec2 &p) { return ((*this - p).abs()); }
     };
