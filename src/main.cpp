@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
                         
                         if (sqrt(pow((pos_robot[0]-pos_ball[0]),2) + pow((pos_robot[1]-pos_ball[1]),2)) < 0.08)
                         {
-                            ctrl::vec2 spin = gpk::kick(robot);
+                            ctrl::vec2 spin = gpk::kick(robot,ball);
                             sim_client.sendCommand(i, spin[0], spin[1]);
                         }
                         else
