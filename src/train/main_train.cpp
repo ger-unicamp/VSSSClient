@@ -17,10 +17,10 @@
 
 extern Random randr;
 const size_t MAX_GEN = 200;
-const size_t N_POP = 10;
-const size_t N_GENES = 4;
+const size_t N_POP = 20;
+const size_t N_GENES = 2;
 const double min_value = 0.0;
-const double max_value = 1.0;
+const double max_value = 0.1;
 const double mr = 0.15; 
 
 struct measure
@@ -38,13 +38,8 @@ struct measure
      */
     double operator()()
     {
-        double tmp = this->time;
-        if (tmp < 1.5)
-        {
-            tmp /= 10.0;
-        }
-        double eval = 10.0 * tmp * tmp;
-        eval += 10.0 * this->t_error * this->t_error;
+        double eval = 10.0 * time * time;
+        eval += 5 * this->t_error * this->t_error;
         eval += 2.0 * this->x_error * this->x_error;
         eval += 2.0 * this->y_error * this->y_error;
         eval += 5.0 * this->vy_error * this->vy_error;
@@ -52,7 +47,7 @@ struct measure
     }
 };
 
-std::function<void(ctrl::vec2 &start, DNA &d, measure *res)> simulate;
+std::function<void(ctrl::vec2 &start_robot, ctrl::vec2 &start_obstacle0, DNA &d, measure *res)> simulate;
 double fitness_simulate(DNA &d);
 double test_fitness(DNA &d);
 
@@ -74,13 +69,15 @@ int main()
      * robot reached the target.
      * 
      */
-    simulate = [&](ctrl::vec2 &start, DNA &d, measure *res) {
+    simulate = [&](ctrl::vec2 &start_robot, ctrl::vec2 &start_obstacle0, DNA &d, measure *res) {
         while (true)
         {
             if (client.receive(packet))
             {
                 replacer.setBallPos(0.0, 0.0);
-                replacer.setRobotPos(false, 0, start.x, start.y, 0.0);
+                replacer.setRobotPos(false, 0, start_robot.x, start_robot.y, 0.0);
+                replacer.setRobotPos(true, 0, start_obstacle0.x, start_obstacle0.y, 0.0);
+                // replacer.setRobotPos(true, 1, start_obstacle1.x, start_obstacle1.y, 0.0);
                 break;
             }
         }
@@ -92,6 +89,9 @@ int main()
             {
                 auto ball = packet.frame().ball();
                 auto robot = packet.frame().robots_blue(0);
+                auto obstacle0 = packet.frame().robots_yellow(0);
+                
+
                 
                 // Update measure
                 double tmp = robot.orientation();
@@ -118,8 +118,12 @@ int main()
                     res->time = (time() - start) / 1000.0;
                     break;
                 }
-                ctrl::vec2 apf_vec = apf::ball_field(robot, ball, d.genes[0], d.genes[1]);
-                ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, d.genes[2], 40.0*d.genes[3] + 10.0);
+
+                // Spiral field: G0:0.0937194 G1:0.00469342 G2:0.521572 G3: 40 * 0.608694 + 10)
+                ctrl::vec2 spiral_vec = apf::ball_field(robot, ball, 0.0937194, 0.00469342);
+                ctrl::vec2 repulsion_vec = apf::repulsion_field(robot, obstacle0, d.genes[0]);
+                ctrl::vec2 apf_vec = apf::composite_field(repulsion_vec, spiral_vec, d.genes[1]);
+                ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, 0.521572, 34.3477599);
                 sim_client.sendCommand(0, command[0], command[1]);
             }
         }
@@ -155,12 +159,14 @@ int main()
 
 double fitness_simulate(DNA &d)
 {
-    ctrl::vec2 starts[] = {{0.2, 0.0}, {0.5, 0.0}, {0.5, 0.3}, {0.0, 0.4}, {-0.5, 0.3}, {-0.5, 0.0}};
+    ctrl::vec2 starts_robot[] = {{0.5, 0.3}, {0.0, 0.4}, {-0.5, 0.3}, {-0.5, 0.0}};
+    ctrl::vec2 starts_obstacle0[] = {{0.2, 0.2}, {0.0, 0.15}, {-0.2, 0.2}, {-0.25, 0.0}};
+
     double fitness = 0.0;
     for (size_t i = 0; i < 6; i++)
     {
         measure f;
-        simulate(starts[i], d, &f);
+        simulate(starts_robot[i], starts_obstacle0[i], d, &f);
         fitness += f();
     }
 
