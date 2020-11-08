@@ -201,44 +201,23 @@ int main(int argc, char *argv[])
                 // G0: 0.125666 G1:0.0695225 G2:0.392803 G3:0.822646
                 ctrl::vec2 apf_vec = apf::ball_field(my_robots[0], ball, 0.125666, 0.0695225);
                 ctrl::vec2 command = ctrl::move_robot(my_robots[0], apf_vec, 0.392803, 40.0 * 0.822646 + 10.0);
-                sim_client.sendCommand(0, command[0], command[1]);
+                if (game_on)
+                    sim_client.sendCommand(0, command[0], command[1]);
+                else
+                    sim_client.sendCommand(0, 0.0, 0.0);
 
-                int robots_blue_n = detection.robots_blue_size();
-                int robots_yellow_n = detection.robots_yellow_size();
-
-                //Ball info:
-                fira_message::Ball ball = detection.ball();
-
-                //Blue robot info:
-                for (int i = 0; i < robots_blue_n; i++)
+                if (!game_on)
+                    sim_client.sendCommand(2, 0.0, 0.0);
+                else if (ctrl::vec2(my_robots[2]).distance(ball) < 0.08)
                 {
-                    // goalkeeper
-                    if (i == 2)
-                    {
-                        auto robot = my_robots[i];
-                        ctrl::vec2 pos_robot = ctrl::vec2(robot);
-                        ctrl::vec2 pos_ball = ctrl::vec2(ball);
-
-                        if (sqrt(pow((pos_robot[0] - pos_ball[0]), 2) + pow((pos_robot[1] - pos_ball[1]), 2)) < 0.08)
-                        {
-                            ctrl::vec2 spin = gpk::kick(robot, ball);
-                            sim_client.sendCommand(i, spin[0], spin[1]);
-                        }
-                        else
-                        {
-                            ctrl::vec2 apf_vec = gpk::follow(robot, ball);
-                            ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, 0.4, 5);
-                            sim_client.sendCommand(i, 10 * command[0], 10 * command[1]);
-                        }
-                    }
+                    ctrl::vec2 spin = gpk::kick(my_robots[2], ball);
+                    sim_client.sendCommand(2, spin[0], spin[1]);
                 }
-
-                //Yellow robot info:
-                for (int i = 0; i < robots_yellow_n; i++)
+                else
                 {
-                    fira_message::Robot robot = detection.robots_yellow(i);
-                    printf("-Robot(Y) (%2d/%2d): ", i + 1, robots_yellow_n);
-                    printRobotInfo(robot);
+                    ctrl::vec2 apf_vec = gpk::follow(my_robots[2], ball);
+                    ctrl::vec2 command = ctrl::move_robot(my_robots[2], apf_vec, 0.4, 5);
+                    sim_client.sendCommand(2, 10 * command[0], 10 * command[1]);
                 }
             }
 
