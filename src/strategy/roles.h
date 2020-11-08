@@ -1,5 +1,5 @@
-#ifndef GPK
-#define GPK
+#ifndef ROLES
+#define ROLES
 #include "strategy/controller.h"
 
 
