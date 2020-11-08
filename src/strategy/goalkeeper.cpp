@@ -10,7 +10,12 @@ ctrl::vec2 gpk::follow(fira_message::Robot &robot, fira_message::Ball &ball)
     ctrl::vec2 pos_ball = ctrl::vec2(ball);
     double auxx,auxy;
 
-    if (pos_ball.y > 0.3 )
+    if (pos_robot.x < -0.73)
+    {
+        auxx = -10*(pos_robot.x - -0.65 );
+        auxy = -(pos_robot.y - pos_ball.y);
+    }
+    else if (pos_ball.y > 0.3 )
     {
         auxx = -2*(pos_robot.x - -0.65 );
         auxy = -6*(pos_robot.y - 0.3);
@@ -40,13 +45,13 @@ ctrl::vec2 gpk::kick(fira_message::Robot &robot,fira_message::Ball &ball)
 
     if (pos_robot.y < pos_ball.y)
     {
-        auxx = 30;
-        auxy = -30;
+        auxx = 50;
+        auxy = -50;
     }
     else
     {
-        auxx = -30;
-        auxy = 30;
+        auxx = -50;
+        auxy = 50;
     }
 
     ctrl::vec2 apf_vec = ctrl::vec2(auxx,auxy);
