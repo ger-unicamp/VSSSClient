@@ -15,6 +15,7 @@
 #include "strategy/controller.h"
 #include "strategy/APF.h"
 #include "strategy/goalkeeper.h"
+#include "strategy/roles.h"
 
 #include "pb/command.pb.h"
 #include "pb/common.pb.h"
