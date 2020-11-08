@@ -15,6 +15,7 @@
 #include "strategy/controller.h"
 #include "strategy/APF.h"
 #include "strategy/goalkeeper.h"
+#include "strategy/roles.h"
 
 #include "pb/command.pb.h"
 #include "pb/common.pb.h"
@@ -207,16 +208,10 @@ int main(int argc, char *argv[])
 
                 if (!game_on)
                     sim_client.sendCommand(2, 0.0, 0.0);
-                else if (ctrl::vec2(my_robots[2]).distance(ball) < 0.08)
+                else 
                 {
-                    ctrl::vec2 spin = gpk::kick(my_robots[2], ball);
-                    sim_client.sendCommand(2, spin[0], spin[1]);
-                }
-                else
-                {
-                    ctrl::vec2 apf_vec = gpk::follow(my_robots[2], ball);
-                    ctrl::vec2 command = ctrl::move_robot(my_robots[2], apf_vec, 0.4, 5);
-                    sim_client.sendCommand(2, 10 * command[0], 10 * command[1]);
+                    command = rol::goalkeeper(my_robots[2],ball);
+                    sim_client.sendCommand(2,command[0],command[1]);              
                 }
             }
 
