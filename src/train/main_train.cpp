@@ -17,7 +17,7 @@
 
 extern Random randr;
 const size_t MAX_GEN = 200;
-const size_t N_POP = 20;
+const size_t N_POP = 10;
 const size_t N_GENES = 4;
 const double min_value = 0.0;
 const double max_value = 1.0;
@@ -155,9 +155,9 @@ int main()
 
 double fitness_simulate(DNA &d)
 {
-    ctrl::vec2 starts[] = {{0.5, 0.3}, {0.0, 0.4}, {-0.5, 0.3}, {-0.5, 0.0}};
+    ctrl::vec2 starts[] = {{0.2, 0.0}, {0.5, 0.0}, {0.5, 0.3}, {0.0, 0.4}, {-0.5, 0.3}, {-0.5, 0.0}};
     double fitness = 0.0;
-    for (size_t i = 0; i < 4; i++)
+    for (size_t i = 0; i < 6; i++)
     {
         measure f;
         simulate(starts[i], d, &f);
