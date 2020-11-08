@@ -198,20 +198,40 @@ int main(int argc, char *argv[])
 
                 detect_objects(detection, ball, my_robots, enemy_robots, yellow);
 
-                // G0: 0.125666 G1:0.0695225 G2:0.392803 G3:0.822646
-                ctrl::vec2 apf_vec = apf::ball_field(my_robots[0], ball, 0.125666, 0.0695225);
-                ctrl::vec2 command = ctrl::move_robot(my_robots[0], apf_vec, 0.392803, 40.0 * 0.822646 + 10.0);
-                if (game_on)
-                    sim_client.sendCommand(0, command[0], command[1]);
+                ctrl::vec2 command0;
+                ctrl::vec2 command1;
+                ctrl::vec2 command2;
+                ctrl::vec2 pos_ball = ctrl::vec2(ball);
+
+                if (pos_ball.y>=0)
+                {
+                    command0 = rol::attacker(my_robots[0],ball);
+                    command1 = rol::defender(my_robots[1],ball,1);
+                }
                 else
+                {
+                    command0 = rol::defender(my_robots[0],ball,0);
+                    command1 = rol::attacker(my_robots[1],ball);
+                }
+                
+                
+                if (game_on)
+                {
+                    sim_client.sendCommand(0, command0[0], command0[1]);
+                    sim_client.sendCommand(1, command1[0], command1[1]);
+                }
+                else
+                {
                     sim_client.sendCommand(0, 0.0, 0.0);
+                    sim_client.sendCommand(1, 0.0, 0.0);
+                }
 
                 if (!game_on)
                     sim_client.sendCommand(2, 0.0, 0.0);
                 else 
                 {
-                    command = rol::goalkeeper(my_robots[2],ball);
-                    sim_client.sendCommand(2,command[0],command[1]);              
+                    command2 = rol::goalkeeper(my_robots[2],ball);
+                    sim_client.sendCommand(2,command2[0],command2[1]);              
                 }
             }
 
