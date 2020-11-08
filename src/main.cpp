@@ -252,3 +252,4 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
 
     //print_info(ball, my_robots, enemy_robots, yellow);
 }
+
