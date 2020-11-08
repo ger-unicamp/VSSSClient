@@ -13,17 +13,17 @@ ctrl::vec2 gpk::follow(fira_message::Robot &robot, fira_message::Ball &ball)
     if (pos_ball.y > 0.3 )
     {
         auxx = -2*(pos_robot.x - -0.65 );
-        auxy = 4*(pos_robot.y - 0.3);
+        auxy = -4*(pos_robot.y - 0.3);
     }
     else if (pos_ball.y < -0.3)
     {
         auxx = -2*(pos_robot.x - -0.65 );
-        auxy = 4*(pos_robot.y - -0.3);
+        auxy = -4*(pos_robot.y - -0.3);
     }
     else
     {
         auxx = -2*(pos_robot.x - -0.65 );
-        auxy = 4*(pos_robot.y - pos_ball.y);
+        auxy = -4*(pos_robot.y - pos_ball.y);
     }
 
     ctrl::vec2 apf_vec = ctrl::vec2(auxx,auxy);

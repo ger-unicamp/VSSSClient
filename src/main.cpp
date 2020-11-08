@@ -214,8 +214,8 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    ctrl::vec2 apf_vec = gpk::follow(my_robots[2], ball);
-                    ctrl::vec2 command = ctrl::move_robot(my_robots[2], apf_vec, 0.4, 5);
+                    apf_vec = gpk::follow(my_robots[2], ball);
+                    command = ctrl::move_robot(my_robots[2], apf_vec, 0.4, 5);
                     sim_client.sendCommand(2, 10 * command[0], 10 * command[1]);
                 }
             }
