@@ -131,8 +131,6 @@ namespace ctrl
             sincos(this->theta(), &s, &c);
             return vec2(c, s);
         }
-
-        double distance(const vec2 &p) { return ((*this - p).abs()); }
         
         double distance(const vec2 &p) { return ((*this - p).abs()); }
     };

@@ -18,7 +18,7 @@
 extern Random randr;
 const size_t MAX_GEN = 200;
 const size_t N_POP = 10;
-const size_t N_GENES = 2;
+const size_t N_GENES = 3;
 const double min_value = 0.0;
 const double max_value = 0.1;
 const double mr = 0.15; 
@@ -110,11 +110,12 @@ int main()
                     tmp = math::wrap_to_pi(tmp + PI);
                 }
                 
+                double dist = ctrl::vec2(robot).distance(ctrl::vec2(obstacle0));
                 res->t_error = tmp;
                 res->y_error = robot.y();
                 res->x_error = robot.x() + 0.059;
                 res->vy_error = ball.vy();
-                res->do_error = 1/ctrl::vec2(robot).distance(ctrl::vec2(obstacle0));
+                res->do_error = 1 / dist;
 
                 /**
                  * @brief This comparisson may change
@@ -126,11 +127,12 @@ int main()
                     break;
                 }
 
-                // Spiral field: G0:0.0937194 G1:0.00469342 G2:0.521572 G3: 40 * 0.608694 + 10)
-                ctrl::vec2 spiral_vec = apf::ball_field(robot, ball, 0.0937194, 0.00469342);
-                ctrl::vec2 repulsion_vec = apf::repulsion_field(robot, obstacle0, d.genes[0]/10000);
-                ctrl::vec2 apf_vec = apf::composite_field(repulsion_vec, spiral_vec, d.genes[1]);
-                ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, 0.521572, 34.3477599);
+                ctrl::vec2 spiral_vec = apf::ball_field(robot, ball, 0.0755485, 0.0691405);
+                ctrl::vec2 repulsion_vec = apf::repulsion_field(robot, obstacle0, d.genes[0]);
+                double phi = apf::composite_field(repulsion_vec, spiral_vec, d.genes[1], d.genes[2], dist);
+                ctrl::vec2 apf_vec;
+                sincos(phi, &apf_vec.y, &apf_vec.x);
+                ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, 0.443467, 40.0 * 0.74899 + 10.0);
                 sim_client.sendCommand(0, command[0], command[1]);
             }
         }
@@ -141,6 +143,7 @@ int main()
     {
         if (client.receive(packet))
         {
+
             replacer.setRobotsOutside(true, packet.frame().robots_yellow_size());
             replacer.setRobotsOutside(false, packet.frame().robots_blue_size());
             break;
@@ -166,11 +169,11 @@ int main()
 
 double fitness_simulate(DNA &d)
 {
-    ctrl::vec2 starts_robot[] = {{0.5, 0.3}, {0.0, 0.4}, {-0.5, 0.3}, {-0.5, 0.0}};
-    ctrl::vec2 starts_obstacle0[] = {{0.2, 0.2}, {0.0, 0.15}, {-0.2, 0.2}, {-0.25, 0.1}};
+    ctrl::vec2 starts_robot[] = {{0.5, 0.0}, {0.5, 0.3}, {0.0, 0.4}, {-0.5, 0.3}, {-0.5, 0.0}};
+    ctrl::vec2 starts_obstacle0[] = {{0.2, 0.05}, {0.15, 0.1}, {0.05, 0.14}, {-0.25, 0.15}, {-0.25, 0.05}};
 
     double fitness = 0.0;
-    for (size_t i = 0; i < 6; i++)
+    for (size_t i = 0; i < 5; i++)
     {
         measure f;
         simulate(starts_robot[i], starts_obstacle0[i], d, &f);

@@ -123,12 +123,15 @@ ctrl::vec2 apf::ball_field(ctrl::vec2 robot, ctrl::vec2 ball, double radius, dou
     return apf_vector;
 }
 
-double apf::composite_field(ctrl::vec2 repulsion_vec, ctrl::vec2 spiral_vec, double sigma)
+double apf::composite_field(ctrl::vec2 repulsion_vec, ctrl::vec2 spiral_vec, double sigma, double dmin, double R)
 {
-    double repulsion_abs = repulsion_vec.abs();
     double phi_repulsion = repulsion_vec.theta();
     double phi_spiral = spiral_vec.theta();
-    return (phi_spiral * math::gaussian(repulsion_abs, sigma)) + (phi_repulsion * (1-math::gaussian(repulsion_abs, sigma)));
+    double gauss = math::gaussian(R-dmin, sigma);
+    if (R <= dmin)
+        return phi_repulsion;
+    else
+        return (phi_repulsion * gauss + phi_spiral * (1-gauss));
 }
 
 
