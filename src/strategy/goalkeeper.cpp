@@ -26,6 +26,7 @@ ctrl::vec2 gpk::follow(fira_message::Robot &robot, fira_message::Ball &ball)
         auxy = -6*(pos_robot.y - pos_ball.y);
     }
 
+
     ctrl::vec2 apf_vec = ctrl::vec2(auxx,auxy);
     return apf_vec;
 
