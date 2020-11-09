@@ -52,7 +52,7 @@ ctrl::vec2 ctrl::future_position(fira_message::Ball &b, fira_message::Robot &r, 
  */
 ctrl::vec2 ctrl::future_position(fira_message::Robot &r1, fira_message::Robot &r2, double dt)
 {
-    ctrl::vec2 path = dt * ctrl::vec2(r1.vx(), r1.vy());
+    ctrl::vec2 path = dt * ctrl::vec2(r1.vx() - r2.vx(), r1.vy() - r2.vy());
     double dist = ctrl::vec2(r1).distance(ctrl::vec2(r2));
     if (dist < path.abs())
         path = dist * path.normalized();
