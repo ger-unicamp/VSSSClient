@@ -1,8 +1,6 @@
 #include "strategy/goalkeeper.h"
 #include <iostream>
 
-#define GOAL_X 0.75
-#define GOAL_Y 0.0
 
 ctrl::vec2 gpk::follow(fira_message::Robot &robot, fira_message::Ball &ball)
 {
@@ -12,23 +10,23 @@ ctrl::vec2 gpk::follow(fira_message::Robot &robot, fira_message::Ball &ball)
 
     if (pos_robot.x < -0.73)
     {
-        auxx = -10*(pos_robot.x - -0.65 );
+        auxx = -(pos_robot.x - -0.65 );
         auxy = -(pos_robot.y - pos_ball.y);
     }
     else if (pos_ball.y > 0.3 )
     {
-        auxx = -2*(pos_robot.x - -0.65 );
-        auxy = -6*(pos_robot.y - 0.3);
+        auxx = -(pos_robot.x - -0.65 );
+        auxy = -(pos_robot.y - 0.3);
     }
     else if (pos_ball.y < -0.3)
     {
-        auxx = -2*(pos_robot.x - -0.65 );
-        auxy = -6*(pos_robot.y - -0.3);
+        auxx = -(pos_robot.x - -0.65 );
+        auxy = -(pos_robot.y - -0.3);
     }
     else
     {
-        auxx = -2*(pos_robot.x - -0.65 );
-        auxy = -6*(pos_robot.y - pos_ball.y);
+        auxx = -(pos_robot.x - -0.65 );
+        auxy = -(pos_robot.y - pos_ball.y);
     }
 
 
