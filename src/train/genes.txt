@@ -1,4 +1,4 @@
-Best individuals
+Best individuals spiral
 
 Test 1:
 G0:0.280901 G1:0.648261 G2:0.502458 G3: 10 * 3.52179
@@ -16,6 +16,14 @@ Test 5 (pop 20):
 Last individual: G0:0.0922878 G1:0.00563102 G2:0.438424 G3: 40 * 0.617454 + 10)
 Best individual: G0:0.0937194 G1:0.00469342 G2:0.521572 G3: 40 * 0.608694 + 10)
 
-Test 6
+Test 6:
 Last individual: G0:0.0477393 G1:0.0570808 G2:0.300637 G3: 40* 0.661463 + 10
 Best individual: G0:0.0755485 G1:0.0691405 G2:0.443467 G3: 40 * 0.664899 + 10
+
+
+Best individuals repulsive
+
+Test 1:
+Best individual (60 gen): G0:0.0824116 G1:0.0381877 G2:0.0478782
+
+Test 2 (pop 20):

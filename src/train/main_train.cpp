@@ -17,10 +17,10 @@
 
 extern Random randr;
 const size_t MAX_GEN = 200;
-const size_t N_POP = 10;
-const size_t N_GENES = 2;
+const size_t N_POP = 20;
+const size_t N_GENES = 3;
 const double min_value = 0.0;
-const double max_value = 1.0;
+const double max_value = 0.2;
 const double mr = 0.15; 
 
 struct measure
@@ -39,19 +39,17 @@ struct measure
      */
     double operator()()
     {
-        // double tmp1 = this->do_error;
-        double tmp2 = this->time;
+        double tmp = this->time;
 
-        if (tmp2 < 2.0)
+        if (tmp < 2.0)
         {
-            tmp2 /= 10.0;
+            tmp /= 10.0;
         }
-        double eval = 10.0 * tmp2 * tmp2;
+        double eval = 10.0 * tmp * tmp;
         eval += 5 * this->t_error * this->t_error;
         eval += 2.0 * this->x_error * this->x_error;
         eval += 2.0 * this->y_error * this->y_error;
         eval += 5.0 * this->vy_error * this->vy_error;
-        // eval += 20 * tmp1 * tmp1;
         return eval;
     }
 };
@@ -112,12 +110,10 @@ int main()
                     tmp = math::wrap_to_pi(tmp + PI);
                 }
                 
-                double dist = ctrl::vec2(robot).distance(ctrl::vec2(obstacle0));
                 res->t_error = tmp;
                 res->y_error = robot.y();
                 res->x_error = robot.x() + 0.059;
                 res->vy_error = ball.vy();
-                // res->do_error = 1 / dist;
 
                 /**
                  * @brief This comparisson may change
@@ -130,9 +126,11 @@ int main()
                 }
 
                 // G0:0.0755485 G1:0.0691405 G2:0.443467 G3: 40 * 0.664899 + 10
-                ctrl::vec2 spiral_vec = apf::ball_field(robot, ball, 0.0755485, 0.0691405);
-                ctrl::vec2 repulsion_vec = apf::repulsion_field(robot, obstacle0, d.genes[0]);
-                double phi = apf::composite_field(repulsion_vec, spiral_vec, d.genes[1], d.genes[2], dist);
+                ctrl::vec2 future_obstacle0 = ctrl::future_position(obstacle0, robot, d.genes[0]);
+                double dist = ctrl::vec2(robot).distance(future_obstacle0);
+                double spiral_phi = apf::move_to_goal(robot, ball, 0.0755485, 0.0691405);
+                double repulsion_phi = (ctrl::vec2(robot) - future_obstacle0).theta();
+                double phi = apf::composite_field(repulsion_phi, spiral_phi, d.genes[1], d.genes[2], dist);
                 ctrl::vec2 apf_vec;
                 sincos(phi, &apf_vec.y, &apf_vec.x);
                 ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, 0.443467, 40.0 * 0.74899 + 10.0);
@@ -173,7 +171,7 @@ int main()
 double fitness_simulate(DNA &d)
 {
     ctrl::vec2 starts_robot[] = {{0.5, 0.0}, {0.5, 0.3}, {0.0, 0.4}, {-0.5, 0.3}, {-0.5, 0.0}};
-    ctrl::vec2 starts_obstacle0[] = {{0.2, 0.05}, {0.15, 0.1}, {0.05, 0.14}, {-0.25, 0.15}, {-0.25, 0.05}};
+    ctrl::vec2 starts_obstacle0[] = {{0.2, -0.05}, {0.15, 0.1}, {0.0, 0.15}, {-0.25, 0.15}, {-0.25, 0.05}};
 
     double fitness = 0.0;
     for (size_t i = 0; i < 5; i++)

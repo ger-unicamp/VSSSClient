@@ -5,36 +5,28 @@
 #define GOAL_X 0.75
 #define GOAL_Y 0.0
 
-// ctrl::vec2 apf::uniform_goal_field()
-// {
-//     double apf_intensity = 10;
-
-//     ctrl::vec2 apf_vector = ctrl::vec2(apf_intensity, 0.0); // potential field vector at robot position
-
-//     return apf_vector;
-// }
-
-// ctrl::vec2 apf::uniform_walls_field(fira_message::Robot &robot)
-// {
-//     double y = robot.y();  // force proportional to y and
-//     double x = -robot.x(); // inversely proportional to x coord of robot
-//     double ky = 5;         // force strength in y axis
-//     double kx = 2;         // force strength in x axis
-
-//     ctrl::vec2 apf_vector = ctrl::vec2(x > 0 ? -kx : kx, y > 0 ? ky : -ky);
-
-//     return apf_vector;
-// }
-
-
-ctrl::vec2 apf::repulsion_field(ctrl::vec2 robot, ctrl::vec2 obstacle, double k)
+ctrl::vec2 apf::walls_field(fira_message::Robot &robot)
 {
-    ctrl::vec2 apf_vec = ctrl::vec2();
-    double dist = robot.distance(obstacle);
-    double theta = (robot - obstacle).theta();
-    sincos(theta, &apf_vec.y, &apf_vec.x);
+    double y = robot.y();  // force proportional to y and
+    double x = -robot.x(); // inversely proportional to x coord of robot
+    double ky = 5;         // force strength in y axis
+    double kx = 2;         // force strength in x axis
 
-    return k * (1 / (dist*dist)) * apf_vec;
+    ctrl::vec2 apf_vector = ctrl::vec2(x > 0 ? -kx : kx, y > 0 ? ky : -ky);
+
+    return apf_vector;
+}
+
+/**
+ * @brief univector repulsion field, returns univector angle
+ * 
+ * @param robot 
+ * @param obstacle 
+ * @return double 
+ */
+double repulsion_field(ctrl::vec2 robot, ctrl::vec2 obstacle)
+{
+    return ((robot - obstacle).theta());
 }
 
 //  ----------> BALL FIELD <-----------
@@ -123,62 +115,21 @@ ctrl::vec2 apf::ball_field(ctrl::vec2 robot, ctrl::vec2 ball, double radius, dou
     return apf_vector;
 }
 
-double apf::composite_field(ctrl::vec2 repulsion_vec, ctrl::vec2 spiral_vec, double sigma, double dmin, double R)
+/**
+ * @brief composes repulsion and move to goal fields with gaussian compound ratio
+ * 
+ * @param repulsion_vec 
+ * @param spiral_vec 
+ * @param sigma 
+ * @param dmin 
+ * @param R 
+ * @return double 
+ */
+double apf::composite_field(double repulsion_phi, double spiral_phi, double sigma, double dmin, double R)
 {
-    double phi_repulsion = repulsion_vec.theta();
-    double phi_spiral = spiral_vec.theta();
     double gauss = math::gaussian(R-dmin, sigma);
     if (R <= dmin)
-        return phi_repulsion;
+        return repulsion_phi;
     else
-        return (phi_repulsion * gauss + phi_spiral * (1-gauss));
+        return (repulsion_phi * gauss + spiral_phi * (1-gauss));
 }
-
-
-// ------------------> PAPER FUNCTIONS <-------------------- 
-
-// double apf::repulsion_field(fira_message::Robot &robot, fira_message::Robot &obstacle, double k)
-// {
-//     ctrl::vec2 apf_vector;
-//     ctrl::vec2 v_robot = ctrl::vec2(robot.vx(), robot.vy());
-//     ctrl::vec2 v_obstacle = ctrl::vec2(obstacle.vx(), obstacle.vy());   
-//     ctrl::vec2 p_robot = ctrl::vec2(robot.x(), robot.y());
-//     ctrl::vec2 p_real_obstacle = ctrl::vec2(obstacle.x(), obstacle.y());
-//     ctrl::vec2 s = k*(v_obstacle - v_robot);
-//     double dist = p_real_obstacle.distance(p_robot);
-
-//     double phi;
-//     ctrl::vec2 p_virtual_obstacle;
-
-//     if (dist > s.abs())
-//     {
-//         p_virtual_obstacle = p_real_obstacle + s;
-//     }
-//     else
-//     {
-//         p_virtual_obstacle = p_real_obstacle + (dist/s.abs())*s;
-//     }
-
-//     phi = (p_real_obstacle - p_virtual_obstacle).theta();
-
-//     return phi;
-// }
-
-// double apf::composite_field(ctrl::vec2 robot, ctrl::vec2 obstacle, double phi_target, double phi_repulsion, double d_min, double sigma)
-// {
-//     ctrl::vec2 apf_vector;
-//     double R = robot.distance(obstacle);
-
-//     double phi_composed;
-
-//     if (R <= d_min)
-//     {
-//         phi_composed = phi_repulsion;
-//     }
-
-//     else
-//     {
-//         phi_composed = (phi_repulsion * math::gaussian(R - d_min, sigma)) + (phi_target * (1-math::gaussian(R - d_min, sigma)));
-//     }
-//     return phi_composed;
-// }
