@@ -6,14 +6,15 @@
 ctrl::vec2 rol::goalkeeper(fira_message::Robot &robot, fira_message::Ball &ball)
 {      
     ctrl::vec2 apf_vec;
+    ctrl::vec2 future_ball = ctrl::future_position(ball,robot,DT);
 
-    if (ctrl::vec2(robot).distance(ball) < 0.08)
+    if (ctrl::vec2(robot).distance(future_ball) < 0.08)
     {
-        apf_vec = gpk::kick(robot, ball);
+        apf_vec = gpk::kick(robot, future_ball);
     }
     else
     {
-        apf_vec = gpk::follow(robot, ball);
+        apf_vec = gpk::follow(robot, future_ball);
         apf_vec = ctrl::move_robot(robot,apf_vec,K_TURNING, K_VEL);
     }
 
@@ -69,15 +70,21 @@ vector<ctrl::vec2> rol::select_role(fira_message::Ball &ball,vector<fira_message
     vector<ctrl::vec2> roles(3);
     ctrl::vec2 pos_ball = ctrl::vec2(ball);
 
-    roles[0] = goalkeeper(my_robots[0], ball);
-
-    if (pos_ball.y >= 0)
+    if (pos_ball.x < -0.55 && (pos_ball.y < -0.3 || pos_ball.y > 0.3) )
     {
+        roles[0] = goalkeeper(my_robots[0], ball);
+        roles[1] = defender(1,ball,my_robots,enemy_robots);
+        roles[2] = defender(2,ball,my_robots,enemy_robots);
+    }
+    else if (pos_ball.y >= 0)
+    {
+        roles[0] = goalkeeper(my_robots[0], ball);
         roles[1] = attacker(1,ball,my_robots,enemy_robots);
         roles[2] = defender(2,ball,my_robots,enemy_robots);
     }
     else
     {
+        roles[0] = goalkeeper(my_robots[0], ball);
         roles[1] = defender(1,ball,my_robots,enemy_robots);
         roles[2] = attacker(2,ball,my_robots,enemy_robots);
     }

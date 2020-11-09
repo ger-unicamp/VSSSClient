@@ -5,8 +5,8 @@
 
 namespace gpk
 {
-    ctrl::vec2 follow(fira_message::Robot &robot, fira_message::Ball &ball);
-    ctrl::vec2 kick(fira_message::Robot &robot, fira_message::Ball &ball);
+    ctrl::vec2 follow(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball);
+    ctrl::vec2 kick(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball);
 };
 
 
