@@ -17,7 +17,7 @@ ctrl::vec2 rol::goalkeeper(fira_message::Robot &robot, fira_message::Ball &ball)
         apf_vec = ctrl::move_robot(robot,apf_vec,0.300637,40*0.661463+20);
     }
 
-    return 5*apf_vec;
+    return 6*apf_vec;
 }
 
 ctrl::vec2 rol::attacker(fira_message::Robot &robot, fira_message::Ball &ball)
@@ -38,13 +38,39 @@ ctrl::vec2 rol::defender(fira_message::Robot &robot, fira_message::Ball &ball, i
 
     if (i == 0)
     {
-        auxx = -(pos_robot.x - pos_ball.x );
-        auxy = -(pos_robot.y - 0.3);
+        if (pos_ball.x > 0.5)
+        {
+            auxx = -(pos_robot.x - 0.5 );
+            auxy = -(pos_robot.y - 0.3);
+        }
+        else if (pos_ball.x < -0.5)
+        {
+            auxx = -(pos_robot.x - -0.5 );
+            auxy = -(pos_robot.y - 0.3);
+        }
+        else
+        {
+            auxx = -(pos_robot.x - pos_ball.x );
+            auxy = -(pos_robot.y - 0.3);
+        } 
     }
     else
     {
-        auxx = -(pos_robot.x - pos_ball.x );
-        auxy = -(pos_robot.y - -0.3);
+        if (pos_ball.x > 0.5)
+        {
+            auxx = -(pos_robot.x - 0.5 );
+            auxy = -(pos_robot.y - -0.3);
+        }
+        else if (pos_ball.x < -0.5)
+        {
+            auxx = -(pos_robot.x - -0.5);
+            auxy = -(pos_robot.y - -0.3);
+        }
+        else
+        {
+            auxx = -(pos_robot.x - pos_ball.x );
+            auxy = -(pos_robot.y - -0.3);
+        } 
     }
     ctrl::vec2 apf_vec = ctrl::vec2(auxx,auxy);
     apf_vec = ctrl::move_robot(robot, apf_vec, 0.392803, 40.0 * 0.822646 + 10.0);

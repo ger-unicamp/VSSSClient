@@ -25,8 +25,10 @@ ctrl::vec2 gpk::follow(fira_message::Robot &robot, fira_message::Ball &ball)
     }
     else
     {
+        
         auxx = -(pos_robot.x - -0.65 );
         auxy = -(pos_robot.y - pos_ball.y);
+        
     }
 
 
