@@ -27,3 +27,4 @@ Test 1:
 Best individual (60 gen): G0:0.0824116 G1:0.0381877 G2:0.0478782
 
 Test 2 (pop 20):
+Best individual: G0:0.147302 G1:0.0413777 G2:0.0290801
