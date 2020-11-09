@@ -31,7 +31,7 @@ const double K_TURNING = 0.443467;
 const double K_VEL = 39.9596;
 const double DT = 0.147302;
 const double SIGMA = 0.0413777;
-const double D_MIN = 0.0290801;
+const double D_MIN = 0.0457;
 
 void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
                     vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow);
