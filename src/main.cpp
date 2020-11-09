@@ -204,9 +204,14 @@ int main(int argc, char *argv[])
 
                 detect_objects(detection, ball, my_robots, enemy_robots, yellow);
 
-                // G0: 0.125666 G1:0.0695225 G2:0.392803 G3:0.822646
-                ctrl::vec2 apf_vec = apf::ball_field(my_robots[0], ball, 0.125666, 0.0695225);
-                ctrl::vec2 command = ctrl::move_robot(my_robots[0], apf_vec, 0.392803, 40.0 * 0.822646 + 10.0);
+                auto robot = my_robots[0];;
+                double spiral_phi = apf::move_to_goal(robot, ball, 0.0755485, 0.0691405);
+                std::pair<double, double> tmp = apf::repulsion_field(0, my_robots, enemy_robots);
+                double phi = apf::composite_field(tmp.first, spiral_phi, 0.0413777, 0.0290801, tmp.second);
+                ctrl::vec2 apf_vec;
+                sincos(phi, &apf_vec.y, &apf_vec.x);
+                ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, 0.443467, 39.9596);
+                sim_client.sendCommand(0, command[0], command[1]);
                 if (game_on)
                     sim_client.sendCommand(0, command[0], command[1]);
                 else
