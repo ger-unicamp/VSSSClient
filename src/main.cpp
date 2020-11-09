@@ -25,13 +25,13 @@
 #include "pb/vssref_common.pb.h"
 #include "pb/vssref_placement.pb.h"
 
-#define RADIUS 0.0755485
-#define K_SPIRAL 0.0691405
-#define K_TURNING 0.443467
-#define K_VEL 39.9596
-#define DT 0.147302
-#define SIGMA 0.0413777
-#define D_MIN 0.0290801
+const double RADIUS = 0.0755485;
+const double K_SPIRAL = 0.0691405;
+const double K_TURNING = 0.443467;
+const double K_VEL = 39.9596;
+const double DT = 0.147302;
+const double SIGMA = 0.0413777;
+const double D_MIN = 0.0290801;
 
 void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
                     vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow);

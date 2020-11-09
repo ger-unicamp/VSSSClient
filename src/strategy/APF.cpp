@@ -22,6 +22,7 @@ ctrl::vec2 apf::uniform_walls_field(ctrl::vec2 robot)
  * @param moving_robot_id 
  * @param my_robots 
  * @param enemy_robots 
+ * @param dt
  * @return std::pair<double, double> returns min distance phi and min distance
  */
 std::pair<double, double> apf::repulsion_field(unsigned int moving_robot_id, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots, double dt)
