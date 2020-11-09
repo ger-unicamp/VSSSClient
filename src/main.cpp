@@ -24,6 +24,13 @@
 #include "pb/vssref_common.pb.h"
 #include "pb/vssref_placement.pb.h"
 
+#define RADIUS 
+#define K_SPIRAL
+#define D_MIN
+#define SIGMA
+#define K_TURNING
+#define K_VEL
+
 void printRobotInfo(const fira_message::Robot &robot)
 {
 

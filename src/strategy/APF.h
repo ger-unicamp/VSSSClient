@@ -1,13 +1,13 @@
 #ifndef APF
 #define APF
 #include "strategy/controller.h"
+#include <algorithm>
+#include <vector>
 
 namespace apf
 {
-    ctrl::vec2 uniform_goal_field();
-    ctrl::vec2 robots_field(ctrl::vec2 robot1, ctrl::vec2 robot2, double k = 0.20);
     ctrl::vec2 uniform_walls_field(ctrl::vec2 robot);
-    ctrl::vec2 test_control(ctrl::vec2 robot, ctrl::vec2 ball);
+    std::pair<double, double> apf::repulsion_field(unsigned int moving_robot_id, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots);
 
     double spiral_field_cw(ctrl::vec2 pos, double radius, double k);
     double spiral_field_ccw(ctrl::vec2 pos, double radius, double k);
