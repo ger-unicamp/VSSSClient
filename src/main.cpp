@@ -25,13 +25,7 @@
 #include "pb/vssref_common.pb.h"
 #include "pb/vssref_placement.pb.h"
 
-const double RADIUS = 0.0755485;
-const double K_SPIRAL = 0.0691405;
-const double K_TURNING = 0.443467;
-const double K_VEL = 39.9596;
-const double DT = 0.147302;
-const double SIGMA = 0.0413777;
-const double D_MIN = 0.0457;
+
 
 void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
                     vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow);
@@ -74,45 +68,24 @@ int main(int argc, char *argv[])
 
                 detect_objects(detection, ball, my_robots, enemy_robots, yellow);
 
-                auto robot = my_robots[0];;
-                double spiral_phi = apf::move_to_goal(robot, ball, RADIUS, K_SPIRAL);
-                std::pair<double, double> tmp = apf::repulsion_field(0, my_robots, enemy_robots, DT);
-                double phi = apf::composite_field(tmp.first, spiral_phi, SIGMA, D_MIN, tmp.second);
-                ctrl::vec2 apf_vec;
-                sincos(phi, &apf_vec.y, &apf_vec.x);
-                ctrl::vec2 command = ctrl::move_robot(robot, apf_vec, K_TURNING, K_VEL);
-                if (game_on)
-                    sim_client.sendCommand(0, command[0], command[1]);
+                std::vector<ctrl::vec2> commands;
+                if (!game_on)
+                {
+                    commands = {{0,0},{0,0},{0,0}};
+                }
                 else
-                    sim_client.sendCommand(0, 0.0, 0.0);
-
-                // if (!game_on)
-                //     sim_client.sendCommand(2, 0.0, 0.0);
-                // else if (ctrl::vec2(my_robots[2]).distance(ball) < 0.08)
-                // {
-                //     ctrl::vec2 spin = gpk::kick(my_robots[2], ball);
-                //     sim_client.sendCommand(2, spin[0], spin[1]);
-                // }
-                // else
-                // {
-                //     apf_vec = gpk::follow(my_robots[2], ball);
-                //     command = ctrl::move_robot(my_robots[2], apf_vec, 0.4, 5);
-                //     sim_client.sendCommand(2, 10 * command[0], 10 * command[1]);
-                // }
+                {
+                    commands = rol::select_role(ball,my_robots,enemy_robots);
+                }
+                
+                for (size_t i = 0; i < commands.size(); i++)
+                {
+                    sim_client.sendCommand(i,commands[i][0],commands[i][1]);
+                }
+                
+                
             }
-
-            //see if packet contains geometry data:
-            if (packet.has_field() && false)
-            {
-                printf("-[Geometry Data]-------\n");
-
-                const fira_message::Field &field = packet.field();
-                printf("Field Dimensions:\n");
-                printf("  -field_length=%f (mm)\n", field.length());
-                printf("  -field_width=%f (mm)\n", field.width());
-                printf("  -goal_width=%f (mm)\n", field.goal_width());
-                printf("  -goal_depth=%f (mm)\n", field.goal_depth());
-            }
+            
         }
     }
 
