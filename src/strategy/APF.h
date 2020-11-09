@@ -7,7 +7,7 @@
 namespace apf
 {
     ctrl::vec2 uniform_walls_field(ctrl::vec2 robot);
-    std::pair<double, double> repulsion_field(unsigned int moving_robot_id, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots);
+    std::pair<double, double> repulsion_field(unsigned int moving_robot_id, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots, double dt);
 
     double spiral_field_cw(ctrl::vec2 pos, double radius, double k);
     double spiral_field_ccw(ctrl::vec2 pos, double radius, double k);

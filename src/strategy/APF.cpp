@@ -24,7 +24,7 @@ ctrl::vec2 apf::uniform_walls_field(ctrl::vec2 robot)
  * @param enemy_robots 
  * @return std::pair<double, double> returns min distance phi and min distance
  */
-std::pair<double, double> apf::repulsion_field(unsigned int moving_robot_id, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots)
+std::pair<double, double> apf::repulsion_field(unsigned int moving_robot_id, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots, double dt)
 {
     double repulsion_phi;
     std::vector<double> phis;
@@ -35,7 +35,7 @@ std::pair<double, double> apf::repulsion_field(unsigned int moving_robot_id, std
     {
         if (i != moving_robot_id)
         {
-            auto obstacle =  ctrl::future_position(my_robots[i], my_robots[moving_robot_id], 0.147302);
+            auto obstacle =  ctrl::future_position(my_robots[i], my_robots[moving_robot_id], dt);
             repulsion_phi = (ctrl::vec2(my_robots[moving_robot_id]) - obstacle).theta();
             phis.push_back(repulsion_phi);
             dist = ctrl::vec2(my_robots[moving_robot_id]).distance(obstacle);
@@ -44,7 +44,7 @@ std::pair<double, double> apf::repulsion_field(unsigned int moving_robot_id, std
     }
     for (size_t i = 0; i < enemy_robots.size(); ++i)
     {
-        auto obstacle =  ctrl::future_position(enemy_robots[i], my_robots[moving_robot_id], 0.147302);
+        auto obstacle =  ctrl::future_position(enemy_robots[i], my_robots[moving_robot_id], dt);
         repulsion_phi = (ctrl::vec2(my_robots[moving_robot_id]) - obstacle).theta();
         phis.push_back(repulsion_phi);
         dist = ctrl::vec2(my_robots[moving_robot_id]).distance(obstacle);

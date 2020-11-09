@@ -26,6 +26,7 @@
 
 #define RADIUS 0.0755485
 #define K_SPIRAL 0.0691405
+#define DT 0.147302
 #define SIGMA 0.0413777
 #define D_MIN 0.0290801
 #define K_TURNING 0.443467
@@ -74,7 +75,7 @@ int main(int argc, char *argv[])
 
                 auto robot = my_robots[0];;
                 double spiral_phi = apf::move_to_goal(robot, ball, RADIUS, K_SPIRAL);
-                std::pair<double, double> tmp = apf::repulsion_field(0, my_robots, enemy_robots);
+                std::pair<double, double> tmp = apf::repulsion_field(0, my_robots, enemy_robots, DT);
                 double phi = apf::composite_field(tmp.first, spiral_phi, SIGMA, D_MIN, tmp.second);
                 ctrl::vec2 apf_vec;
                 sincos(phi, &apf_vec.y, &apf_vec.x);
