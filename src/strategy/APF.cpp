@@ -129,14 +129,21 @@ double apf::move_to_goal(ctrl::vec2 pos, ctrl::vec2 target, double radius, doubl
     return phi;
 }
 
-ctrl::vec2 apf::ball_field(ctrl::vec2 robot, ctrl::vec2 ball, double radius, double k)
+/**
+ * @brief composes repulsion and move to goal fields with gaussian compound ratio
+ * 
+ * @param repulsion_vec 
+ * @param spiral_vec 
+ * @param sigma 
+ * @param dmin 
+ * @param R 
+ * @return double 
+ */
+double apf::composite_field(double repulsion_phi, double spiral_phi, double sigma, double dmin, double R)
 {
-    double phi = move_to_goal(robot, ball, radius, k);
-    double sin_phi, cos_phi;
-    sincos(phi, &sin_phi, &cos_phi);
-    ctrl::vec2 apf_vector = ctrl::vec2(cos_phi, sin_phi);
-
-    //std::cout << "vec theta: " << apf_vector.theta() * 180 / PI << std::endl;
-
-    return apf_vector;
+    double gauss = math::gaussian(R-dmin, sigma);
+    if (R <= dmin)
+        return repulsion_phi;
+    else
+        return (repulsion_phi * gauss + spiral_phi * (1-gauss));
 }
