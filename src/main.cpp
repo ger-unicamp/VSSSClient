@@ -8,10 +8,11 @@
  */
 #include <stdio.h>
 #include <algorithm>
+#include "util/timer.h"
+#include "util/argparse.h"
 #include "net/robocup_ssl_client.h"
 #include "net/vss_client.h"
 #include "net/referee_client.h"
-#include "util/timer.h"
 #include "strategy/controller.h"
 #include "strategy/APF.h"
 #include "strategy/goalkeeper.h"
@@ -26,6 +27,16 @@
 #include "pb/vssref_placement.pb.h"
 
 
+struct net_config
+{
+    std::string multicast_ip;
+    std::string command_ip;
+    unsigned int command_port;
+    unsigned int referee_port;
+    unsigned int replacer_port;
+    unsigned int vision_port;
+};
+void startup(int argc, char **argv, net_config &conf, bool &team_yellow);
 
 void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
                     vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow);
@@ -33,10 +44,12 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
 int main(int argc, char *argv[])
 {
     bool yellow = false;
+    net_config conf;
+    startup(argc, argv, conf, yellow);
 
-    RoboCupSSLClient client(10002, "224.0.0.1");
-    VSSClient sim_client(20011, "127.0.0.1", yellow);
-    RefereeClient referee(10003, 10004, "224.0.0.1");
+    RoboCupSSLClient client(conf.vision_port, conf.multicast_ip);
+    VSSClient sim_client(conf.command_port, conf.command_ip, yellow);
+    RefereeClient referee(conf.referee_port, conf.replacer_port, conf.multicast_ip);
 
     client.open(false);
     referee.open();
@@ -60,7 +73,6 @@ int main(int argc, char *argv[])
 
         if (client.receive(packet))
         {
-            printf("-----Received Wrapper Packet---------------------------------------------\n");
             //see if the packet contains a robot detection frame:
             if (packet.has_frame())
             {
@@ -71,21 +83,18 @@ int main(int argc, char *argv[])
                 std::vector<ctrl::vec2> commands;
                 if (!game_on)
                 {
-                    commands = {{0,0},{0,0},{0,0}};
+                    commands = {{0, 0}, {0, 0}, {0, 0}};
                 }
                 else
                 {
-                    commands = rol::select_role(ball,my_robots,enemy_robots);
+                    commands = rol::select_role(ball, my_robots, enemy_robots);
                 }
-                
+
                 for (size_t i = 0; i < commands.size(); i++)
                 {
-                    sim_client.sendCommand(i,commands[i][0],commands[i][1]);
+                    sim_client.sendCommand(i, commands[i][0], commands[i][1]);
                 }
-                
-                
             }
-            
         }
     }
 
@@ -225,4 +234,49 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
     }
 
     //print_info(ball, my_robots, enemy_robots, yellow);
+}
+
+/**
+ * @brief Set network config and team color
+ * 
+ * @param argc 
+ * @param argv 
+ * @param conf 
+ * @param team_yellow 
+ */
+void startup(int argc, char **argv, net_config &conf, bool &team_yellow)
+{
+    ArgParse::ArgumentParser parser(argv[0], "GER VSSS FIRASim strategy server");
+    parser.add_argument('m', "multicast_ip", "Vision and Referee IP", new ArgParse::value<std::string>("224.0.0.1"));
+    parser.add_argument('c', "command_ip", "Command IP", new ArgParse::value<std::string>("127.0.0.1"));
+    parser.add_argument('d', "command_port", "Command port", new ArgParse::value<unsigned int>("20011"));
+    parser.add_argument('e', "referee_port", "Referee foul port", new ArgParse::value<unsigned int>("10003"));
+    parser.add_argument('r', "replacer_port", "Referee command port", new ArgParse::value<unsigned int>("10004"));
+    parser.add_argument('v', "vision_port", "Vision port", new ArgParse::value<unsigned int>("10002"));
+    parser.add_argument('t', "team_yellow", "Team collor yellow (true/false)", new ArgParse::value<bool>("false"));
+    parser.add_argument('h', "help", "Show help menu");
+
+    auto args = parser.parse_args(argc, argv);
+
+    if(args["help"]->as<bool>())
+    {
+        std::cout << parser.help() << std::endl;
+        exit(0);
+    }
+
+    conf.multicast_ip = args["multicast_ip"]->as<std::string>();
+    conf.command_ip = args["command_ip"]->as<std::string>();
+    conf.command_port = args["command_port"]->as<unsigned int>();
+    conf.referee_port = args["referee_port"]->as<unsigned int>();
+    conf.replacer_port = args["replacer_port"]->as<unsigned int>();
+    conf.vision_port = args["vision_port"]->as<unsigned int>();
+    team_yellow = args["team_yellow"]->as<bool>();
+
+    // Print startup configuration
+    std::cout << "Vision server at " << conf.multicast_ip << ":" << conf.vision_port << std::endl
+              << "Command listen to " << conf.command_ip << ":" << conf.command_port << std::endl
+              << "Referee server at " << conf.multicast_ip << ":" << conf.referee_port << std::endl
+              << "Replacer listen to " << conf.multicast_ip << ":" << conf.replacer_port << std::endl
+              << "Color team: " << (team_yellow? "yellow":"blue") << std::endl;
+
 }
