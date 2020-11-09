@@ -30,12 +30,13 @@ std::pair<double, double> apf::repulsion_field(unsigned int moving_robot_id, std
     std::vector<double> phis;
     double dist;
     std::vector<double> distances;
+    ctrl::vec2 obstacle;
 
     for (size_t i = 0; i < my_robots.size(); ++i)
     {
         if (i != moving_robot_id)
         {
-            auto obstacle =  ctrl::future_position(my_robots[i], my_robots[moving_robot_id], dt);
+            obstacle =  ctrl::future_position(my_robots[i], my_robots[moving_robot_id], dt);
             repulsion_phi = (ctrl::vec2(my_robots[moving_robot_id]) - obstacle).theta();
             phis.push_back(repulsion_phi);
             dist = ctrl::vec2(my_robots[moving_robot_id]).distance(obstacle);
@@ -44,7 +45,7 @@ std::pair<double, double> apf::repulsion_field(unsigned int moving_robot_id, std
     }
     for (size_t i = 0; i < enemy_robots.size(); ++i)
     {
-        auto obstacle =  ctrl::future_position(enemy_robots[i], my_robots[moving_robot_id], dt);
+        obstacle =  ctrl::future_position(enemy_robots[i], my_robots[moving_robot_id], dt);
         repulsion_phi = (ctrl::vec2(my_robots[moving_robot_id]) - obstacle).theta();
         phis.push_back(repulsion_phi);
         dist = ctrl::vec2(my_robots[moving_robot_id]).distance(obstacle);
@@ -52,7 +53,7 @@ std::pair<double, double> apf::repulsion_field(unsigned int moving_robot_id, std
     }
 
     auto min_dist_it = std::min_element(distances.begin(), distances.end());
-    return std::make_pair(phis[min_dist_it - phis.begin()], *min_dist_it);
+    return std::make_pair(phis[min_dist_it - distances.begin()], *min_dist_it);
 }
 
 //  ----------> BALL FIELD <-----------

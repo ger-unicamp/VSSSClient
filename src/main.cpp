@@ -26,11 +26,11 @@
 
 #define RADIUS 0.0755485
 #define K_SPIRAL 0.0691405
+#define K_TURNING 0.443467
+#define K_VEL 39.9596
 #define DT 0.147302
 #define SIGMA 0.0413777
 #define D_MIN 0.0290801
-#define K_TURNING 0.443467
-#define K_VEL 39.9596
 
 void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
                     vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow);
