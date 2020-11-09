@@ -27,6 +27,16 @@
 #include "pb/vssref_placement.pb.h"
 
 
+struct net_config
+{
+    std::string multicast_ip;
+    std::string command_ip;
+    unsigned int command_port;
+    unsigned int referee_port;
+    unsigned int replacer_port;
+    unsigned int vision_port;
+};
+void startup(int argc, char **argv, net_config &conf, bool &team_yellow);
 
 void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
                     vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow);
@@ -34,10 +44,12 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
 int main(int argc, char *argv[])
 {
     bool yellow = false;
+    net_config conf;
+    startup(argc, argv, conf, yellow);
 
-    RoboCupSSLClient client(10002, "224.0.0.1");
-    VSSClient sim_client(20011, "127.0.0.1", yellow);
-    RefereeClient referee(10003, 10004, "224.0.0.1");
+    RoboCupSSLClient client(conf.vision_port, conf.multicast_ip);
+    VSSClient sim_client(conf.command_port, conf.command_ip, yellow);
+    RefereeClient referee(conf.referee_port, conf.replacer_port, conf.multicast_ip);
 
     client.open(false);
     referee.open();
@@ -61,7 +73,6 @@ int main(int argc, char *argv[])
 
         if (client.receive(packet))
         {
-            printf("-----Received Wrapper Packet---------------------------------------------\n");
             //see if the packet contains a robot detection frame:
             if (packet.has_frame())
             {
@@ -72,21 +83,18 @@ int main(int argc, char *argv[])
                 std::vector<ctrl::vec2> commands;
                 if (!game_on)
                 {
-                    commands = {{0,0},{0,0},{0,0}};
+                    commands = {{0, 0}, {0, 0}, {0, 0}};
                 }
                 else
                 {
-                    commands = rol::select_role(ball,my_robots,enemy_robots);
+                    commands = rol::select_role(ball, my_robots, enemy_robots);
                 }
-                
+
                 for (size_t i = 0; i < commands.size(); i++)
                 {
-                    sim_client.sendCommand(i,commands[i][0],commands[i][1]);
+                    sim_client.sendCommand(i, commands[i][0], commands[i][1]);
                 }
-                
-                
             }
-            
         }
     }
 
@@ -228,16 +236,14 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
     //print_info(ball, my_robots, enemy_robots, yellow);
 }
 
-struct net_config
-{
-    std::string multicast_ip;
-    std::string command_ip;
-    unsigned int command_port;
-    unsigned int referee_port;
-    unsigned int replacer_port;
-    unsigned int vision_port;
-};
-
+/**
+ * @brief Set network config and team color
+ * 
+ * @param argc 
+ * @param argv 
+ * @param conf 
+ * @param team_yellow 
+ */
 void startup(int argc, char **argv, net_config &conf, bool &team_yellow)
 {
     ArgParse::ArgumentParser parser(argv[0], "GER VSSS FIRASim strategy server");
@@ -273,85 +279,4 @@ void startup(int argc, char **argv, net_config &conf, bool &team_yellow)
               << "Replacer listen to " << conf.multicast_ip << ":" << conf.replacer_port << std::endl
               << "Color team: " << (team_yellow? "yellow":"blue") << std::endl;
 
-}
-
-int main(int argc, char *argv[])
-{
-    bool yellow = false;
-    net_config conf;
-    startup(argc, argv, conf, yellow);
-
-    RoboCupSSLClient client(conf.vision_port, conf.multicast_ip);
-    VSSClient sim_client(conf.command_port, conf.command_ip, yellow);
-    RefereeClient referee(conf.referee_port, conf.replacer_port, conf.multicast_ip);
-
-    client.open(false);
-    referee.open();
-
-    fira_message::sim_to_ref::Environment packet;
-    VSSRef::ref_to_team::VSSRef_Command ref_packet;
-    bool game_on = true;
-
-    fira_message::Ball ball;
-    vector<fira_message::Robot> my_robots;
-    vector<fira_message::Robot> enemy_robots;
-
-    while (true)
-    {
-        if (referee.receive(ref_packet))
-        {
-            unsigned int foul = ref_packet.foul();
-            std::cout << "-----Referee Foul: " << foul << std::endl;
-            game_on = foul == 6;
-        }
-
-        if (client.receive(packet))
-        {
-            printf("-----Received Wrapper Packet---------------------------------------------\n");
-            //see if the packet contains a robot detection frame:
-            if (packet.has_frame())
-            {
-                fira_message::Frame detection = packet.frame();
-
-                detect_objects(detection, ball, my_robots, enemy_robots, yellow);
-
-                // G0: 0.125666 G1:0.0695225 G2:0.392803 G3:0.822646
-                ctrl::vec2 apf_vec = apf::ball_field(my_robots[0], ball, 0.125666, 0.0695225);
-                ctrl::vec2 command = ctrl::move_robot(my_robots[0], apf_vec, 0.392803, 40.0 * 0.822646 + 10.0);
-                if (game_on)
-                    sim_client.sendCommand(0, command[0], command[1]);
-                else
-                    sim_client.sendCommand(0, 0.0, 0.0);
-
-                if (!game_on)
-                    sim_client.sendCommand(2, 0.0, 0.0);
-                else if (ctrl::vec2(my_robots[2]).distance(ball) < 0.08)
-                {
-                    ctrl::vec2 spin = gpk::kick(my_robots[2], ball);
-                    sim_client.sendCommand(2, spin[0], spin[1]);
-                }
-                else
-                {
-                    apf_vec = gpk::follow(my_robots[2], ball);
-                    command = ctrl::move_robot(my_robots[2], apf_vec, 0.4, 5);
-                    sim_client.sendCommand(2, 10 * command[0], 10 * command[1]);
-                }
-            }
-
-            //see if packet contains geometry data:
-            if (packet.has_field() && false)
-            {
-                printf("-[Geometry Data]-------\n");
-
-                const fira_message::Field &field = packet.field();
-                printf("Field Dimensions:\n");
-                printf("  -field_length=%f (mm)\n", field.length());
-                printf("  -field_width=%f (mm)\n", field.width());
-                printf("  -goal_width=%f (mm)\n", field.goal_width());
-                printf("  -goal_depth=%f (mm)\n", field.goal_depth());
-            }
-        }
-    }
-
-    return 0;
 }
