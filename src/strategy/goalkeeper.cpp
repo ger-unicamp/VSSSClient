@@ -10,23 +10,23 @@ ctrl::vec2 gpk::follow(fira_message::Robot &robot, fira_message::Ball &ball)
 
     if (pos_robot.x < -0.73)
     {
-        auxx = -5*(pos_robot.x - -0.65 );
+        auxx = -5*(pos_robot.x - -0.63 );
         auxy = -(pos_robot.y - pos_ball.y);
     }
     else if (pos_ball.y > 0.3 )
     {
-        auxx = -(pos_robot.x - -0.65 );
+        auxx = -(pos_robot.x - -0.63 );
         auxy = -(pos_robot.y - 0.3);
     }
     else if (pos_ball.y < -0.3)
     {
-        auxx = -(pos_robot.x - -0.65 );
+        auxx = -(pos_robot.x - -0.63 );
         auxy = -(pos_robot.y - -0.3);
     }
     else
     {
         
-        auxx = -(pos_robot.x - -0.65 );
+        auxx = -(pos_robot.x - -0.63 );
         auxy = -(pos_robot.y - pos_ball.y);
         
     }
