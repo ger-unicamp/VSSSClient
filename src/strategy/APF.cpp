@@ -18,15 +18,42 @@ ctrl::vec2 apf::walls_field(fira_message::Robot &robot)
 }
 
 /**
- * @brief univector repulsion field, returns univector angle
+ * @brief composses univector repulsion fields by all obstacles
  * 
- * @param robot 
- * @param obstacle 
- * @return double 
+ * @param moving_robot_id 
+ * @param my_robots 
+ * @param enemy_robots 
+ * @return std::pair<double, double> returns min distance phi and min distance
  */
-double repulsion_field(ctrl::vec2 robot, ctrl::vec2 obstacle)
+std::pair<double, double> apf::repulsion_field(unsigned int moving_robot_id, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots)
 {
-    return ((robot - obstacle).theta());
+    double repulsion_phi;
+    std::vector<double> phis;
+    double dist;
+    std::vector<double> distances;
+
+    for (size_t i = 0; i < my_robots.size(); ++i)
+    {
+        if (i != moving_robot_id)
+        {
+            auto obstacle =  ctrl::future_position(my_robots[i], my_robots[moving_robot_id], 0.147302);
+            repulsion_phi = (ctrl::vec2(my_robots[moving_robot_id]) - obstacle).theta();
+            phis.push_back(repulsion_phi);
+            dist = ctrl::vec2(my_robots[moving_robot_id]).distance(obstacle);
+            distances.push_back(dist);
+        }
+    }
+    for (size_t i = 0; i < enemy_robots.size(); ++i)
+    {
+        auto obstacle =  ctrl::future_position(enemy_robots[i], my_robots[moving_robot_id], 0.147302);
+        repulsion_phi = (ctrl::vec2(my_robots[moving_robot_id]) - obstacle).theta();
+        phis.push_back(repulsion_phi);
+        dist = ctrl::vec2(my_robots[moving_robot_id]).distance(obstacle);
+        distances.push_back(dist);
+    }
+
+    auto min_dist_it = std::min_element(distances.begin(), distances.end());
+    return std::make_pair(phis[min_dist_it - phis.begin()], *min_dist_it);
 }
 
 //  ----------> BALL FIELD <-----------
