@@ -18,9 +18,9 @@
 extern Random randr;
 const size_t MAX_GEN = 200;
 const size_t N_POP = 10;
-const size_t N_GENES = 3;
+const size_t N_GENES = 2;
 const double min_value = 0.0;
-const double max_value = 0.1;
+const double max_value = 1.0;
 const double mr = 0.15; 
 
 struct measure
@@ -30,7 +30,7 @@ struct measure
     double y_error;
     double t_error;
     double vy_error;
-    double do_error;
+    // double do_error;
 
     /**
      * @brief Returns evaluation function (Kim et al.)
@@ -39,17 +39,19 @@ struct measure
      */
     double operator()()
     {
-        double tmp = this->do_error;
-        if (tmp < 0.05)
+        // double tmp1 = this->do_error;
+        double tmp2 = this->time;
+
+        if (tmp2 < 2.0)
         {
-            tmp *= 2;
+            tmp2 /= 10.0;
         }
-        double eval = 10.0 * time * time;
+        double eval = 10.0 * tmp2 * tmp2;
         eval += 5 * this->t_error * this->t_error;
         eval += 2.0 * this->x_error * this->x_error;
         eval += 2.0 * this->y_error * this->y_error;
         eval += 5.0 * this->vy_error * this->vy_error;
-        eval += 10* tmp * tmp;
+        // eval += 20 * tmp1 * tmp1;
         return eval;
     }
 };
@@ -115,7 +117,7 @@ int main()
                 res->y_error = robot.y();
                 res->x_error = robot.x() + 0.059;
                 res->vy_error = ball.vy();
-                res->do_error = 1 / dist;
+                // res->do_error = 1 / dist;
 
                 /**
                  * @brief This comparisson may change
@@ -127,6 +129,7 @@ int main()
                     break;
                 }
 
+                // G0:0.0755485 G1:0.0691405 G2:0.443467 G3: 40 * 0.664899 + 10
                 ctrl::vec2 spiral_vec = apf::ball_field(robot, ball, 0.0755485, 0.0691405);
                 ctrl::vec2 repulsion_vec = apf::repulsion_field(robot, obstacle0, d.genes[0]);
                 double phi = apf::composite_field(repulsion_vec, spiral_vec, d.genes[1], d.genes[2], dist);
