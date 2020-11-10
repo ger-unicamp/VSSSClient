@@ -8,7 +8,7 @@ ctrl::vec2 rol::goalkeeper(fira_message::Robot &robot, fira_message::Ball &ball)
     ctrl::vec2 apf_vec;
     ctrl::vec2 future_ball = ctrl::future_position(ball,robot,DT);
 
-    if (ctrl::vec2(robot).distance(future_ball) < 0.08)
+    if (ctrl::vec2(robot).distance(future_ball) < 0.075)
     {
         apf_vec = gpk::kick(robot, future_ball);
     }
