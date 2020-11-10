@@ -23,7 +23,6 @@ ctrl::vec2 gpk::follow(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball)
     }
     else
     {
-        
         auxx = -(pos_robot.x - -0.68 );
         auxy = -(pos_robot.y - pos_ball.y);
         

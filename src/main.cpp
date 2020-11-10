@@ -36,10 +36,13 @@ struct net_config
     unsigned int replacer_port;
     unsigned int vision_port;
 };
+
 void startup(int argc, char **argv, net_config &conf, bool &team_yellow);
 
 void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
                     vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow);
+
+bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::team_to_ref::VSSRef_Placement &cmd);
 
 int main(int argc, char *argv[])
 {
@@ -62,26 +65,18 @@ int main(int argc, char *argv[])
     vector<fira_message::Robot> my_robots;
     vector<fira_message::Robot> enemy_robots;
 
+    VSSRef::team_to_ref::VSSRef_Placement cmd;
+
     while (true)
     {
         if (referee.receive(ref_packet))
         {
-            unsigned int foul = ref_packet.foul();
-            std::cout << "-----Referee Foul: " << foul << std::endl;
-            game_on = foul == VSSRef::Foul::GAME_ON;
+            game_on = answer_referee(ref_packet, cmd);
+
+            referee.send(cmd);
         }
 
-        VSSRef::team_to_ref::VSSRef_Placement cmd;
-        VSSRef::Frame *replacement = new VSSRef::Frame();
-        auto robot1 = replacement->add_robots();
-        robot1->set_orientation(0.0);
-        robot1->set_x(0.0);
-        robot1->set_y(0.0);
-        robot1->set_robot_id(0);
-        replacement->set_teamcolor(VSSRef::BLUE);
-        cmd.set_allocated_world(replacement);
-        referee.send(cmd);
-
+        // delete replacement;
         if (client.receive(packet))
         {
             //see if the packet contains a robot detection frame:
@@ -289,5 +284,96 @@ void startup(int argc, char **argv, net_config &conf, bool &team_yellow)
               << "Referee server at " << conf.multicast_ip << ":" << conf.referee_port << std::endl
               << "Replacer listen to " << conf.multicast_ip << ":" << conf.replacer_port << std::endl
               << "Color team: " << (team_yellow? "yellow":"blue") << std::endl;
+}
 
+void replace_robots(VSSRef::Robot *robot0, VSSRef::Robot *robot1, VSSRef::Robot *robot2, vector<ctrl::vec2> &positions)
+{
+    robot0->set_x(positions[0].x);
+    robot0->set_y(positions[0].y);
+    robot0->set_orientation(HALF_PI);
+    robot1->set_x(positions[1].x);
+    robot1->set_y(positions[1].y);
+    robot1->set_orientation(0);
+    robot2->set_x(positions[2].x);
+    robot2->set_y(positions[2].y);
+    robot2->set_orientation(0);
+}
+
+bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::team_to_ref::VSSRef_Placement &cmd)
+{
+    VSSRef::Frame *replacement = new VSSRef::Frame();
+
+    auto robot0 = replacement->add_robots();
+    robot0->set_robot_id(0);
+    auto robot1 = replacement->add_robots();
+    robot1->set_robot_id(1);
+    auto robot2 = replacement->add_robots();
+    robot2->set_robot_id(2);    
+    unsigned int foul = ref_packet.foul();
+    std::cout << "-----Referee Foul: " << foul << std::endl;
+
+    bool game_on = false;
+    vector<ctrl::vec2> positions;
+
+    switch (foul)
+    {
+    case VSSRef::GAME_ON:
+        game_on = true;
+        break;
+
+    case VSSRef::STOP:
+        game_on = false;
+        break;
+
+    case VSSRef::FREE_BALL: 
+        if (ref_packet.foulquadrant() == VSSRef::QUADRANT_2 || ref_packet.foulquadrant() == VSSRef::QUADRANT_3)
+        {
+            positions =  {{-0.7, 0.0}, {-0.6, 0.4}, {-0.6, -0.4}};
+            replace_robots(robot0, robot1, robot2, positions);
+        }
+
+        else if (ref_packet.foulquadrant() == VSSRef::QUADRANT_1 || ref_packet.foulquadrant() == VSSRef::QUADRANT_4)
+        {
+            positions = {{-0.7, 0.0}, {0.175, 0.4}, {0.175, -0.4}};
+            replace_robots(robot0, robot1, robot2, positions);
+        }
+        break;
+    
+    case VSSRef::PENALTY_KICK:
+        if (ref_packet.teamcolor() == VSSRef::BLUE)
+        {
+            positions = {{-0.7, 0.0}, {0.275, 0.0}, {-0.1, -0.25}};
+            replace_robots(robot0, robot1, robot2, positions);
+        }
+
+        else if (ref_packet.teamcolor() == VSSRef::YELLOW)
+        {
+            positions = {{-0.7, 0.0}, {0.1, 0.25}, {0.1, -0.25}};
+            replace_robots(robot0, robot1, robot2, positions);
+        }
+        break;
+
+    case VSSRef::KICKOFF:
+        positions = {{-0.7, 0.0}, {-0.25, 0.0}, {-0.4, -0.2}};
+        replace_robots(robot0, robot1, robot2, positions);
+        break;
+
+    case VSSRef::GOAL_KICK:
+        if (ref_packet.teamcolor() == VSSRef::BLUE)
+        {
+            positions = {{-0.7, 0.0}, {0.25, 0.2}, {0.25, -0.2}};
+            replace_robots(robot0, robot1, robot2, positions);
+        }
+
+        else if (ref_packet.teamcolor() == VSSRef::YELLOW)
+        {
+            positions = {{-0.7, 0.0}, {0.25, 0.2}, {0.25, -0.2}};
+            replace_robots(robot0, robot1, robot2, positions);
+        }
+        break;         
+    }
+
+    cmd.set_allocated_world(replacement);
+
+    return game_on;
 }
