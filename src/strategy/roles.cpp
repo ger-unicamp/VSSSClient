@@ -24,7 +24,8 @@ ctrl::vec2 rol::goalkeeper(fira_message::Robot &robot, fira_message::Ball &ball)
 ctrl::vec2 rol::attacker(unsigned int moving_robot_id,fira_message::Ball &ball, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots)
 {
     ctrl::vec2 apf_vec;
-    double spiral_phi = apf::move_to_goal(my_robots[moving_robot_id], ball, RADIUS, K_SPIRAL);
+    ctrl::vec2 future_ball = ctrl::future_position(ball,my_robots[moving_robot_id], DT);
+    double spiral_phi = apf::move_to_goal(my_robots[moving_robot_id], future_ball, RADIUS, K_SPIRAL);
     pair<double,double> tmp = apf::repulsion_field(moving_robot_id, my_robots, enemy_robots, DT);
     double phi = apf::composite_field(tmp.first, spiral_phi, SIGMA, D_MIN, tmp.second);
     sincos(phi,&apf_vec.y,&apf_vec.x);
@@ -37,9 +38,9 @@ ctrl::vec2 rol::defender(unsigned int moving_robot_id,fira_message::Ball &ball, 
 {
     ctrl::vec2 pos_ball = ctrl::vec2(ball);
 
-    if (pos_ball.x < -0.5)
+    if (pos_ball.x < -0.4)
     {
-        pos_ball.x = -0.5;
+        pos_ball.x = -0.4;
     }
     else if (pos_ball.x > 0.5)
     {
@@ -70,7 +71,7 @@ vector<ctrl::vec2> rol::select_role(fira_message::Ball &ball,vector<fira_message
     vector<ctrl::vec2> roles(3);
     ctrl::vec2 pos_ball = ctrl::vec2(ball);
 
-    if (pos_ball.x < -0.55 && (pos_ball.y < -0.3 || pos_ball.y > 0.3) )
+    if (pos_ball.x < -0.55)
     {
         roles[0] = goalkeeper(my_robots[0], ball);
         roles[1] = defender(1,ball,my_robots,enemy_robots);
