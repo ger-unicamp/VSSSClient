@@ -8,17 +8,17 @@ ctrl::vec2 gpk::follow(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball)
 
     if (pos_robot.x < -0.65)
     {
-        auxx = -5*(pos_robot.x - -0.68 );
+        auxx = -5*(pos_robot.x - -0.68);
         auxy = -(pos_robot.y - pos_ball.y);
     }
     else if (pos_ball.y > 0.3 && pos_ball.x > -0.55)
     {
-        auxx = -(pos_robot.x - -0.63 );
+        auxx = -(pos_robot.x - -0.63);
         auxy = -(pos_robot.y - 0.3);
     }
     else if (pos_ball.y < -0.3 && pos_ball.x > -0.55)
     {
-        auxx = -(pos_robot.x - -0.63 );
+        auxx = -(pos_robot.x - -0.63);
         auxy = -(pos_robot.y - -0.3);
     }
     else

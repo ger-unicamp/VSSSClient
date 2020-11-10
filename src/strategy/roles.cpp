@@ -24,7 +24,8 @@ ctrl::vec2 rol::goalkeeper(fira_message::Robot &robot, fira_message::Ball &ball)
 ctrl::vec2 rol::attacker(unsigned int moving_robot_id,fira_message::Ball &ball, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots)
 {
     ctrl::vec2 apf_vec;
-    double spiral_phi = apf::move_to_goal(my_robots[moving_robot_id], ball, RADIUS, K_SPIRAL);
+    ctrl::vec2 future_ball = ctrl::future_position(ball,my_robots[moving_robot_id], DT);
+    double spiral_phi = apf::move_to_goal(my_robots[moving_robot_id], future_ball, RADIUS, K_SPIRAL);
     pair<double,double> tmp = apf::repulsion_field(moving_robot_id, my_robots, enemy_robots, DT);
     double phi = apf::composite_field(tmp.first, spiral_phi, SIGMA, D_MIN, tmp.second);
     sincos(phi,&apf_vec.y,&apf_vec.x);
