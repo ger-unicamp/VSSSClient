@@ -68,8 +68,19 @@ int main(int argc, char *argv[])
         {
             unsigned int foul = ref_packet.foul();
             std::cout << "-----Referee Foul: " << foul << std::endl;
-            game_on = foul == 6;
+            game_on = foul == VSSRef::Foul::GAME_ON;
         }
+
+        VSSRef::team_to_ref::VSSRef_Placement cmd;
+        VSSRef::Frame *replacement = new VSSRef::Frame();
+        auto robot1 = replacement->add_robots();
+        robot1->set_orientation(0.0);
+        robot1->set_x(0.0);
+        robot1->set_y(0.0);
+        robot1->set_robot_id(0);
+        replacement->set_teamcolor(VSSRef::BLUE);
+        cmd.set_allocated_world(replacement);
+        referee.send(cmd);
 
         if (client.receive(packet))
         {
