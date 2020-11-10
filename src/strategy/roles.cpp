@@ -37,9 +37,9 @@ ctrl::vec2 rol::defender(unsigned int moving_robot_id,fira_message::Ball &ball, 
 {
     ctrl::vec2 pos_ball = ctrl::vec2(ball);
 
-    if (pos_ball.x < -0.5)
+    if (pos_ball.x < -0.4)
     {
-        pos_ball.x = -0.5;
+        pos_ball.x = -0.4;
     }
     else if (pos_ball.x > 0.5)
     {
@@ -70,7 +70,7 @@ vector<ctrl::vec2> rol::select_role(fira_message::Ball &ball,vector<fira_message
     vector<ctrl::vec2> roles(3);
     ctrl::vec2 pos_ball = ctrl::vec2(ball);
 
-    if (pos_ball.x < -0.55 && (pos_ball.y < -0.3 || pos_ball.y > 0.3) )
+    if (pos_ball.x < -0.55)
     {
         roles[0] = goalkeeper(my_robots[0], ball);
         roles[1] = defender(1,ball,my_robots,enemy_robots);
