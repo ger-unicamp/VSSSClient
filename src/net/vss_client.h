@@ -7,6 +7,10 @@
 #include "pb/packet.pb.h"
 #include "pb/replacement.pb.h"
 
+#include "strategy/controller.h"
+#include <vector>
+
+
 class VSSClient
 {
     uint16_t my_port;
@@ -19,6 +23,7 @@ public:
     ~VSSClient();
 
     void sendCommand(int id, double wheel_left, double wheel_right);
+    void sendCommand(std::vector<ctrl::vec2> &cmd);
     uint16_t getPort() { return this->my_port; }
     std::string getAddr() { return this->my_addr; }
     bool amIYellow() { return this->team_yellow; }
