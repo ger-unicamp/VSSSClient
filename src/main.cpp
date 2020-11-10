@@ -26,7 +26,6 @@
 #include "pb/vssref_common.pb.h"
 #include "pb/vssref_placement.pb.h"
 
-
 struct net_config
 {
     std::string multicast_ip;
@@ -76,31 +75,23 @@ int main(int argc, char *argv[])
             referee.send(cmd);
         }
 
-        // delete replacement;
-        if (client.receive(packet))
+        if (client.receive(packet) && packet.has_frame())
         {
-            //see if the packet contains a robot detection frame:
-            if (packet.has_frame())
+            fira_message::Frame detection = packet.frame();
+
+            detect_objects(detection, ball, my_robots, enemy_robots, yellow);
+
+            std::vector<ctrl::vec2> commands;
+            if (!game_on)
             {
-                fira_message::Frame detection = packet.frame();
-
-                detect_objects(detection, ball, my_robots, enemy_robots, yellow);
-
-                std::vector<ctrl::vec2> commands;
-                if (!game_on)
-                {
-                    commands = {{0, 0}, {0, 0}, {0, 0}};
-                }
-                else
-                {
-                    commands = rol::select_role(ball, my_robots, enemy_robots);
-                }
-
-                for (size_t i = 0; i < commands.size(); i++)
-                {
-                    sim_client.sendCommand(i, commands[i][0], commands[i][1]);
-                }
+                commands = {{0, 0}, {0, 0}, {0, 0}};
             }
+            else
+            {
+                commands = rol::select_role(ball, my_robots, enemy_robots);
+            }
+
+            sim_client.sendCommand(commands);
         }
     }
 
@@ -264,7 +255,7 @@ void startup(int argc, char **argv, net_config &conf, bool &team_yellow)
 
     auto args = parser.parse_args(argc, argv);
 
-    if(args["help"]->as<bool>())
+    if (args["help"]->as<bool>())
     {
         std::cout << parser.help() << std::endl;
         exit(0);
