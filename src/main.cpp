@@ -41,7 +41,7 @@ void startup(int argc, char **argv, net_config &conf, bool &team_yellow);
 void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
                     vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots, bool yellow);
 
-bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::team_to_ref::VSSRef_Placement &cmd);
+bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::team_to_ref::VSSRef_Placement &cmd, bool yellow);
 
 int main(int argc, char *argv[])
 {
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     {
         if (referee.receive(ref_packet))
         {
-            game_on = answer_referee(ref_packet, cmd);
+            game_on = answer_referee(ref_packet, cmd, yellow);
 
             referee.send(cmd);
         }
@@ -290,10 +290,13 @@ void replace_robots(VSSRef::Robot *robot0, VSSRef::Robot *robot1, VSSRef::Robot 
     robot2->set_orientation(0);
 }
 
-bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::team_to_ref::VSSRef_Placement &cmd)
+bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::team_to_ref::VSSRef_Placement &cmd, bool yellow)
 {
     VSSRef::Frame *replacement = new VSSRef::Frame();
 
+    if (yellow) replacement->set_teamcolor(VSSRef::YELLOW);
+    else replacement->set_teamcolor(VSSRef::BLUE);
+    
     auto robot0 = replacement->add_robots();
     robot0->set_robot_id(0);
     auto robot1 = replacement->add_robots();
@@ -304,6 +307,7 @@ bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::tea
     std::cout << "-----Referee Foul: " << foul << std::endl;
 
     bool game_on = false;
+
     vector<ctrl::vec2> positions;
 
     switch (foul)
@@ -319,48 +323,68 @@ bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::tea
     case VSSRef::FREE_BALL: 
         if (ref_packet.foulquadrant() == VSSRef::QUADRANT_2 || ref_packet.foulquadrant() == VSSRef::QUADRANT_3)
         {
-            positions =  {{-0.7, 0.0}, {-0.6, 0.4}, {-0.6, -0.4}};
-            replace_robots(robot0, robot1, robot2, positions);
+            if (!yellow) positions = {{-0.7, 0.0}, {-0.6, 0.4}, {-0.6, -0.4}};
+            else positions = {{0.7, 0.0}, {-0.2, -0.4}, {-0.2, 0.4}};
         }
 
         else if (ref_packet.foulquadrant() == VSSRef::QUADRANT_1 || ref_packet.foulquadrant() == VSSRef::QUADRANT_4)
         {
-            positions = {{-0.7, 0.0}, {0.175, 0.4}, {0.175, -0.4}};
-            replace_robots(robot0, robot1, robot2, positions);
+            if (!yellow) positions = {{-0.7, 0.0}, {0.175, 0.4}, {0.175, -0.4}};
+            else positions = {{0.7, 0.0}, {0.55, -0.4}, {0.55, 0.4}};
         }
+        replace_robots(robot0, robot1, robot2, positions);
         break;
     
     case VSSRef::PENALTY_KICK:
         if (ref_packet.teamcolor() == VSSRef::BLUE)
         {
-            positions = {{-0.7, 0.0}, {0.275, 0.0}, {-0.1, -0.25}};
-            replace_robots(robot0, robot1, robot2, positions);
+            if (!yellow) positions = {{-0.7, 0.0}, {0.275, 0.0}, {-0.1, -0.25}};
+            else positions = {{0.7, 0.0}, {-0.275, 0.0}, {0.1, 0.25}};
         }
 
         else if (ref_packet.teamcolor() == VSSRef::YELLOW)
         {
-            positions = {{-0.7, 0.0}, {0.1, 0.25}, {0.1, -0.25}};
-            replace_robots(robot0, robot1, robot2, positions);
+            if (!yellow) positions = {{-0.7, 0.0}, {0.1, 0.25}, {0.1, -0.25}};
+            else positions = {{0.7, 0.0}, {-0.1, -0.25}, {-0.1, 0.25}};
         }
+        replace_robots(robot0, robot1, robot2, positions);
         break;
 
     case VSSRef::KICKOFF:
-        positions = {{-0.7, 0.0}, {-0.25, 0.0}, {-0.4, -0.2}};
+        if (!yellow) positions = {{-0.7, 0.0}, {-0.25, 0.0}, {-0.4, -0.2}};
+        else positions = {{0.7, 0.0}, {0.25, 0.0}, {0.4, 0.2}};
         replace_robots(robot0, robot1, robot2, positions);
+        
         break;
 
     case VSSRef::GOAL_KICK:
         if (ref_packet.teamcolor() == VSSRef::BLUE)
-        {
-            positions = {{-0.7, 0.0}, {0.25, 0.2}, {0.25, -0.2}};
+        {   
+            if (!yellow)
+            {
+                positions = {{-0.65, -0.2}, {0.25, 0.2}, {0.25, -0.2}};
+                robot0->set_orientation(HALF_PI/2.0);
+            }
+            else
+            {
+                positions = {{0.7, 0.0}, {-0.25, -0.2}, {-0.25, 0.2}};
+            }
             replace_robots(robot0, robot1, robot2, positions);
         }
 
         else if (ref_packet.teamcolor() == VSSRef::YELLOW)
         {
-            positions = {{-0.7, 0.0}, {0.25, 0.2}, {0.25, -0.2}};
-            replace_robots(robot0, robot1, robot2, positions);
+            if (!yellow)
+            {
+                positions = {{-0.7, 0.0}, {0.25, 0.2}, {0.25, -0.2}};
+            }
+            else
+            {
+                positions = {{0.65, 0.2}, {0.25, -0.2}, {0.25, 0.2}};
+                robot0->set_orientation(HALF_PI/2.0);
+            }
         }
+        replace_robots(robot0, robot1, robot2, positions);
         break;         
     }
 
