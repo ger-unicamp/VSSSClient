@@ -33,7 +33,7 @@ ctrl::vec2 rol::goalkeeper(fira_message::Robot &robot, fira_message::Ball &ball)
 
     if (ctrl::vec2(robot).distance(future_ball) <= 0.077)
     {
-        apf_vec = gpk::kick((robot.y() > future_ball.y));
+        apf_vec = gpk::kick((robot.y() < future_ball.y));
     }
     else
     {
