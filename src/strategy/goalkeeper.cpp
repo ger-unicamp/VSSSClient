@@ -20,12 +20,12 @@ ctrl::vec2 gpk::follow(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball, double k)
     return apf_vec;
 }
 
-ctrl::vec2 gpk::kick(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball)
+ctrl::vec2 gpk::kick(bool cw)
 {
     const double speed = 150;
     ctrl::vec2 apf_vec;
 
-    if (pos_robot.y < pos_ball.y)
+    if (cw)
     {
         apf_vec = {speed, -speed};
     }
