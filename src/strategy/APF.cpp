@@ -149,3 +149,48 @@ double apf::composite_field(double repulsion_phi, double spiral_phi, double sigm
     else
         return (repulsion_phi * gauss + spiral_phi * (1-gauss));
 }
+
+/**
+ * @brief Field that converge to target with final orientation in vertical
+ * 
+ * @param pos 
+ * @param target 
+ * @param k 
+ * @return double 
+ */
+double apf::vertical_line_field(ctrl::vec2 pos, ctrl::vec2 target, double k)
+{
+    double phi;
+    // Univector always operate over translated points
+    ctrl::vec2 translated = pos - target;
+
+    if (translated.y <= 0.0)
+        phi = PI * (1.0 / (1.0 + std::exp(-1.0 * k * translated.x)));
+    else
+        phi = PI * (-1.0 / (1.0 + std::exp(-1.0 * k * translated.x)));
+
+    return phi;
+}
+
+/**
+ * @brief Field that converge to target with final orientation in horizontal
+ * 
+ * @param pos 
+ * @param target 
+ * @param k 
+ * @return double 
+ */
+double apf::horizontal_line_field(ctrl::vec2 pos, ctrl::vec2 target, double k)
+{
+    double phi;
+    // Univector always operate over translated points
+    ctrl::vec2 translated = pos - target;
+    double e = std::exp(k * translated.y);
+
+    if (translated.x <= 0.0)
+        phi = HALF_PI * ((1 - e) / (1 + e));
+    else
+        phi = HALF_PI * ((1 + 3 * e) / (1 + e));
+
+    return phi;
+}

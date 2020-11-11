@@ -2,55 +2,37 @@
 #include <iostream>
 
 
-ctrl::vec2 gpk::follow(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball)
+ctrl::vec2 gpk::follow(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball, double k)
 {
-    double auxx,auxy;
-
-    if (pos_robot.x < -0.73)
-    {
-        auxx = -5*(pos_robot.x - -0.68);
-        auxy = -(pos_robot.y - pos_ball.y);
-    }
-    else if (pos_ball.y > 0.3 && pos_ball.x > -0.55)
-    {
-        auxx = -(pos_robot.x - -0.63);
-        auxy = -(pos_robot.y - 0.3);
-    }
-    else if (pos_ball.y < -0.3 && pos_ball.x > -0.55)
-    {
-        auxx = -(pos_robot.x - -0.63);
-        auxy = -(pos_robot.y - -0.3);
-    }
+    const double x_target = -0.66;
+    double y_target;
+    if (pos_ball.x < -0.6)
+        y_target = pos_ball.y;
     else
-    {
-        auxx = -(pos_robot.x - -0.68 );
-        auxy = -(pos_robot.y - pos_ball.y);
-        
-    }
+        y_target = math::bound(pos_ball.y, -0.3, 0.3);
+    
+    ctrl::vec2 target = {std::min(x_target, pos_ball.x), y_target};
 
-    ctrl::vec2 apf_vec = ctrl::vec2(auxx,auxy);
+    double phi = apf::vertical_line_field(pos_robot, target, k);
+    ctrl::vec2 apf_vec;
+    sincos(phi, &apf_vec.y, &apf_vec.x);
+
     return apf_vec;
-
 }
 
 ctrl::vec2 gpk::kick(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball)
 {
-    double auxx,auxy;
+    const double speed = 150;
+    ctrl::vec2 apf_vec;
 
     if (pos_robot.y < pos_ball.y)
     {
-        auxx = 50;
-        auxy = -50;
+        apf_vec = {speed, -speed};
     }
     else
     {
-        auxx = -50;
-        auxy = 50;
+        apf_vec = {-speed, speed};
     }
 
-    ctrl::vec2 apf_vec = ctrl::vec2(auxx,auxy);
     return apf_vec;
-
-    
-    
 }
