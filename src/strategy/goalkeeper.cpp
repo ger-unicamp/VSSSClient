@@ -4,7 +4,7 @@
 
 ctrl::vec2 gpk::follow(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball, double k)
 {
-    const double x_target = -0.68;
+    const double x_target = -0.66;
     double y_target;
     if (pos_ball.x < -0.6)
         y_target = pos_ball.y;
