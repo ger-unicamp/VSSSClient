@@ -3,6 +3,43 @@
 #include "APF.h"
 #include <iostream>
 
+unsigned int robot_next_to_goal(vector<fira_message::Robot> my_robots, ctrl::vec2 target)
+{
+    double dist;
+    unsigned int min_idx;
+    double min_dist = std::numeric_limits<double>::max();
+    for (auto robot : my_robots)
+    {
+        dist = ctrl::vec2(robot).distance(target);
+        if (dist < min_dist) 
+        {
+            min_dist = dist;
+            min_idx = robot.robot_id();
+        }
+    }
+
+    return min_idx;
+}
+
+unsigned int robot_next_to_ball(vector<fira_message::Robot> my_robots, ctrl::vec2 ball)
+{
+    double dist;
+    unsigned int min_idx = 4;
+    double min_dist = std::numeric_limits<double>::max();
+    for (auto robot : my_robots)
+    {
+        dist = ctrl::vec2(robot).distance(ball);
+        if (dist < min_dist && dist < 2.0) 
+        {
+            min_dist = dist;
+            min_idx = robot.robot_id();
+        }
+    }
+
+    return min_idx;
+}
+
+
 ctrl::vec2 rol::goalkeeper(fira_message::Robot &robot, fira_message::Ball &ball)
 {      
     ctrl::vec2 apf_vec;
@@ -42,19 +79,12 @@ ctrl::vec2 rol::defender(unsigned int moving_robot_id,fira_message::Ball &ball, 
     {
         pos_ball.x = -0.4;
     }
-    else if (pos_ball.x > 0.5)
+    else if (pos_ball.x > 0.6)
     {
-        pos_ball.x = 0.5;
+        pos_ball.x = 0.6;
     }
 
-    if (moving_robot_id == 1)
-    {
-        pos_ball.y = 0.3;
-    }
-    else
-    {
-        pos_ball.y = -0.3;
-    }
+    pos_ball.y = 0.0;
 
     ctrl::vec2 apf_vec;
     double spiral_phi = apf::move_to_goal(my_robots[moving_robot_id], pos_ball, RADIUS, K_SPIRAL);
@@ -71,24 +101,6 @@ vector<ctrl::vec2> rol::select_role(fira_message::Ball &ball,vector<fira_message
     vector<ctrl::vec2> roles(3);
     ctrl::vec2 pos_ball = ctrl::future_position(ball, my_robots[0], DT);
 
-    if (pos_ball.x < -0.55)
-    {
-        roles[0] = goalkeeper(my_robots[0], ball);
-        roles[1] = defender(1,ball,my_robots,enemy_robots);
-        roles[2] = defender(2,ball,my_robots,enemy_robots);
-    }
-    else if (pos_ball.y >= 0)
-    {
-        roles[0] = goalkeeper(my_robots[0], ball);
-        roles[1] = attacker(1,ball,my_robots,enemy_robots);
-        roles[2] = defender(2,ball,my_robots,enemy_robots);
-    }
-    else
-    {
-        roles[0] = goalkeeper(my_robots[0], ball);
-        roles[1] = defender(1,ball,my_robots,enemy_robots);
-        roles[2] = attacker(2,ball,my_robots,enemy_robots);
-    }
-
+    if (pos_ball.x <= 0)
     return roles;
 }
