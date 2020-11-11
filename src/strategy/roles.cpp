@@ -49,13 +49,21 @@ ctrl::vec2 rol::attacker(unsigned int moving_robot_id,fira_message::Ball &ball, 
 {
     ctrl::vec2 apf_vec;
     ctrl::vec2 future_ball = ctrl::future_position(ball,my_robots[moving_robot_id], DT);
-    if (future_ball.x < -0.55)
+    double move_phi, phi;
+
+    if (ctrl::vec2(my_robots[moving_robot_id]).x < -0.6)
     {
-        future_ball.x = -0.55;
+        future_ball.x = math::bound(future_ball.x, -0.6, std::numeric_limits<double>::max());
+        move_phi = apf::horizontal_line_field(my_robots[moving_robot_id], future_ball, K_LINE);
     }
-    double spiral_phi = apf::move_to_goal(my_robots[moving_robot_id], future_ball, RADIUS, K_SPIRAL);
+
+    else
+    {
+        move_phi = apf::move_to_goal(my_robots[moving_robot_id], future_ball, RADIUS, K_SPIRAL);
+    }
+    
     pair<double,double> tmp = apf::repulsion_field(moving_robot_id, my_robots, enemy_robots, DT);
-    double phi = apf::composite_field(tmp.first, spiral_phi, SIGMA, D_MIN, tmp.second);
+    phi = apf::composite_field(tmp.first, move_phi, SIGMA, D_MIN, tmp.second);
     sincos(phi,&apf_vec.y,&apf_vec.x);
     apf_vec = ctrl::move_robot(my_robots[moving_robot_id], apf_vec, K_TURNING, K_VEL);
 
