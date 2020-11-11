@@ -338,14 +338,14 @@ bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::tea
     case VSSRef::PENALTY_KICK:
         if (ref_packet.teamcolor() == VSSRef::BLUE)
         {
-            if (!yellow) positions = {{-0.7, 0.0}, {0.275, 0.0}, {-0.1, -0.25}};
-            else positions = {{0.7, 0.0}, {-0.275, 0.0}, {0.1, 0.25}};
+            if (!yellow) positions = {{-0.7, 0.0}, {0.25, 0.0}, {-0.1, 0.0}};
+            else positions = {{0.7, 0.0}, {-0.1, -0.25}, {-0.1, 0.25}};
         }
 
         else if (ref_packet.teamcolor() == VSSRef::YELLOW)
         {
             if (!yellow) positions = {{-0.7, 0.0}, {0.1, 0.25}, {0.1, -0.25}};
-            else positions = {{0.7, 0.0}, {-0.1, -0.25}, {-0.1, 0.25}};
+            else positions = {{0.7, 0.0}, {-0.25, -0.0}, {0.1, 0.0}};
         }
         replace_robots(robot0, robot1, robot2, positions);
         break;
@@ -362,14 +362,14 @@ bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::tea
         {   
             if (!yellow)
             {
-                positions = {{-0.65, -0.2}, {0.25, 0.2}, {0.25, -0.2}};
-                robot0->set_orientation(HALF_PI/2.0);
+                positions = {{-0.65, -0.2}, {-0.4, -0.25}, {-0.5, -0.55}};
             }
             else
             {
                 positions = {{0.7, 0.0}, {-0.25, -0.2}, {-0.25, 0.2}};
             }
             replace_robots(robot0, robot1, robot2, positions);
+            robot0->set_orientation(HALF_PI/2.0);
         }
 
         else if (ref_packet.teamcolor() == VSSRef::YELLOW)
@@ -380,11 +380,11 @@ bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::tea
             }
             else
             {
-                positions = {{0.65, 0.2}, {0.25, -0.2}, {0.25, 0.2}};
-                robot0->set_orientation(HALF_PI/2.0);
+                positions = {{0.65, 0.2}, {0.4, 0.25}, {0.5, 0.55}};
             }
         }
         replace_robots(robot0, robot1, robot2, positions);
+        robot0->set_orientation(-HALF_PI/2.0);
         break;         
     }
 
