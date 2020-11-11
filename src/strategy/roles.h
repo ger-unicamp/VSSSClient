@@ -1,5 +1,6 @@
 #ifndef ROLES
 #define ROLES
+
 #include "strategy/controller.h"
 
 using namespace std;
@@ -19,8 +20,8 @@ namespace rol
     ctrl::vec2 goalkeeper(fira_message::Robot &robot, fira_message::Ball &ball);
     ctrl::vec2 attacker(unsigned int moving_robot_id, fira_message::Ball &ball, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots);
     ctrl::vec2 defender(unsigned int moving_robot_id, ctrl::vec2 pos_target, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots);
+    bool liberty_spin(fira_message::Robot robot, unsigned int &stopped_count);
     vector<ctrl::vec2> select_role(fira_message::Ball &ball,vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots);
 };
-
 
 #endif
