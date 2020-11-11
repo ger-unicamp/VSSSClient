@@ -87,9 +87,9 @@ ctrl::vec2 rol::defender_midfield(unsigned int moving_robot_id, ctrl::vec2 pos_b
 {
     if (pos_ball.x >= 0) 
     {
-        pos_ball.x = 0.2;
-        pos_ball.y = (pos_ball.y > 0.2)? 0.2 : pos_ball.y;
-        pos_ball.y = (pos_ball.y < -0.2)? -0.2 : pos_ball.y;
+        pos_ball.x = pos_ball.x - 0.2;
+        pos_ball.y = (pos_ball.y > 0.4)? 0.4 : pos_ball.y;
+        pos_ball.y = (pos_ball.y < -0.4)? -0.4 : pos_ball.y;
     }
     else pos_ball.x = -0.2;
 
@@ -117,11 +117,7 @@ vector<ctrl::vec2> rol::select_role(fira_message::Ball &ball,vector<fira_message
     id_def = 3 - (id_gkp + id_atk);
     roles[id_gkp] = goalkeeper(my_robots[id_gkp], ball);
     roles[id_atk] = attacker(id_atk, ball, my_robots, enemy_robots);
-    
-    if (pos_ball.x <= 0.3 && pos_ball.x >= -0.3 && pos_ball.y >= 0.4)
-        roles[id_def] = attacker(id_def, ball, my_robots, enemy_robots);
-    else
-        roles[id_def] = defender_midfield(id_def, pos_ball, my_robots, enemy_robots);
+    roles[id_def] = defender_midfield(id_def, pos_ball, my_robots, enemy_robots);
 
 
     return roles;
