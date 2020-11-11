@@ -49,9 +49,9 @@ ctrl::vec2 rol::attacker(unsigned int moving_robot_id,fira_message::Ball &ball, 
 {
     ctrl::vec2 apf_vec;
     ctrl::vec2 future_ball = ctrl::future_position(ball,my_robots[moving_robot_id], DT);
-    if (future_ball.x < -0.4)
+    if (future_ball.x < -0.55)
     {
-        future_ball.x = -0.4;
+        future_ball.x = -0.55;
     }
     double spiral_phi = apf::move_to_goal(my_robots[moving_robot_id], future_ball, RADIUS, K_SPIRAL);
     pair<double,double> tmp = apf::repulsion_field(moving_robot_id, my_robots, enemy_robots, DT);
