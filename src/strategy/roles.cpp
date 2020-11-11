@@ -8,17 +8,17 @@ ctrl::vec2 rol::goalkeeper(fira_message::Robot &robot, fira_message::Ball &ball)
     ctrl::vec2 apf_vec;
     ctrl::vec2 future_ball = ctrl::future_position(ball,robot,DT);
 
-    if (ctrl::vec2(robot).distance(future_ball) < 0.075)
+    if (ctrl::vec2(robot).distance(future_ball) <= 0.077)
     {
         apf_vec = gpk::kick(robot, future_ball);
     }
     else
     {
-        apf_vec = gpk::follow(robot, future_ball);
-        apf_vec = ctrl::move_robot(robot,apf_vec,K_TURNING, K_VEL);
+        apf_vec = gpk::follow(robot, future_ball, K_LINE);
+        apf_vec = ctrl::move_robot(robot,apf_vec, K_TURNING, K_VEL);
     }
 
-    return 6*apf_vec;
+    return apf_vec;
 }
 
 ctrl::vec2 rol::attacker(unsigned int moving_robot_id,fira_message::Ball &ball, std::vector<fira_message::Robot> my_robots, std::vector<fira_message::Robot> enemy_robots)
@@ -69,7 +69,7 @@ ctrl::vec2 rol::defender(unsigned int moving_robot_id,fira_message::Ball &ball, 
 vector<ctrl::vec2> rol::select_role(fira_message::Ball &ball,vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots)
 {
     vector<ctrl::vec2> roles(3);
-    ctrl::vec2 pos_ball = ctrl::vec2(ball);
+    ctrl::vec2 pos_ball = ctrl::future_position(ball, my_robots[0], DT);
 
     if (pos_ball.x < -0.55)
     {
