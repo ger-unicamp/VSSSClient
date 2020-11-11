@@ -63,6 +63,23 @@ namespace math
         return (1.0 / (s * std::sqrt(TWO_PI))) * gaussian(r, s);
     }
 
+    /**
+     * @brief Limit a number to a interval [min, max]
+     * 
+     * @param x 
+     * @param min 
+     * @param max 
+     * @return double 
+     */
+    inline double bound(double x, double min, double max)
+    {
+        if(x > max)
+            return max;
+        if(x < min)
+            return min;
+        return x;
+    }
+
 }; // namespace math
 
 #endif
