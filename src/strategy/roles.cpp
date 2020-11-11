@@ -110,7 +110,7 @@ vector<ctrl::vec2> rol::select_role(fira_message::Ball &ball,vector<fira_message
     id_def = 3 - (id_gkp + id_atk);
 
     roles[id_gkp] = liberty_spin(my_robots[id_gkp], stopped_count_gkp) ? 
-                    gpk::kick((my_robots[id_gkp].y() > ball.y())) : goalkeeper(my_robots[id_gkp], ball);
+                    gpk::kick((my_robots[id_gkp].y() < ball.y())) : goalkeeper(my_robots[id_gkp], ball);
 
     roles[id_atk] = liberty_spin(my_robots[id_atk], stopped_count_atk) ? 
                     gpk::kick((my_robots[id_atk].y() > 0.0)) : attacker(id_atk, ball, my_robots, enemy_robots);
