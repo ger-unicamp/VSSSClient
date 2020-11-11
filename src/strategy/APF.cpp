@@ -149,3 +149,17 @@ double apf::composite_field(double repulsion_phi, double spiral_phi, double sigm
     else
         return (repulsion_phi * gauss + spiral_phi * (1-gauss));
 }
+
+double apf::vertical_line_field(ctrl::vec2 pos, ctrl::vec2 target, double k)
+{
+    double phi;
+    // Univector always operate over translated points
+    ctrl::vec2 translated = pos - target;
+
+    if (translated.y <= 0.0)
+        phi = PI*(1.0/(1.0+std::exp(-1.0*k*translated.x)));
+    else
+        phi = PI*(-1.0/(1.0+std::exp(-1.0*k*translated.x)));
+
+    return phi;
+}
