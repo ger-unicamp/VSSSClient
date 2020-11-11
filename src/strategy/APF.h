@@ -14,6 +14,7 @@ namespace apf
     double move_to_goal(ctrl::vec2 pos, ctrl::vec2 target, double radius, double k);
     double composite_field(double repulsion_phi, double spiral_phi, double sigma, double dmin, double R);
     double vertical_line_field(ctrl::vec2 pos, ctrl::vec2 target, double k);
+    double horizontal_line_field(ctrl::vec2 pos, ctrl::vec2 target, double k);
 }; // namespace apf
 
 #endif
