@@ -10,8 +10,9 @@ const double K_SPIRAL = 0.0691405;
 const double K_TURNING = 0.443467;
 const double K_VEL = 39.9596;
 const double DT = 0.147302;
+const double DT_GOALKEEPER = 0.245;
 const double SIGMA = 0.0413777;
-const double D_MIN = 0.0457;
+const double D_MIN = 0.04;
 const double K_LINE = 16.0;
 
 namespace rol

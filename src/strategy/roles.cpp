@@ -27,9 +27,9 @@ unsigned int rol::robot_next_to_target(unsigned int id_gkp, vector<fira_message:
 
 
 ctrl::vec2 rol::goalkeeper(fira_message::Robot &robot, fira_message::Ball &ball)
-{      
+{
     ctrl::vec2 apf_vec;
-    ctrl::vec2 future_ball = ctrl::future_position(ball,robot,DT);
+    ctrl::vec2 future_ball = ctrl::future_position(ball, robot, DT_GOALKEEPER);
 
     if (ctrl::vec2(robot).distance(future_ball) <= 0.077)
     {
