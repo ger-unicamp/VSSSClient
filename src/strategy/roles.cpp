@@ -21,7 +21,7 @@ unsigned int rol::robot_next_to_target(unsigned int id_gkp, unsigned int last_id
             min_idx = robot.robot_id();
         }
     }
-    std::cout << min_idx << std::endl;
+
     return min_idx;
 }
 
