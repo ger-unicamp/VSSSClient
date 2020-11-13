@@ -2,26 +2,26 @@
 #include "goalkeeper.h"
 #include "APF.h"
 
-const unsigned int NULL_ID = 4;
 
-unsigned int rol::robot_next_to_target(unsigned int id_gkp, vector<fira_message::Robot> my_robots, ctrl::vec2 target)
+unsigned int rol::robot_next_to_target(unsigned int id_gkp, unsigned int last_idx, vector<fira_message::Robot> my_robots, ctrl::vec2 target)
 {
+    const double epsilon = 0.1;
     double dist; 
-    unsigned int min_idx = NULL_ID;
-    double min_dist = std::numeric_limits<double>::max();
+    unsigned int min_idx = last_idx;
+    double min_dist = ctrl::vec2(my_robots[last_idx]).distance(target);
     ctrl::vec2 future_pos;
 
     for (auto robot : my_robots)
     {   
         future_pos = ctrl::vec2(robot) + DT * ctrl::vec2(robot.vx(), robot.vy());
         dist = future_pos.distance(target);
-        if (dist < min_dist && robot.robot_id() != id_gkp) 
+        if (dist < min_dist - epsilon && robot.robot_id() != id_gkp) 
         {
             min_dist = dist;
             min_idx = robot.robot_id();
         }
     }
-
+    std::cout << min_idx << std::endl;
     return min_idx;
 }
 
@@ -97,7 +97,8 @@ bool rol::liberty_spin(fira_message::Robot robot, unsigned int &stopped_count)
 
 vector<ctrl::vec2> rol::select_role(fira_message::Ball &ball,vector<fira_message::Robot> &my_robots, vector<fira_message::Robot> &enemy_robots)
 {
-    unsigned int id_gkp, id_atk, id_def;
+    const unsigned int id_gkp = 0;
+    static unsigned int id_atk = 1, id_def = 2;
 
     static unsigned int stopped_count_gkp = 0;
     static unsigned int stopped_count_atk = 0;
@@ -105,8 +106,7 @@ vector<ctrl::vec2> rol::select_role(fira_message::Ball &ball,vector<fira_message
 
     vector<ctrl::vec2> roles(3);
 
-    id_gkp = 0;
-    id_atk = robot_next_to_target(id_gkp, my_robots, ball);
+    id_atk = robot_next_to_target(id_gkp, id_atk, my_robots, ball);
     id_def = 3 - (id_gkp + id_atk);
 
     roles[id_gkp] = liberty_spin(my_robots[id_gkp], stopped_count_gkp) ? 
