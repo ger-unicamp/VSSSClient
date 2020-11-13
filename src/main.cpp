@@ -244,13 +244,13 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
 void startup(int argc, char **argv, net_config &conf, bool &team_yellow)
 {
     ArgParse::ArgumentParser parser(argv[0], "GER VSSS FIRASim strategy server");
-    parser.add_argument('m', "multicast_ip", "Vision and Referee IP", new ArgParse::value<std::string>("224.0.0.1"));
-    parser.add_argument('c', "command_ip", "Command IP", new ArgParse::value<std::string>("127.0.0.1"));
-    parser.add_argument('d', "command_port", "Command port", new ArgParse::value<unsigned int>("20011"));
-    parser.add_argument('e', "referee_port", "Referee foul port", new ArgParse::value<unsigned int>("10003"));
-    parser.add_argument('r', "replacer_port", "Referee command port", new ArgParse::value<unsigned int>("10004"));
-    parser.add_argument('v', "vision_port", "Vision port", new ArgParse::value<unsigned int>("10002"));
-    parser.add_argument('t', "team_yellow", "Team collor yellow (true/false)", new ArgParse::value<bool>("false"));
+    parser.add_argument('m', "multicast_ip", "Vision and Referee IP", ArgParse::value<std::string>("224.0.0.1"));
+    parser.add_argument('c', "command_ip", "Command IP", ArgParse::value<std::string>("127.0.0.1"));
+    parser.add_argument('d', "command_port", "Command port", ArgParse::value<unsigned int>(20011));
+    parser.add_argument('e', "referee_port", "Referee foul port", ArgParse::value<unsigned int>(10003));
+    parser.add_argument('r', "replacer_port", "Referee command port", ArgParse::value<unsigned int>(10004));
+    parser.add_argument('v', "vision_port", "Vision port", ArgParse::value<unsigned int>(10002));
+    parser.add_argument('t', "team_yellow", "Team collor yellow (true/false)", ArgParse::value<bool>(false));
     parser.add_argument('h', "help", "Show help menu");
 
     auto args = parser.parse_args(argc, argv);
