@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 #include <sstream>
 #include <stdexcept>
@@ -83,7 +84,6 @@ namespace ArgParse
     {
     protected:
         std::string val;
-        size_t type;
     public:
         void set(const std::string &s)
         {
@@ -93,30 +93,30 @@ namespace ArgParse
         template <typename U>
         U as()
         {
-            std::string str = this->val;
+            std::stringstream ss;
             if(typeid(U) == typeid(bool))
-            {
-                if(tolower(str) == "true" || str == "1")
-                    str = "1";
-                else
-                    str = "0";
-            }
-            std::istringstream ss(str);
+                ss << std::boolalpha << val;
+            else
+                ss << val;
             U ret;
             ss >> ret;
             return ret;
         }
+        virtual ~value_iface() {}
     };
 
     template <typename T>
     class value : public value_iface
     {
-
     public:
-        value(const std::string &_val)
+        value(const T &_val)
         {
-            val = _val;
-            type = typeid(T).hash_code();
+            std::stringstream ss;
+            if(typeid(T) == typeid(bool))
+                ss << std::boolalpha << _val;
+            else
+                ss << _val;
+            ss >> this->val;
         }
     };
 
@@ -126,9 +126,12 @@ namespace ArgParse
         char short_name;
         std::string long_name;
         std::string description;
-        value_iface *arg;
+        std::shared_ptr<value_iface> arg;
 
-        Option(char _short_name, std::string _long_name, std::string _description, value_iface *_arg) : short_name(_short_name), long_name(_long_name), description(_description), arg(_arg) {}
+        Option(char _short_name, std::string _long_name, std::string _description, std::shared_ptr<value_iface> _arg) : short_name(_short_name),
+                                                                                                                        long_name(_long_name),
+                                                                                                                        description(_description),
+                                                                                                                        arg(_arg){};
     };
 
     class ArgumentParserError : std::runtime_error
@@ -141,8 +144,8 @@ namespace ArgParse
     {
         std::string name;
         std::string description;
-        std::vector<Option *> options;
-        std::map<std::string, value_iface *> parsed_args;
+        std::vector<Option> options;
+        std::map<std::string, std::shared_ptr<value_iface>> parsed_args;
 
     public:
         ArgumentParser(std::string name, std::string description = "")
@@ -159,18 +162,18 @@ namespace ArgParse
             ss << "Usage: " << this->name;
             for (size_t i = 0; i < this->options.size(); i++)
             {
-                ss << " -" << this->options[i]->short_name;
-                ss << "\\--" << this->options[i]->long_name;
-                ss << " " << ((this->options[i]->arg == NULL) ? "" : std::string(toupper(this->options[i]->long_name)));
+                ss << " -" << this->options[i].short_name;
+                ss << "\\--" << this->options[i].long_name;
+                ss << " " << ((this->options[i].arg == NULL) ? "" : std::string(toupper(this->options[i].long_name)));
             }
             ss << std::endl
                << "Options:" << std::endl;
             for (size_t i = 0; i < this->options.size(); i++)
             {
-                ss << "\t-" << this->options[i]->short_name;
-                ss << "\\--" << this->options[i]->long_name;
-                ss << " " << ((this->options[i]->arg == NULL) ? "" : std::string(toupper(this->options[i]->long_name)));
-                ss << ": " << this->options[i]->description << std::endl;
+                ss << "\t-" << this->options[i].short_name;
+                ss << "\\--" << this->options[i].long_name;
+                ss << " " << ((this->options[i].arg == NULL) ? "" : std::string(toupper(this->options[i].long_name)));
+                ss << ": " << this->options[i].description << std::endl;
             }
 
             return ss.str();
@@ -181,14 +184,28 @@ namespace ArgParse
          * @param short_arg shortname of option (-o)
          * @param arg longname of option (--option)
          * @param description help option description
-         * @param val Pointer to a ArgParse::value<type>. Default is NULL, indicate that -o\--option is a flag (does not expect any argument).
+         * @param val A ArgParse::value<type>.
          */
+        template <typename T>
         void add_argument(char short_arg,
                           std::string arg,
                           std::string description,
-                          value_iface *val = NULL)
+                          const value<T> &val)
         {
-            this->options.push_back(new Option(short_arg, arg, description, val));
+            this->options.push_back(Option(short_arg, arg, description, std::make_shared<value<T>>(val)));
+        }
+        /**
+         * @brief Add 
+         * 
+         * @param short_arg 
+         * @param arg 
+         * @param description 
+         */
+        void add_argument(char short_arg,
+                          std::string arg,
+                          std::string description)
+        {
+            this->options.push_back(Option(short_arg, arg, description, nullptr));
         }
         /**
          * @brief 
@@ -197,22 +214,22 @@ namespace ArgParse
          * @param argv 
          * @return std::map<std::string, ArgParse::value<typename T>> 
          */
-        std::map<std::string, value_iface *> parse_args(int argc, char *argv[])
+        std::map<std::string, std::shared_ptr<value_iface>> parse_args(int argc, char *argv[])
         {
             int opt;
             std::string optstring;
             struct option *optstruct = new option[this->options.size() + 1];
             for (size_t i = 0; i < this->options.size(); i++)
             {
-                optstring.push_back(this->options[i]->short_name);
-                if (this->options[i]->arg != NULL)
+                optstring.push_back(this->options[i].short_name);
+                if (this->options[i].arg != NULL)
                 {
                     optstring.push_back(':');
-                    optstruct[i] = {this->options[i]->long_name.c_str(), required_argument, 0, this->options[i]->short_name};
+                    optstruct[i] = {this->options[i].long_name.c_str(), required_argument, 0, this->options[i].short_name};
                 }
                 else
                 {
-                    optstruct[i] = {this->options[i]->long_name.c_str(), no_argument, 0, this->options[i]->short_name};
+                    optstruct[i] = {this->options[i].long_name.c_str(), no_argument, 0, this->options[i].short_name};
                 }
             }
             optstruct[this->options.size()] = {0, 0, 0, 0};
@@ -228,18 +245,18 @@ namespace ArgParse
                 else
                 {
                     // Find an option witch opt char == short_name
-                    std::vector<Option *>::iterator optit = std::find_if(this->options.begin(), this->options.end(), [opt](const ArgParse::Option *o) { return o->short_name == opt; });
+                    std::vector<Option>::iterator optit = std::find_if(this->options.begin(), this->options.end(), [opt](const ArgParse::Option &o) { return o.short_name == opt; });
                     if (optit != this->options.end())
                     {
                         int index = optit - this->options.begin();
-                        if (this->options[index]->arg == NULL)
-                            this->parsed_args[this->options[index]->long_name] = new value<bool>("true");
+                        if (this->options[index].arg == NULL)
+                            this->parsed_args[this->options[index].long_name] = std::make_shared<value<bool>>(value<bool>(true));
                         else
                         {
                             // Set argument value
                             std::string arg(optarg);
-                            this->options[index]->arg->set(arg);
-                            this->parsed_args[this->options[index]->long_name] = this->options[index]->arg;
+                            this->options[index].arg->set(arg);
+                            this->parsed_args[this->options[index].long_name] = this->options[index].arg;
                         }
                     }
                     else
@@ -254,10 +271,10 @@ namespace ArgParse
             // Track undefined/not found flag options as false
             for (size_t i = 0; i < this->options.size(); i++)
             {
-                if (this->options[i]->arg == NULL && this->parsed_args.count(this->options[i]->long_name) == 0)
-                    this->parsed_args[this->options[i]->long_name] = new value<bool>("false");
-                else if(this->parsed_args.count(this->options[i]->long_name) == 0)
-                    this->parsed_args[this->options[i]->long_name] = this->options[i]->arg;
+                if (this->options[i].arg == NULL && this->parsed_args.count(this->options[i].long_name) == 0)
+                    this->parsed_args[this->options[i].long_name] = std::make_shared<value<bool>>(value<bool>(false));
+                else if(this->parsed_args.count(this->options[i].long_name) == 0)
+                    this->parsed_args[this->options[i].long_name] = this->options[i].arg;
             }
 
             delete[] optstruct;
