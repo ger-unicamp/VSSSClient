@@ -26,6 +26,10 @@
 #include "pb/vssref_common.pb.h"
 #include "pb/vssref_placement.pb.h"
 
+unsigned int stopped_count_gkp = 0;
+unsigned int stopped_count_atk = 0;
+unsigned int stopped_count_def = 0;
+
 struct net_config
 {
     std::string multicast_ip;
@@ -71,6 +75,10 @@ int main(int argc, char *argv[])
         if (referee.receive(ref_packet))
         {
             game_on = answer_referee(ref_packet, cmd, yellow);
+
+            stopped_count_gkp = 0;
+            stopped_count_atk = 0;
+            stopped_count_def = 0;
 
             referee.send(cmd);
         }
@@ -281,7 +289,7 @@ void replace_robots(VSSRef::Robot *robot0, VSSRef::Robot *robot1, VSSRef::Robot 
 {
     robot0->set_x(positions[0].x);
     robot0->set_y(positions[0].y);
-    robot0->set_orientation(HALF_PI);
+    robot0->set_orientation(90);
     robot1->set_x(positions[1].x);
     robot1->set_y(positions[1].y);
     robot1->set_orientation(0);
@@ -338,14 +346,14 @@ bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::tea
     case VSSRef::PENALTY_KICK:
         if (ref_packet.teamcolor() == VSSRef::BLUE)
         {
-            if (!yellow) positions = {{-0.7, 0.0}, {0.25, 0.0}, {-0.1, 0.0}};
+            if (!yellow) positions = {{-0.7, 0.0}, {0.25, 0.04}, {-0.1, 0.0}};
             else positions = {{0.7, 0.0}, {-0.1, -0.25}, {-0.1, 0.25}};
         }
 
         else if (ref_packet.teamcolor() == VSSRef::YELLOW)
         {
             if (!yellow) positions = {{-0.7, 0.0}, {0.1, 0.25}, {0.1, -0.25}};
-            else positions = {{0.7, 0.0}, {-0.25, -0.0}, {0.1, 0.0}};
+            else positions = {{0.7, 0.0}, {-0.25, -0.04}, {0.1, 0.0}};
         }
         replace_robots(robot0, robot1, robot2, positions);
         break;
@@ -362,14 +370,15 @@ bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::tea
         {   
             if (!yellow)
             {
-                positions = {{-0.65, -0.2}, {-0.4, -0.25}, {-0.5, -0.55}};
+                positions = {{-0.65, -0.3}, {-0.4, -0.25}, {-0.5, -0.55}};
+                replace_robots(robot0, robot1, robot2, positions);
+                robot0->set_orientation(135);
             }
             else
             {
                 positions = {{0.7, 0.0}, {-0.25, -0.2}, {-0.25, 0.2}};
-            }
-            replace_robots(robot0, robot1, robot2, positions);
-            robot0->set_orientation(HALF_PI/2.0);
+                replace_robots(robot0, robot1, robot2, positions);
+            }   
         }
 
         else if (ref_packet.teamcolor() == VSSRef::YELLOW)
@@ -377,14 +386,15 @@ bool answer_referee(VSSRef::ref_to_team::VSSRef_Command &ref_packet, VSSRef::tea
             if (!yellow)
             {
                 positions = {{-0.7, 0.0}, {0.25, 0.2}, {0.25, -0.2}};
+                replace_robots(robot0, robot1, robot2, positions);
             }
             else
             {
-                positions = {{0.65, 0.2}, {0.4, 0.25}, {0.5, 0.55}};
+                positions = {{0.7, 0.25}, {0.4, 0.25}, {0.5, 0.55}};
+                replace_robots(robot0, robot1, robot2, positions);
+                robot0->set_orientation(135);
             }
         }
-        replace_robots(robot0, robot1, robot2, positions);
-        robot0->set_orientation(-HALF_PI/2.0);
         break;         
     }
 
