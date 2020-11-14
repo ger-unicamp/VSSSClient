@@ -39,7 +39,12 @@ ctrl::vec2 ctrl::future_position(fira_message::Ball &b, fira_message::Robot &r, 
     double dist = ctrl::vec2(b).distance(ctrl::vec2(r));
     if (dist < path.abs())
         path = dist * path.normalized();
-    return ctrl::vec2(b) + path;
+    
+    path = ctrl::vec2(b) + path;
+    path.y = math::bound(path.y, -0.65, 0.65);
+    path.x = math::bound(path.x, -0.75, 0.75);
+    
+    return path;
 }
 
 /**
@@ -56,5 +61,10 @@ ctrl::vec2 ctrl::future_position(fira_message::Robot &r1, fira_message::Robot &r
     double dist = ctrl::vec2(r1).distance(ctrl::vec2(r2));
     if (dist < path.abs())
         path = dist * path.normalized();
-    return ctrl::vec2(r1) + path;
+    
+    path = ctrl::vec2(r1) + path;
+    path.y = math::bound(path.y, -0.65, 0.65);
+    path.x = math::bound(path.x, -0.75, 0.75);
+
+    return path;
 }
