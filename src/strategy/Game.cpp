@@ -1,0 +1,86 @@
+#include "strategy/Game.h"
+
+Game::Game(bool is_yellow, int argc, char *argv[]) 
+{
+    startup(argc, argv);
+    this->is_yellow = is_yellow;
+    this->client = RoboCupSSLClient(this->conf.vision_port, this->conf.multicast_ip);
+    this->sim_client = VSSClient(this->conf.command_port, this->conf.command_ip, this->is_yellow);
+    this->referee = RefereeClient(this->conf.referee_port, this->conf.replacer_port, this->conf.multicast_ip);
+}
+
+/**
+ * @brief Set network config and team color
+ * 
+ * @param argc 
+ * @param argv 
+ */
+void Game::startup(int argc, char **argv) 
+{
+    ArgParse::ArgumentParser parser(argv[0], "GER VSSS FIRASim strategy server");
+    parser.add_argument('m', "multicast_ip", "Vision and Referee IP", ArgParse::value<std::string>("224.0.0.1"));
+    parser.add_argument('c', "command_ip", "Command IP", ArgParse::value<std::string>("127.0.0.1"));
+    parser.add_argument('d', "command_port", "Command port", ArgParse::value<unsigned int>(20011));
+    parser.add_argument('e', "referee_port", "Referee foul port", ArgParse::value<unsigned int>(10003));
+    parser.add_argument('r', "replacer_port", "Referee command port", ArgParse::value<unsigned int>(10004));
+    parser.add_argument('v', "vision_port", "Vision port", ArgParse::value<unsigned int>(10002));
+    parser.add_argument('t', "team_yellow", "Team collor yellow (true/false)", ArgParse::value<bool>(false));
+    parser.add_argument('h', "help", "Show help menu");
+
+    auto args = parser.parse_args(argc, argv);
+
+    if (args["help"]->as<bool>())
+    {
+        std::cout << parser.help() << std::endl;
+        exit(0);
+    }
+
+    this->conf.multicast_ip = args["multicast_ip"]->as<std::string>();
+    this->conf.command_ip = args["command_ip"]->as<std::string>();
+    this->conf.command_port = args["command_port"]->as<unsigned int>();
+    this->conf.referee_port = args["referee_port"]->as<unsigned int>();
+    this->conf.replacer_port = args["replacer_port"]->as<unsigned int>();
+    this->conf.vision_port = args["vision_port"]->as<unsigned int>();
+    this->is_yellow = args["team_yellow"]->as<bool>();
+
+    // Print startup configuration
+    std::cout << "Vision server at " << this->conf.multicast_ip << ":" << this->conf.vision_port << std::endl
+              << "Command listen to " << this->conf.command_ip << ":" << this->conf.command_port << std::endl
+              << "Referee server at " << this->conf.multicast_ip << ":" << this->conf.referee_port << std::endl
+              << "Replacer listen to " << this->conf.multicast_ip << ":" << this->conf.replacer_port << std::endl
+              << "Color team: " << (this->is_yellow? "yellow":"blue") << std::endl;
+}
+
+fira_message::Ball Game::detect_ball(fira_message::Frame frame) 
+{
+    return frame.ball();
+}
+
+vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Frame frame) 
+{
+    vector<fira_message::Robot> robots;
+    uint robots_size = is_yellow ? frame.robots_yellow_size() : frame.robots_blue_size();
+    robots.resize(robots_size);
+
+    for (uint i = 0; i < robots_size; ++i) 
+    {
+        robots[i] = is_yellow ? frame.robots_yellow(i) : frame.robots_blue(i);
+    }
+
+    return robots;
+}
+
+void Game::detect_objects(fira_message::Frame frame) 
+{
+    this->ball = detect_ball(frame);
+    this->my_robots = detect_robots(this->is_yellow, frame);
+    this->enemy_robots = detect_robots(!this->is_yellow, frame);
+}
+
+void Game::play()
+{
+    while (true) 
+    {
+        ;
+    }
+}

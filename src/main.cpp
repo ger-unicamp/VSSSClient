@@ -6,17 +6,9 @@
  * @date 2020-07-09
  * 
  */
+
 #include <stdio.h>
 #include <algorithm>
-#include "util/timer.h"
-#include "util/argparse.h"
-#include "net/robocup_ssl_client.h"
-#include "net/vss_client.h"
-#include "net/referee_client.h"
-#include "strategy/controller.h"
-#include "strategy/APF.h"
-#include "strategy/goalkeeper.h"
-#include "strategy/roles.h"
 
 #include "pb/command.pb.h"
 #include "pb/common.pb.h"
@@ -26,9 +18,23 @@
 #include "pb/vssref_common.pb.h"
 #include "pb/vssref_placement.pb.h"
 
-unsigned int stopped_count_gkp = 0;
-unsigned int stopped_count_atk = 0;
-unsigned int stopped_count_def = 0;
+#include "net/robocup_ssl_client.h"
+#include "net/vss_client.h"
+#include "net/referee_client.h"
+
+#include "util/timer.h"
+#include "util/argparse.h"
+
+#include "strategy/controller.h"
+#include "strategy/APF.h"
+#include "strategy/goalkeeper.h"
+#include "strategy/roles.h"
+
+namespace {
+    unsigned int stopped_count_gkp = 0;
+    unsigned int stopped_count_atk = 0;
+    unsigned int stopped_count_def = 0;
+}
 
 struct net_config
 {
@@ -239,50 +245,6 @@ void detect_objects(fira_message::Frame detection, fira_message::Ball &ball,
     }
 
     //print_info(ball, my_robots, enemy_robots, yellow);
-}
-
-/**
- * @brief Set network config and team color
- * 
- * @param argc 
- * @param argv 
- * @param conf 
- * @param team_yellow 
- */
-void startup(int argc, char **argv, net_config &conf, bool &team_yellow)
-{
-    ArgParse::ArgumentParser parser(argv[0], "GER VSSS FIRASim strategy server");
-    parser.add_argument('m', "multicast_ip", "Vision and Referee IP", ArgParse::value<std::string>("224.0.0.1"));
-    parser.add_argument('c', "command_ip", "Command IP", ArgParse::value<std::string>("127.0.0.1"));
-    parser.add_argument('d', "command_port", "Command port", ArgParse::value<unsigned int>(20011));
-    parser.add_argument('e', "referee_port", "Referee foul port", ArgParse::value<unsigned int>(10003));
-    parser.add_argument('r', "replacer_port", "Referee command port", ArgParse::value<unsigned int>(10004));
-    parser.add_argument('v', "vision_port", "Vision port", ArgParse::value<unsigned int>(10002));
-    parser.add_argument('t', "team_yellow", "Team collor yellow (true/false)", ArgParse::value<bool>(false));
-    parser.add_argument('h', "help", "Show help menu");
-
-    auto args = parser.parse_args(argc, argv);
-
-    if (args["help"]->as<bool>())
-    {
-        std::cout << parser.help() << std::endl;
-        exit(0);
-    }
-
-    conf.multicast_ip = args["multicast_ip"]->as<std::string>();
-    conf.command_ip = args["command_ip"]->as<std::string>();
-    conf.command_port = args["command_port"]->as<unsigned int>();
-    conf.referee_port = args["referee_port"]->as<unsigned int>();
-    conf.replacer_port = args["replacer_port"]->as<unsigned int>();
-    conf.vision_port = args["vision_port"]->as<unsigned int>();
-    team_yellow = args["team_yellow"]->as<bool>();
-
-    // Print startup configuration
-    std::cout << "Vision server at " << conf.multicast_ip << ":" << conf.vision_port << std::endl
-              << "Command listen to " << conf.command_ip << ":" << conf.command_port << std::endl
-              << "Referee server at " << conf.multicast_ip << ":" << conf.referee_port << std::endl
-              << "Replacer listen to " << conf.multicast_ip << ":" << conf.replacer_port << std::endl
-              << "Color team: " << (team_yellow? "yellow":"blue") << std::endl;
 }
 
 void replace_robots(VSSRef::Robot *robot0, VSSRef::Robot *robot1, VSSRef::Robot *robot2, vector<ctrl::vec2> &positions)
