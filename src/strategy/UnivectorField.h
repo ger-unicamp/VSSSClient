@@ -14,12 +14,14 @@ class UnivectorField
     static const double SIGMA = 0.0413777;
     static const double D_MIN = 0.02;
     static const double K_LINE = 16.0;
+    static const double GOAL_X = 0.75;
+    static const double GOAL_Y = 0.0;
 
     UnivectorField();
 
     ctrl::vec2 move_robot(fira_message::Robot &robot, ctrl::vec2 vector);
-    ctrl::vec2 future_position(fira_message::Robot &r1, fira_message::Robot &r2); // TODO
-    ctrl::vec2 future_position(fira_message::Ball &b, fira_message::Robot &r); // TODO
+    ctrl::vec2 future_position(fira_message::Robot &r1, fira_message::Robot &r2);
+    ctrl::vec2 future_position(fira_message::Ball &b, fira_message::Robot &r);
 };
 
 #endif
