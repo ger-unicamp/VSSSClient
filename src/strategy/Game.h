@@ -18,7 +18,6 @@
 
 #include "util/timer.h"
 
-
 struct net_config
 {
     std::string multicast_ip;
