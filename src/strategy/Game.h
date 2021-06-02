@@ -4,9 +4,6 @@
 #include <iostream>
 #include <algorithm>
 
-#include "util/timer.h"
-#include "util/argparse.h"
-
 #include "pb/command.pb.h"
 #include "pb/common.pb.h"
 #include "pb/packet.pb.h"
@@ -18,6 +15,8 @@
 #include "net/robocup_ssl_client.h"
 #include "net/vss_client.h"
 #include "net/referee_client.h"
+
+#include "util/timer.h"
 
 
 struct net_config

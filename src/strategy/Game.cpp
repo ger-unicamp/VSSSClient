@@ -1,4 +1,5 @@
 #include "strategy/Game.h"
+#include "util/argparse.h"
 
 Game::Game(bool is_yellow, int argc, char *argv[]) 
 {
