@@ -2,11 +2,8 @@
 
 Game::Game(bool is_yellow, int argc, char *argv[]) 
 {
-    startup(argc, argv);
+    this->startup(argc, argv);
     this->is_yellow = is_yellow;
-    this->client = RoboCupSSLClient(this->conf.vision_port, this->conf.multicast_ip);
-    this->sim_client = VSSClient(this->conf.command_port, this->conf.command_ip, this->is_yellow);
-    this->referee = RefereeClient(this->conf.referee_port, this->conf.replacer_port, this->conf.multicast_ip);
 }
 
 /**
@@ -70,6 +67,11 @@ vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Fr
     return robots;
 }
 
+/**
+ * @brief stores state of current game objects into Game attributes
+ * 
+ * @param frame current game frame
+ */
 void Game::detect_objects(fira_message::Frame frame) 
 {
     this->ball = detect_ball(frame);
@@ -79,6 +81,16 @@ void Game::detect_objects(fira_message::Frame frame)
 
 void Game::play()
 {
+    RoboCupSSLClient client(this->conf.vision_port, this->conf.multicast_ip);
+    VSSClient sim_client(this->conf.command_port, this->conf.command_ip, this->is_yellow);
+    RefereeClient referee(this->conf.referee_port, this->conf.replacer_port, this->conf.multicast_ip);
+
+    client.open(false); // opens client
+    referee.open(); // opens referee
+
+    VSSRef::ref_to_team::VSSRef_Command ref_packet;
+    VSSRef::team_to_ref::VSSRef_Placement cmd;
+    
     while (true) 
     {
         ;

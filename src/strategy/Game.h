@@ -35,13 +35,6 @@ class Game
 
     net_config conf;
 
-    RoboCupSSLClient client;
-    VSSClient sim_client;
-    RefereeClient referee;
-    fira_message::sim_to_ref::Environment packet;
-    VSSRef::ref_to_team::VSSRef_Command ref_packet;
-    VSSRef::team_to_ref::VSSRef_Placement cmd;
-
     fira_message::Ball ball;
     vector<fira_message::Robot> my_robots;
     vector<fira_message::Robot> enemy_robots;
