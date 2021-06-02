@@ -1,3 +1,6 @@
+#ifndef VEC2_HEADER
+#define VEC2_HEADER
+
 #include <cmath>
 
 #include "pb/command.pb.h"
@@ -132,3 +135,5 @@ namespace ctrl
         double distance(const vec2 &p) { return ((*this - p).abs()); }
     };
 }
+
+#endif

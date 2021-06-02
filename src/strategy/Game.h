@@ -4,6 +4,9 @@
 #include <iostream>
 #include <algorithm>
 
+#include "util/timer.h"
+#include "util/argparse.h"
+
 #include "pb/command.pb.h"
 #include "pb/common.pb.h"
 #include "pb/packet.pb.h"
@@ -15,9 +18,6 @@
 #include "net/robocup_ssl_client.h"
 #include "net/vss_client.h"
 #include "net/referee_client.h"
-
-#include "util/timer.h"
-#include "util/argparse.h"
 
 
 struct net_config
@@ -40,10 +40,11 @@ class Game
     vector<fira_message::Robot> my_robots;
     vector<fira_message::Robot> enemy_robots;
 
+public:
     Game(bool is_yellow, int argc, char *argv[]);
 
     void startup(int argc, char **argv);
-    
+
     vector<fira_message::Robot> detect_robots(bool is_yellow, fira_message::Frame frame);
     fira_message::Ball detect_ball(fira_message::Frame frame);
     void detect_objects(fira_message::Frame frame);

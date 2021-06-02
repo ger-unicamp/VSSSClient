@@ -5,17 +5,17 @@
 
 class UnivectorField 
 {
-    static const double RADIUS = 0.0755485;
-    static const double K_SPIRAL = 0.0691405;
-    static const double K_TURNING = 0.443467;
-    static const double K_VEL = 39.9596;
-    static const double DT = 0.147302;
-    static const double DT_GOALKEEPER = 0.245;
-    static const double SIGMA = 0.0413777;
-    static const double D_MIN = 0.02;
-    static const double K_LINE = 16.0;
-    static const double GOAL_X = 0.75;
-    static const double GOAL_Y = 0.0;
+    static constexpr double RADIUS = 0.0755485;
+    static constexpr double K_SPIRAL = 0.0691405;
+    static constexpr double K_TURNING = 0.443467;
+    static constexpr double K_VEL = 39.9596;
+    static constexpr double DT = 0.147302;
+    static constexpr double DT_GOALKEEPER = 0.245;
+    static constexpr double SIGMA = 0.0413777;
+    static constexpr double D_MIN = 0.02;
+    static constexpr double K_LINE = 16.0;
+    static constexpr double GOAL_X = 0.75;
+    static constexpr double GOAL_Y = 0.0;
 
     UnivectorField();
 

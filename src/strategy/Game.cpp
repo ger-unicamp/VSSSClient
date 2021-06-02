@@ -45,7 +45,7 @@ void Game::startup(int argc, char **argv)
               << "Command listen to " << this->conf.command_ip << ":" << this->conf.command_port << std::endl
               << "Referee server at " << this->conf.multicast_ip << ":" << this->conf.referee_port << std::endl
               << "Replacer listen to " << this->conf.multicast_ip << ":" << this->conf.replacer_port << std::endl
-              << "Color team: " << (this->is_yellow? "yellow":"blue") << std::endl;
+              << "Color team: " << (this->is_yellow ? "yellow":"blue") << std::endl;
 }
 
 fira_message::Ball Game::detect_ball(fira_message::Frame frame) 
@@ -95,11 +95,29 @@ void Game::play()
     client.open(false); // opens client
     referee.open(); // opens referee
 
+    fira_message::sim_to_ref::Environment packet;
     VSSRef::ref_to_team::VSSRef_Command ref_packet;
     VSSRef::team_to_ref::VSSRef_Placement cmd;
-    
+
     while (true) 
     {
-        ;
+        if (referee.receive(ref_packet))
+        {
+
+            referee.send(cmd);
+        }
+
+        if (client.receive(packet) && packet.has_frame())
+        {
+            fira_message::Frame detection = packet.frame();
+
+            detect_objects(detection);
+
+            std::vector<ctrl::vec2> commands;
+
+            commands = {{0, 0}, {0, 0}, {0, 0}};
+
+            sim_client.sendCommand(commands);
+        }
     }
 }
