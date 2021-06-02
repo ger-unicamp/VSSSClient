@@ -1,7 +1,6 @@
 #include "strategy/goalkeeper.h"
 #include <iostream>
 
-
 ctrl::vec2 gpk::follow(ctrl::vec2 pos_robot, ctrl::vec2 pos_ball, double k)
 {
     const double x_target = -0.66;

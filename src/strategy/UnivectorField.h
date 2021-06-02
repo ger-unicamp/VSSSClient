@@ -3,8 +3,8 @@
 
 #include "util/vec2.h"
 
-class UnivectorField {
-
+class UnivectorField 
+{
     static const double RADIUS = 0.0755485;
     static const double K_SPIRAL = 0.0691405;
     static const double K_TURNING = 0.443467;
