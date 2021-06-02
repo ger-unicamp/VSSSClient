@@ -53,6 +53,13 @@ fira_message::Ball Game::detect_ball(fira_message::Frame frame)
     return frame.ball();
 }
 
+/**
+ * @brief returns blue or yellow vector of robots
+ * 
+ * @param is_yellow 
+ * @param frame 
+ * @return vector<fira_message::Robot> 
+ */
 vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Frame frame) 
 {
     vector<fira_message::Robot> robots;

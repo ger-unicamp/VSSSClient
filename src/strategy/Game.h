@@ -19,6 +19,7 @@
 #include "util/timer.h"
 #include "util/argparse.h"
 
+
 struct net_config
 {
     std::string multicast_ip;
@@ -42,12 +43,12 @@ class Game
     Game(bool is_yellow, int argc, char *argv[]);
 
     void startup(int argc, char **argv);
+    
     vector<fira_message::Robot> detect_robots(bool is_yellow, fira_message::Frame frame);
     fira_message::Ball detect_ball(fira_message::Frame frame);
     void detect_objects(fira_message::Frame frame);
 
     void play(); // TODO
 };
-
 
 #endif
