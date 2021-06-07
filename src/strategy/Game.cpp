@@ -59,7 +59,7 @@ fira_message::Ball Game::detect_ball(fira_message::Frame frame)
  * 
  * @param is_yellow 
  * @param frame 
- * @return vector<fira_message::Robot> 
+ * @return vector<Robot> 
  */
 vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Frame frame) 
 {
@@ -77,7 +77,7 @@ vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Fr
 
 /**
  * @brief stores state of current game objects into Game attributes
- * 
+ * (Robot) 
  * @param frame current game frame
  */
 void Game::detect_objects(fira_message::Frame frame) 
@@ -113,6 +113,9 @@ void Game::play()
             fira_message::Frame detection = packet.frame();
 
             detect_objects(detection);
+
+            
+            cout << this->my_robots[0].x();
 
             std::vector<ctrl::vec2> commands;
 
