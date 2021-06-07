@@ -10,6 +10,8 @@
 
 #include "util/mathutil.h"
 
+#include "Robot.h"
+
 namespace ctrl
 {
     /**
@@ -42,9 +44,9 @@ namespace ctrl
          */
         vec2(const fira_message::Ball &b) : x(b.x()), y(b.y()) {}
         /**
-         * @param r fira_message::Robot position x,y
+         * @param r Robot position x,y
          */
-        vec2(const fira_message::Robot &r) : x(r.x()), y(r.y()) {}
+        vec2(const Robot &r) : x(r.x()), y(r.y()) {}
 
         vec2 operator+(const vec2 &p) const { return vec2(x + p.x, y + p.y); }
         vec2 &operator+=(const vec2 &p)
