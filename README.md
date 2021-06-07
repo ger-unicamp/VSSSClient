@@ -1,8 +1,8 @@
 # GER Very Small Size Soccer - Remote Edition 🦠
 
-<img src="doc/robot.gif" alt="alt text">
-
 Repositório de código direcionado à competição na categoria de Very Small Size Soccer(VSSS) produzido pelo Grupo de Estudos em Robótica da Unicamp(GER).
+
+<img src="doc/robot.gif" alt="alt text">
 
 ## Pré-requisitos
 Alguns pré-requisitos são necessários para se compilar e executar o projeto. Para evitar conflitos entre os pré-requisitos e agilizar o processo, recomendamos o uso do Docker.
@@ -23,13 +23,25 @@ Utilizamos *containers* para trabalhar em um ambiente controlado, evitando confl
 Por enquanto, mesmo utilizando o Docker, nossa solução não funciona para MacOS. Isso se deve ao fato do hardware proprietário da placa de vídeo impedir alguns acessos importantes ao se utilizar a biblioteca OpenGL. Recomendamos a utilização do Docker em máquina virtual GNU/Linux para contornar este problema.
 
 ## Compilação
-Para compilar o código, blablabla
+
+Para compilar o projeto utilizamos uma _makefile_ para simplificar os comandos de compilação. Os principais comandos são:
+
+- ```make``` ou ```make all``` - cria os arquivos vss.exe e train.exe, para a execução do simulador e treinamento dos parâmetros do modelo, respectivamente.
+
+- ```make clean``` - remove o arquivo vss.exe
+
+- ```make clean_train``` - remove o arquivo train.exe
 
 ## Execução
-Para executsar o código blablabla
+
+Para executar o projeto, utilize os seguintes comandos:
+
+- ```./vss.exe``` - para executar o simulador
+- ```./train.exe```- para rodar o treino.
+- **TODO:** adicionais instruções de execução e parâmetros.
 
 ## Componentes
-O código é dividido das seguinte maneira:
+O código é dividido da seguinte maneira:
 
 - **TODO:** Fazer o diagrama de componentes
 
@@ -111,4 +123,26 @@ Descreve métodos relacionados aos campos vetoriais. Define e combina os campos 
 - **TODO:** fazer diagrama da classe
 
 
+```
+           _...----.._
+        ,:':::::.     `>.
+      ,' |:::::;'     |:::.
+     /    `'::'       :::::\
+    /         _____     `::;\
+   :         /:::::\      `  :
+   | ,.     /:::::::\        |
+   |;:::.   `::::::;'        |
+   ::::::     `::;'      ,.  ;
+    \:::'              ,::::/
+     \                 \:::/
+      `.     ,:.        :;'
+        `-.::::::..  _.''
+           ```----'''
 
+     ██████╗ ███████╗██████╗ 
+    ██╔════╝ ██╔════╝██╔══██╗
+    ██║  ███╗█████╗  ██████╔╝
+    ██║   ██║██╔══╝  ██╔══██╗
+    ╚██████╔╝███████╗██║  ██║
+     ╚═════╝ ╚══════╝╚═╝  ╚═╝
+ ```
