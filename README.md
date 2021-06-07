@@ -3,11 +3,22 @@
 Repositório de código direcionado à competição na categoria de Very Small Size Soccer(VSSS) produzido pelo Grupo de Estudos em Robótica da Unicamp(GER).
 
 ## Pré-requisitos
-Para compilar os códigos corretamente, é necessário blablabla firasim blablabl.
-Para evitar conflitos de versoes e blablabla, você pode usar o Docker
+Alguns pré-requisitos são necessários para se compilar e executar o projeto. Para evitar conflitos entre os pré-requisitos e agilizar o processo, recomendamos o uso do Docker.
+
+Os pré-requisitos não são descritos aqui pois são gerenciados pelo Docker, o que permite a abstração do processo de configuração e evita tecnicalidades e problemas encontrados ao se tentar configurar o ambiente em diferentes sistemas operacionais com diferentes versões de pré-requisitos.
 
 ### Docker
-Baixe o docker e faça num sei o q
+Docker é um conjunto de produtos de plataforma como serviço que usam virtualização de nível de sistema operacional para entregar software em pacotes chamados *containers*. Os *containers* são isolados uns dos outros e agrupam seus próprios softwares, bibliotecas e arquivos de configuração.
+
+*Containers* permitem utilizar o hardware de seu próprio computador, diferente de máquinas virtuais, que virtualizam o *hardware*. Outra vantagem em relação às VMs, é o menor uso de memória e a velocidade de um *container*.
+
+Utilizamos *containers* para trabalhar em um ambiente controlado, evitando conflitos entre versões dos pré-requisitos ou a falta deles em sua máquina local. 
+
+**Para configurar o Docker, veja nosso manual disponível neste repositório:**
+[VSSSDocker](https://github.com/ger-unicamp/VSSSDocker).
+
+**Observações importantes:**
+Por enquanto, mesmo utilizando o Docker, nossa solução não funciona para MacOS. Isso se deve ao fato do hardware proprietário da placa de vídeo impedir alguns acessos importantes ao se utilizar a biblioteca OpenGL. Recomendamos a utilização do Docker em máquina virtual GNU/Linux para contornar este problema.
 
 ## Compilação
 Para compilar o código, blablabla
@@ -88,8 +99,8 @@ Contém métodos relacionados ao jogo. Atribuição de times, inicialização de
 - **TODO:** fazer diagrama da classe
 
 ### Univector
+Descreve métodos relacionados aos campos vetoriais. Define e combina os campos vetoriais gerados pelos robôs e pela bola. Movimenta cada robô de acordo com o campo vetorial combinado e sua posição (x,y).
 
-- **TODO:** descrever a classe
 - **TODO:** fazer diagrama da classe
 
 ### Referee
