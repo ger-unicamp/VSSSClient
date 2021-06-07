@@ -26,6 +26,8 @@ Por enquanto, mesmo utilizando o Docker, nossa solução não funciona para MacO
 
 Para compilar o projeto utilizamos uma _makefile_ para simplificar os comandos de compilação. Os principais comandos são:
 
+- ```make``` - **TODO**
+
 - ```make all``` - cria os arquivos vss.exe e train.exe, para a execução do simulador e treinamento dos parâmetros do modelo, respectivamente.
 
 - ```make clean``` - remove o arquivo vss.exe
@@ -34,10 +36,14 @@ Para compilar o projeto utilizamos uma _makefile_ para simplificar os comandos d
 
 ## Execução
 
-- **TODO:** instruções de execução
+Para executar o projeto, utilize os seguintes comandos:
+
+- ```./vss.exe``` - para executar o simulador
+- ```./train.exe```- para rodar o treino.
+- **TODO:** adicionais instruções de execução e parâmetros.
 
 ## Componentes
-O código é dividido das seguinte maneira:
+O código é dividido da seguinte maneira:
 
 - **TODO:** Fazer o diagrama de componentes
 
