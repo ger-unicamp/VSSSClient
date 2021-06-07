@@ -15,14 +15,20 @@ Para compilar o código, blablabla
 ## Execução
 Para executsar o código blablabla
 
-## Introdução
-O código é dividido nas seguintes das seguintes formas
+## Componentes
+O código é dividido das seguinte maneira:
 
-O diagrama da modelagem ta ae
+- **TODO:** Fazer o diagrama de componentes
+
+Os componentes são descritos à seguir:
+
+<hr/>
 
 ### net
 
 Contém os métodos que conectam o FiraSim ao nosso código pela rede. A conexão é estabelescida utilizando UDP, como um broadcast, sem confirmação da recepção das mensagens. 
+
+<hr/>
 
 ### pb
 
@@ -36,6 +42,8 @@ Exemplos de mensagens são:
 - Receber a posição da bola e dos robôs no campo.
 - Intervenções do juiz no jogo.
 
+<hr/>
+
 ### strategy
 
 Contém métodos uteis que definem a estratégia do jogo, além de métodos adicionais para detectar objetos no campo e iniciar partidas.
@@ -45,7 +53,9 @@ A estratégia se utiliza de *univector potential fields*, basicamente campos vet
 <img src="doc/field.png" alt="alt text" width="200px">
 
 O processo é melhor descrito no seguinte paper:
-[Univector Field Navigation With Collision Avoidance](doc/UnivectorFieldNavigationWithCollisionAvoidance.pdf)
+[Univector Field Navigation With Collision Avoidance](./doc/UnivectorFieldNavigationWithCollisionAvoidance.pdf)
+
+<hr/>
 
 ### train
 
@@ -56,7 +66,9 @@ Contém arquivos relacionados ao algoritmo genérico utilizado para otimizar os 
 - **TODO:** Descrever como treinar
 
 O algoritmo evolucionário também é descrito no paper:
-[Univector Field Navigation With Collision Avoidance](doc/UnivectorFieldNavigationWithCollisionAvoidance.pdf)
+[Univector Field Navigation With Collision Avoidance](./doc/UnivectorFieldNavigationWithCollisionAvoidance.pdf)
+
+<hr/>
 
 ### util
 
@@ -68,7 +80,22 @@ Contém métodos gerais que sejam úteis.
 - **util:** outros métodos gerais. Funções matemáticas, operações bitwise, cálculo com ângulos, estruturas de dados, acesso à memória, entre outros.
 - **vec2:** representa o tipo vec2, para vetores no espaço ℝ<sup>2</sup>. Define operações vetoriais, como produto escalar e normalização.
 
+## Classes e Objetos
 
+### [Game](src/strategy/Game.cpp)
+Contém métodos relacionados ao jogo. Atribuição de times, inicialização de partidas, reposicionamento no campo, entre outros
+
+- **TODO:** fazer diagrama da classe
+
+### Univector
+
+- **TODO:** descrever a classe
+- **TODO:** fazer diagrama da classe
+
+### Referee
+
+- **TODO:** descrever a classe
+- **TODO:** fazer diagrama da classe
 
 
 
