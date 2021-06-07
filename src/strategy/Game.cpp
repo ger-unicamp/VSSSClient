@@ -1,6 +1,8 @@
 #include "strategy/Game.h"
 #include "util/argparse.h"
 
+using namespace client;
+
 Game::Game(bool is_yellow, int argc, char *argv[]) 
 {
     this->startup(argc, argv);

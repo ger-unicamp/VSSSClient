@@ -8,15 +8,13 @@
 #include "pb/common.pb.h"
 #include "pb/packet.pb.h"
 #include "pb/replacement.pb.h"
-#include "pb/vssref_command.pb.h"
-#include "pb/vssref_common.pb.h"
-#include "pb/vssref_placement.pb.h"
 
 #include "net/robocup_ssl_client.h"
-#include "net/vss_client.h"
 #include "net/referee_client.h"
 
 #include "util/timer.h"
+
+#include "strategy/univector.h"
 
 struct net_config
 {
@@ -28,26 +26,26 @@ struct net_config
     unsigned int vision_port;
 };
 
-class Game 
-{ 
-    bool is_yellow;
+namespace client {
+    class Game 
+    { 
+        bool is_yellow;
 
-    net_config conf;
+        net_config conf;
 
-    fira_message::Ball ball;
-    vector<fira_message::Robot> my_robots;
-    vector<fira_message::Robot> enemy_robots;
+        fira_message::Ball ball;
+        vector<fira_message::Robot> my_robots;
+        vector<fira_message::Robot> enemy_robots;
 
-public:
-    Game(bool is_yellow, int argc, char *argv[]);
+        void startup(int argc, char **argv);
+        vector<fira_message::Robot> detect_robots(bool is_yellow, fira_message::Frame frame);
+        fira_message::Ball detect_ball(fira_message::Frame frame);
+        void detect_objects(fira_message::Frame frame);
 
-    void startup(int argc, char **argv);
-
-    vector<fira_message::Robot> detect_robots(bool is_yellow, fira_message::Frame frame);
-    fira_message::Ball detect_ball(fira_message::Frame frame);
-    void detect_objects(fira_message::Frame frame);
-
-    void play(); // TODO
+    public:
+        Game(bool is_yellow, int argc, char *argv[]);
+        void play(); // TODO
+    };
 };
 
 #endif
