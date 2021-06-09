@@ -1,6 +1,6 @@
 # GER Very Small Size Soccer - Remote Edition 🦠
 
-Repositório de código direcionado à competição na categoria de Very Small Size Soccer(VSSS) produzido pelo Grupo de Estudos em Robótica da Unicamp(GER).
+Repositório de código direcionado à competição na categoria de Very Small Size Soccer(VSSS) produzido pelo Grupo de Estudos em Robótica da Unicamp (GER).
 
 <img src="doc/robot.gif" alt="alt text">
 
