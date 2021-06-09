@@ -8,16 +8,12 @@
  */
 
 #include "strategy/Game.h"
-#include "strategy/UnivectorField.h"
-
 
 int main(int argc, char *argv[])
 {
-    Game myGame(true, argc, argv);
-    while (true)
-    {
-        ;
-    }
+    Game myGame(argc, argv);
+    
+    myGame.play();
 
     return 0;
 }

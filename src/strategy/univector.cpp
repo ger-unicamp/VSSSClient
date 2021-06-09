@@ -1,7 +1,5 @@
 #include "strategy/univector.h"
 
-
-
 /**
  * @brief composses univec repulsion fields by all obstacles
  * 

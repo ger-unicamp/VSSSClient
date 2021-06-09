@@ -26,26 +26,25 @@ struct net_config
     unsigned int vision_port;
 };
 
-namespace client {
-    class Game 
-    { 
-        bool is_yellow;
+class Game 
+{ 
+private:
+    bool is_yellow;
 
-        net_config conf;
+    net_config conf;
 
-        fira_message::Ball ball;
-        vector<fira_message::Robot> my_robots;
-        vector<fira_message::Robot> enemy_robots;
+    fira_message::Ball ball;
+    vector<fira_message::Robot> my_robots;
+    vector<fira_message::Robot> enemy_robots;
 
-        void startup(int argc, char **argv);
-        vector<fira_message::Robot> detect_robots(bool is_yellow, fira_message::Frame frame);
-        fira_message::Ball detect_ball(fira_message::Frame frame);
-        void detect_objects(fira_message::Frame frame);
+    void startup(int argc, char **argv);
+    vector<fira_message::Robot> detect_robots(bool is_yellow, fira_message::Frame frame);
+    fira_message::Ball detect_ball(fira_message::Frame frame);
+    void detect_objects(fira_message::Frame frame);
 
-    public:
-        Game(bool is_yellow, int argc, char *argv[]);
-        void play(); // TODO
-    };
+public:
+    Game(int argc, char *argv[]);
+    void play(); // TODO
 };
 
 #endif

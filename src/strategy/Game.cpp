@@ -1,12 +1,9 @@
 #include "strategy/Game.h"
 #include "util/argparse.h"
 
-using namespace client;
-
-Game::Game(bool is_yellow, int argc, char *argv[]) 
+Game::Game(int argc, char *argv[]) 
 {
     this->startup(argc, argv);
-    this->is_yellow = is_yellow;
 }
 
 /**
@@ -116,14 +113,12 @@ void Game::play()
 
             detect_objects(detection);
 
-            
-            cout << this->my_robots[0].x();
 
             std::vector<ctrl::vec2> commands;
 
             commands = {{0, 0}, {0, 0}, {0, 0}};
 
-            sim_client.sendCommand(commands);
+            sim_client.sendCommand(1, 50, -50);
         }
     }
 }
