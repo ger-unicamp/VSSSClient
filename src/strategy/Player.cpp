@@ -2,6 +2,75 @@
 
 Player::Player(fira_message::Robot &robot): robot(robot) {}
 
+ctrl::vec2 Player::get_pos()
+{
+    return ctrl::vec2(this->robot);
+}
+
+/**
+ * @brief Returns ball future position based on its relative position to Player
+ * 
+ * @param b 
+ * @return ctrl::vec2 
+ */
+ctrl::vec2 Player::future_position_of(fira_message::Ball &b, double dt)
+{
+    ctrl::vec2 fut_pos = dt * ctrl::vec2(b.vx(), b.vy());
+    double dist = ctrl::vec2(b).distance(ctrl::vec2(this->robot));
+    if (dist < fut_pos.abs())
+        fut_pos = dist * fut_pos.normalized();
+    
+    fut_pos = ctrl::vec2(b) + fut_pos;
+    fut_pos.y = math::bound(fut_pos.y, -0.65, 0.65);
+    fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
+    
+    return fut_pos;
+}
+
+/**
+ * @brief Returns robot r future position based on its relative position to Player
+ * 
+ * @param r
+ * @return ctrl::vec2 
+ */
+ctrl::vec2 Player::future_position_of(fira_message::Robot &r, double dt)
+{
+    ctrl::vec2 fut_pos = dt * ctrl::vec2(r.vx() - this->robot.vx(), r.vy() - this->robot.vy());
+    double dist = ctrl::vec2(r).distance(ctrl::vec2(this->robot));
+    if (dist < fut_pos.abs())
+        fut_pos = dist * fut_pos.normalized();
+    
+    fut_pos = ctrl::vec2(r) + fut_pos;
+    fut_pos.y = math::bound(fut_pos.y, -0.65, 0.65);
+    fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
+
+    return fut_pos;
+}
+
+/**
+ * @brief univector field that converge to target with final orientation in vertical
+ * 
+ * @param target 
+ * @return double 
+ */
+double Player::univec_vertical_line_field(ctrl::vec2 target)
+{
+    double phi;
+
+    // univector always operate over translated points
+    ctrl::vec2 translated = this->get_pos() - target;
+
+    if (translated.y <= 0.0)
+        phi = PI * (1.0 / (1.0 + std::exp(-1.0 * Player::K_LINE * translated.x)));
+    else
+        phi = PI * (-1.0 / (1.0 + std::exp(-1.0 * Player::K_LINE * translated.x)));
+
+    return phi;
+}
+
+
+// --------------------> PUBLIC FUNCS <--------------------
+
 /**
  * @brief Returns Player robot speed (left, right) to move into vector (x,y) direction
  * 
@@ -55,45 +124,4 @@ ctrl::vec2 Player::spin(bool cw)
 
     return motors_speed;
 }
-
-/**
- * @brief Returns ball future position based on its relative position to Player
- * 
- * @param b 
- * @return ctrl::vec2 
- */
-ctrl::vec2 Player::future_position_of(fira_message::Ball &b, double dt)
-{
-    ctrl::vec2 fut_pos = dt * ctrl::vec2(b.vx(), b.vy());
-    double dist = ctrl::vec2(b).distance(ctrl::vec2(this->robot));
-    if (dist < fut_pos.abs())
-        fut_pos = dist * fut_pos.normalized();
-    
-    fut_pos = ctrl::vec2(b) + fut_pos;
-    fut_pos.y = math::bound(fut_pos.y, -0.65, 0.65);
-    fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
-    
-    return fut_pos;
-}
-
-/**
- * @brief Returns robot r future position based on its relative position to Player
- * 
- * @param r
- * @return ctrl::vec2 
- */
-ctrl::vec2 Player::future_position_of(fira_message::Robot &r, double dt)
-{
-    ctrl::vec2 fut_pos = dt * ctrl::vec2(r.vx() - this->robot.vx(), r.vy() - this->robot.vy());
-    double dist = ctrl::vec2(r).distance(ctrl::vec2(this->robot));
-    if (dist < fut_pos.abs())
-        fut_pos = dist * fut_pos.normalized();
-    
-    fut_pos = ctrl::vec2(r) + fut_pos;
-    fut_pos.y = math::bound(fut_pos.y, -0.65, 0.65);
-    fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
-
-    return fut_pos;
-}
-
 

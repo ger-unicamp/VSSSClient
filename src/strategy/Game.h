@@ -36,6 +36,7 @@ private:
     fira_message::Ball ball;
     vector<fira_message::Robot> my_robots;
     vector<fira_message::Robot> enemy_robots;
+    vector<fira_message::Robot> robots;
 
     void startup(int argc, char **argv);
     vector<fira_message::Robot> detect_robots(bool is_yellow, fira_message::Frame frame);
