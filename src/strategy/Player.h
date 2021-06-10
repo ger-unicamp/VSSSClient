@@ -1,7 +1,7 @@
 #ifndef PLAYER_HEADER
 #define PLAYER_HEADER
 
-#include "vss_client.h"
+#include "net/vss_client.h"
 #include "util/vec2.h"
 
 class Player
@@ -25,8 +25,8 @@ public:
     ctrl::vec2 spin(bool cw);
     bool is_locked(unsigned int &stopped_count);
 
-    // virtual function that returns final motors speed for sendind to simulator
-    virtual ctrl::vec2 play();
+    // virtual function that returns final motors speed for sending to simulator
+    virtual ctrl::vec2 play(fira_message::Ball &ball) { return ctrl::vec2(ball); }
 };
 
 #endif

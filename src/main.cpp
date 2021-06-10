@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
     Game myGame(argc, argv);
     
-    myGame.play();
+    myGame.run();
 
     return 0;
 }

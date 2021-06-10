@@ -86,7 +86,7 @@ void Game::detect_objects(fira_message::Frame frame)
     this->enemy_robots = detect_robots(!this->is_yellow, frame);
 }
 
-void Game::play()
+void Game::run()
 {
     RoboCupSSLClient client(this->conf.vision_port, this->conf.multicast_ip);
     VSSClient sim_client(this->conf.command_port, this->conf.command_ip, this->is_yellow);
@@ -113,12 +113,11 @@ void Game::play()
 
             detect_objects(detection);
 
+            Goalkeeper gkp(my_robots[0]);
+            
+            ctrl::vec2 command = gkp.play(ball);
 
-            std::vector<ctrl::vec2> commands;
-
-            commands = {{0, 0}, {0, 0}, {0, 0}};
-
-            sim_client.sendCommand(1, 50, -50);
+            sim_client.sendCommand(0, command.x, command.y);
         }
     }
 }

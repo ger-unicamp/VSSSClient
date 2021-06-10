@@ -1,9 +1,6 @@
 #include "Player.h"
 
-Player::Player(fira_message::Robot &robot)
-{
-    this->robot = robot;
-}
+Player::Player(fira_message::Robot &robot): robot(robot) {}
 
 /**
  * @brief Returns Player robot speed (left, right) to move into vector (x,y) direction

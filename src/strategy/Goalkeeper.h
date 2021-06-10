@@ -14,10 +14,11 @@ private:
     static constexpr double KICK_DIST = 0.077;
 
     double univec_vertical_line_field(ctrl::vec2 target);
+    ctrl::vec2 defend_goal_from(ctrl::vec2 ball_pos);
 
 public:
     Goalkeeper(fira_message::Robot &robot);
-    ctrl::vec2 follow_ball_projection(ctrl::vec2 pos_ball);
+    ctrl::vec2 play(fira_message::Ball &ball);
 };
 
 #endif

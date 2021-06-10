@@ -14,7 +14,7 @@
 
 #include "util/timer.h"
 
-#include "strategy/univector.h"
+#include "Goalkeeper.h"
 
 struct net_config
 {
@@ -44,7 +44,7 @@ private:
 
 public:
     Game(int argc, char *argv[]);
-    void play(); // TODO
+    void run(); // TODO
 };
 
 #endif
