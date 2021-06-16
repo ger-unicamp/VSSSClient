@@ -2,54 +2,15 @@
 
 Attacker::Attacker(fira_message::Robot &robot): Player(robot) {}
 
-/**
- * @brief get closest robot r from Attacker
- * 
- * @param my_robots 
- * @param enemy_robots 
- * @return fira_message::Robot 
- */
-fira_message::Robot Attacker::get_closest_robot(std::vector<fira_message::Robot> robots)
-{
-    double min_dist = std::numeric_limits<double>::max();
-    int idx = -1;
-    for (uint i = 0; i < robots.size(); ++i)
-    {
-        double dist =this->get_pos().distance(this->future_position_of(robots[i], Player::DT));
-
-        // get min dist of robot that isn't the same robot
-        if (dist < min_dist && dist != 0) {
-            min_dist = dist;
-            idx = i;
-        }
-    }
-
-    return robots[idx];
-}
-
-/**
- * @brief calculates final univector repulsion field created by obstacle
- * 
- * @param my_robots 
- * @param enemy_robots 
- * @return double
- */
-double Attacker::univec_repulsion_field(fira_message::Robot obstacle)
-{
-    double phi = ctrl::vec2(this->get_pos() - obstacle).theta();
-
-    return phi;
-}
-
- /* @brief Calculates a spiral field arround (0, 0)
+ /** @brief Calculates a spiral field arround (0, 0)
  * 
  * @param cw char indicating spiral orientation ('+' to counterclockwise and '-' to clockwise)
  * @return double 
  */
-double Attacker::univec_spiral_field(ctrl::vec2 pos, char cw)
+double Attacker::univec_spiral_field(ctrl::vec2 pos, bool is_cw)
 {
     double phi, dist, theta;
-    double sgn = (cw == '-') ? -1.0 : 1.0;
+    double sgn = (is_cw) ? -1.0 : 1.0;
     dist = pos.abs();
     theta = pos.theta();
 
@@ -59,16 +20,6 @@ double Attacker::univec_spiral_field(ctrl::vec2 pos, char cw)
         phi = theta + (sgn) * HALF_PI * std::sqrt(dist / Attacker::RADIUS);
 
     return phi;
-}
-
-double Attacker::univec_spiral_field_cw(ctrl::vec2 pos)
-{
-    return univec_spiral_field(pos, '-');
-}
-
-double Attacker::univec_spiral_field_ccw(ctrl::vec2 pos)
-{
-    return univec_spiral_field(pos, '+');
 }
 
 /**
@@ -90,8 +41,8 @@ double Attacker::univec_spiral_field_to_target(ctrl::vec2 target)
     if (-Attacker::RADIUS <= translated.y && translated.y < Attacker::RADIUS)
     {
         double sin_phi, cos_phi;
-        double phicw = this->univec_spiral_field_cw(posr);
-        double phiccw = this->univec_spiral_field_ccw(posl);
+        double phicw = this->univec_spiral_field(posr, Attacker::CW);
+        double phiccw = this->univec_spiral_field(posl, Attacker::CCW);
         sincos(phicw, &sin_phi, &cos_phi); // Get sin & cosin at once
         ctrl::vec2 Ncw = ctrl::vec2(cos_phi, sin_phi);
         sincos(phiccw, &sin_phi, &cos_phi);
@@ -100,9 +51,9 @@ double Attacker::univec_spiral_field_to_target(ctrl::vec2 target)
         phi = tmp.theta();
     }
     else if (translated.y < -Attacker::RADIUS)
-        phi = this->univec_spiral_field_cw(posl);
+        phi = this->univec_spiral_field(posl, Attacker::CW);
     else
-        phi = this->univec_spiral_field_ccw(posr);
+        phi = this->univec_spiral_field(posr, Attacker::CCW);
 
     return phi;
 }
@@ -113,7 +64,7 @@ double Attacker::univec_spiral_field_to_target(ctrl::vec2 target)
  * @param target 
  * @return double 
  */
-double Attacker::univec_horizontal_line_field(ctrl::vec2 target)
+double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
 {
     double phi;
     // Univector always operate over translated points
@@ -128,18 +79,31 @@ double Attacker::univec_horizontal_line_field(ctrl::vec2 target)
     return phi;
 }
 
-/**
- * @brief composes repulsion and move to goal fields with gaussian compound ratio
- * 
- * @param repulsion_phi 
- * @param spiral_phi
- * @return double final composed phi
- */
-double Attacker::univec_composite_field(double repulsion_phi, double spiral_phi)
+ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Robot> &robots)
 {
-    double gauss = math::gaussian(Attacker::RADIUS - Attacker::D_MIN, Attacker::SIGMA);
-    if (Attacker::RADIUS <= Attacker::D_MIN)
-        return repulsion_phi;
+    fira_message::Robot closest_robot;
+    ctrl::vec2 univec, motors_speed, ball_fut_pos;
+    double spiral_phi, repulsion_phi, phi;
+
+    ball_fut_pos = this->future_position_of(ball, Player::DT);
+
+    if (this->get_pos().x < -Attacker::FRIENDLY_GOAL_X_LIMIT)
+    {
+        ball_fut_pos.x = math::bound(ball_fut_pos.x, -Attacker::FRIENDLY_GOAL_X_LIMIT, Player::INF);
+        spiral_phi = this->univec_horizontal_sigmoid_field(ball_fut_pos);
+    }
+
     else
-        return (repulsion_phi * gauss + spiral_phi * (1-gauss));
+    {
+        spiral_phi = this->univec_spiral_field_to_target(ball_fut_pos);
+    }
+    
+    closest_robot = this->get_closest_robot(robots);
+    repulsion_phi = this->univec_repulsion_field(closest_robot);
+    phi = this->univec_composite_field(repulsion_phi, spiral_phi, this->get_pos().distance(closest_robot));
+    sincos(phi, &univec.y, &univec.x);
+
+    motors_speed = this->move(univec);
+
+    return motors_speed;
 }

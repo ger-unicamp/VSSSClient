@@ -1,5 +1,9 @@
-#include "strategy/Game.h"
 #include "util/argparse.h"
+
+#include "strategy/Game.h"
+#include "strategy/Goalkeeper.h"
+#include "strategy/Attacker.h"
+#include "strategy/Midfielder.h"
 
 Game::Game(int argc, char *argv[]) 
 {
@@ -84,6 +88,8 @@ void Game::detect_objects(fira_message::Frame frame)
     this->ball = detect_ball(frame);
     this->my_robots = detect_robots(this->is_yellow, frame);
     this->enemy_robots = detect_robots(!this->is_yellow, frame);
+    this->robots = my_robots;
+    this->robots.insert(robots.end(), enemy_robots.begin(), enemy_robots.end());
 }
 
 void Game::run()
@@ -113,11 +119,16 @@ void Game::run()
 
             detect_objects(detection);
 
-            Goalkeeper gkp(my_robots[0]);
-            
-            ctrl::vec2 command = gkp.play(ball);
+            Goalkeeper gkp(this->my_robots[0]);
+            Attacker atk(this->my_robots[1]);
+            Midfielder mid(this->my_robots[2]);
 
-            sim_client.sendCommand(0, command.x, command.y);
+            ctrl::vec2 gkp_command = gkp.play(this->ball);
+            ctrl::vec2 atk_command = atk.play(this->ball, this->robots);
+            ctrl::vec2 mid_command = mid.play(this->ball, this->robots);
+
+            vector<ctrl::vec2> commands = {gkp_command, atk_command, mid_command};
+            sim_client.sendCommand(commands);
         }
     }
 }

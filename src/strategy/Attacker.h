@@ -8,25 +8,18 @@ class Attacker: public Player
 private:
     static constexpr double RADIUS = 0.0755485;
     static constexpr double K_SPIRAL = 0.0691405;
-    static constexpr double SIGMA = 0.0413777;
-    static constexpr double D_MIN = 0.02;
-    static constexpr double K_LINE = 16.0;
-    static constexpr double GOAL_X = 0.75;
-    static constexpr double GOAL_Y = 0.0;
+    static constexpr double FRIENDLY_GOAL_X_LIMIT = 0.55;
+    static constexpr bool CW = true;
+    static constexpr bool CCW = false;
 
-    fira_message::Robot get_closest_robot(std::vector<fira_message::Robot> robots);
-    double univec_repulsion_field(fira_message::Robot obstacle);
-    double univec_spiral_field(ctrl::vec2 pos, char cw);
-    double univec_spiral_field_cw(ctrl::vec2 pos);
-    double univec_spiral_field_ccw(ctrl::vec2 pos);
+    double univec_spiral_field(ctrl::vec2 pos, bool is_cw);
     double univec_spiral_field_to_target(ctrl::vec2 target);
-    double univec_horizontal_line_field(ctrl::vec2 target);
-    double univec_composite_field(double repulsion_phi, double spiral_phi);
+    double univec_horizontal_sigmoid_field(ctrl::vec2 target);
 
 public:
     Attacker(fira_message::Robot &robot);
 
-    ctrl::vec2 play(fira_message::Ball &ball); // TODO for main attacker and secondary
+    ctrl::vec2 play(fira_message::Ball &ball, std::vector<fira_message::Robot> &robots); // TODO for main attacker and secondary
 };
 
 #endif

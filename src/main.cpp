@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 {
     Game myGame(argc, argv);
-    
+
     myGame.run();
 
     return 0;

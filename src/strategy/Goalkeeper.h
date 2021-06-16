@@ -10,7 +10,7 @@ private:
     static constexpr double Y_LIMIT_GKP = 0.28;
     static constexpr double X_LIMIT_BALL = -0.55;
     static constexpr double DT_GKP = 0.245;
-    static constexpr double KICK_DIST = 0.077;
+    static constexpr double KICK_DIST = 0.08;
 
     ctrl::vec2 defend_goal_from(ctrl::vec2 ball_pos);
 

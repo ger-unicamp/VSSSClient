@@ -2,7 +2,6 @@
 
 Goalkeeper::Goalkeeper(fira_message::Robot &robot): Player(robot) {}
 
-
 /**
  * @brief defend our goal by following ball y projection using a vertical line univector field
  * 
@@ -22,7 +21,7 @@ ctrl::vec2 Goalkeeper::defend_goal_from(ctrl::vec2 ball_pos)
     
     // if ball is behind goalkeeper x limit, he follows ball x position
     target = ctrl::vec2(std::min(Goalkeeper::X_LIMIT_GKP, ball_pos.x), y_target);
-    phi = this->univec_vertical_line_field(target);
+    phi = this->univec_vertical_sigmoid_field(target);
 
     sincos(phi, &univec.y, &univec.x);
 
@@ -43,7 +42,7 @@ ctrl::vec2 Goalkeeper::play(fira_message::Ball &ball)
 
     if (this->get_pos().distance(ball_fut_pos) <= Goalkeeper::KICK_DIST)
     {
-        univec = this->spin((this->robot.y() < ball_fut_pos.y));
+        motors_speed = this->spin((this->robot.y() < ball_fut_pos.y));
     }
     else
     {

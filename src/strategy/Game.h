@@ -14,8 +14,6 @@
 
 #include "util/timer.h"
 
-#include "Goalkeeper.h"
-
 struct net_config
 {
     std::string multicast_ip;
@@ -45,7 +43,7 @@ private:
 
 public:
     Game(int argc, char *argv[]);
-    void run(); // TODO
+    void run();
 };
 
 #endif

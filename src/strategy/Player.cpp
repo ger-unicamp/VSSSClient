@@ -2,11 +2,6 @@
 
 Player::Player(fira_message::Robot &robot): robot(robot) {}
 
-ctrl::vec2 Player::get_pos()
-{
-    return ctrl::vec2(this->robot);
-}
-
 /**
  * @brief Returns ball future position based on its relative position to Player
  * 
@@ -53,7 +48,7 @@ ctrl::vec2 Player::future_position_of(fira_message::Robot &r, double dt)
  * @param target 
  * @return double 
  */
-double Player::univec_vertical_line_field(ctrl::vec2 target)
+double Player::univec_vertical_sigmoid_field(ctrl::vec2 target)
 {
     double phi;
 
@@ -68,8 +63,66 @@ double Player::univec_vertical_line_field(ctrl::vec2 target)
     return phi;
 }
 
+/**
+ * @brief get closest robot r from Player
+ * 
+ * @param my_robots 
+ * @param enemy_robots 
+ * @return fira_message::Robot 
+ */
+fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> robots)
+{
+    double min_dist = Player::INF;
+    int idx = -1;
+    for (uint i = 0; i < robots.size(); ++i)
+    {
+        double dist =this->get_pos().distance(this->future_position_of(robots[i], Player::DT));
+
+        // get min dist of robot that isn't the same robot
+        if (dist < min_dist && dist != 0) {
+            min_dist = dist;
+            idx = i;
+        }
+    }
+
+    return robots[idx];
+}
+
+/**
+ * @brief calculates final univector repulsion field created by obstacle
+ * 
+ * @param obstacle 
+ * @return double 
+ */
+double Player::univec_repulsion_field(fira_message::Robot obstacle)
+{
+    ctrl::vec2 fut_obstacle = this->future_position_of(obstacle, Player::DT);
+    double phi = (this->get_pos() - fut_obstacle).theta();
+    return phi;
+}
+
+/**
+ * @brief composes repulsion and move to goal fields with gaussian compound ratio
+ * 
+ * @param repulsion_phi 
+ * @param spiral_phi
+ * @return double final composed phi
+ */
+double Player::univec_composite_field(double repulsion_phi, double spiral_phi, double closest_obstacle_dist)
+{
+    double gauss = math::gaussian(closest_obstacle_dist - Player::D_MIN, Player::SIGMA);
+    if (closest_obstacle_dist <= Player::D_MIN)
+        return repulsion_phi;
+    else
+        return (repulsion_phi * gauss + spiral_phi * (1-gauss));
+}
 
 // --------------------> PUBLIC FUNCS <--------------------
+
+ctrl::vec2 Player::get_pos()
+{
+    return ctrl::vec2(this->robot);
+}
 
 /**
  * @brief Returns Player robot speed (left, right) to move into vector (x,y) direction
@@ -120,7 +173,7 @@ ctrl::vec2 Player::spin(bool cw)
     ctrl::vec2 motors_speed;
 
     motors_speed = cw ? ctrl::vec2(Player::SPIN_SPEED, -Player::SPIN_SPEED)
-                   : ctrl::vec2(-Player::SPIN_SPEED, Player::SPIN_SPEED);
+                      : ctrl::vec2(-Player::SPIN_SPEED, Player::SPIN_SPEED);
 
     return motors_speed;
 }
