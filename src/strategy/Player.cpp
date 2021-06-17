@@ -136,13 +136,13 @@ ctrl::vec2 Player::move(ctrl::vec2 vector)
     double vel = Player::K_VEL * vector.abs();
     double angle_diff = math::wrap_to_pi(vector.theta() - this->robot.orientation());
 
-    ctrl::vec2 motors_speed = vel * cos(angle_diff) * ctrl::vec2(1.0);
+    ctrl::vec2 motors_speeds = vel * cos(angle_diff) * ctrl::vec2(1.0);
     if (angle_diff >= HALF_PI || angle_diff <= -HALF_PI)
-        motors_speed += vel * Player::K_TURNING * sin(angle_diff) * ctrl::vec2(1.0, -1.0);
+        motors_speeds += vel * Player::K_TURNING * sin(angle_diff) * ctrl::vec2(1.0, -1.0);
     else
-        motors_speed += vel * Player::K_TURNING * sin(angle_diff) * ctrl::vec2(-1.0, 1.0);
+        motors_speeds += vel * Player::K_TURNING * sin(angle_diff) * ctrl::vec2(-1.0, 1.0);
 
-    return motors_speed;
+    return motors_speeds;
 }
 
 /**
@@ -170,11 +170,11 @@ bool Player::is_locked(unsigned int &stopped_count)
  */
 ctrl::vec2 Player::spin(bool cw)
 {
-    ctrl::vec2 motors_speed;
+    ctrl::vec2 motors_speeds;
 
-    motors_speed = cw ? ctrl::vec2(Player::SPIN_SPEED, -Player::SPIN_SPEED)
+    motors_speeds = cw ? ctrl::vec2(Player::SPIN_SPEED, -Player::SPIN_SPEED)
                       : ctrl::vec2(-Player::SPIN_SPEED, Player::SPIN_SPEED);
 
-    return motors_speed;
+    return motors_speeds;
 }
 

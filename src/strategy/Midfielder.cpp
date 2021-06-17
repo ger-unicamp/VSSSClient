@@ -5,7 +5,7 @@ Midfielder::Midfielder(fira_message::Robot &robot): Player(robot) {}
 ctrl::vec2 Midfielder::play(fira_message::Ball &ball, std::vector<fira_message::Robot> robots)
 {
     fira_message::Robot closest_robot;
-    ctrl::vec2 target, univec, motors_speed;
+    ctrl::vec2 target, univec, motors_speeds;
     double repulsion_phi, sigmoid_phi, phi;
 
     target = ctrl::vec2(ball);
@@ -26,7 +26,7 @@ ctrl::vec2 Midfielder::play(fira_message::Ball &ball, std::vector<fira_message::
     phi = this->univec_composite_field(repulsion_phi, sigmoid_phi, this->get_pos().distance(closest_robot));
     sincos(phi, &univec.y, &univec.x);
 
-    motors_speed = this->move(univec);
+    motors_speeds = this->move(univec);
 
-    return motors_speed;
+    return motors_speeds;
 }

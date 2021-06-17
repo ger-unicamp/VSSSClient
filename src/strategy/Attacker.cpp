@@ -82,7 +82,7 @@ double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
 ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Robot> &robots)
 {
     fira_message::Robot closest_robot;
-    ctrl::vec2 univec, motors_speed, ball_fut_pos;
+    ctrl::vec2 univec, motors_speeds, ball_fut_pos;
     double spiral_phi, repulsion_phi, phi;
 
     ball_fut_pos = this->future_position_of(ball, Player::DT);
@@ -103,7 +103,7 @@ ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Ro
     phi = this->univec_composite_field(repulsion_phi, spiral_phi, this->get_pos().distance(closest_robot));
     sincos(phi, &univec.y, &univec.x);
 
-    motors_speed = this->move(univec);
+    motors_speeds = this->move(univec);
 
-    return motors_speed;
+    return motors_speeds;
 }

@@ -36,19 +36,19 @@ ctrl::vec2 Goalkeeper::defend_goal_from(ctrl::vec2 ball_pos)
  */
 ctrl::vec2 Goalkeeper::play(fira_message::Ball &ball)
 {
-    ctrl::vec2 univec, motors_speed, ball_fut_pos;
+    ctrl::vec2 univec, motors_speeds, ball_fut_pos;
 
     ball_fut_pos = this->future_position_of(ball, Goalkeeper::DT_GKP);
 
     if (this->get_pos().distance(ball_fut_pos) <= Goalkeeper::KICK_DIST)
     {
-        motors_speed = this->spin((this->robot.y() < ball_fut_pos.y));
+        motors_speeds = this->spin((this->robot.y() < ball_fut_pos.y));
     }
     else
     {
         univec = this->defend_goal_from(ball_fut_pos);
-        motors_speed = this->move(univec);
+        motors_speeds = this->move(univec);
     }
 
-    return motors_speed;
+    return motors_speeds;
 }
