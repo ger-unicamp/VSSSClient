@@ -1,6 +1,17 @@
 #include "Player.h"
 
+Player::Player(): robot(fira_message::Robot()) {}
 Player::Player(fira_message::Robot &robot): robot(robot) {}
+
+fira_message::Robot Player::get_robot()
+{
+    return this->robot;
+}
+
+void Player::set_robot(fira_message::Robot &robot)
+{
+    this->robot = robot;
+}
 
 /**
  * @brief Returns ball future position based on its relative position to Player
@@ -8,7 +19,7 @@ Player::Player(fira_message::Robot &robot): robot(robot) {}
  * @param b 
  * @return ctrl::vec2 
  */
-ctrl::vec2 Player::future_position_of(fira_message::Ball &b, double dt)
+ctrl::vec2 Player::future_position_relative_to(fira_message::Ball &b, double dt)
 {
     ctrl::vec2 fut_pos = dt * ctrl::vec2(b.vx(), b.vy());
     double dist = ctrl::vec2(b).distance(ctrl::vec2(this->robot));
@@ -28,7 +39,7 @@ ctrl::vec2 Player::future_position_of(fira_message::Ball &b, double dt)
  * @param r
  * @return ctrl::vec2 
  */
-ctrl::vec2 Player::future_position_of(fira_message::Robot &r, double dt)
+ctrl::vec2 Player::future_position_relative_to(fira_message::Robot &r, double dt)
 {
     ctrl::vec2 fut_pos = dt * ctrl::vec2(r.vx() - this->robot.vx(), r.vy() - this->robot.vy());
     double dist = ctrl::vec2(r).distance(ctrl::vec2(this->robot));
@@ -40,6 +51,12 @@ ctrl::vec2 Player::future_position_of(fira_message::Robot &r, double dt)
     fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
 
     return fut_pos;
+}
+
+ctrl::vec2 Player::future_position()
+{
+    ctrl::vec2 vel(this->robot.vx(), this->robot.vy());
+    return this->get_pos() + vel * Player::DT;
 }
 
 /**
@@ -76,7 +93,7 @@ fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> r
     int idx = -1;
     for (uint i = 0; i < robots.size(); ++i)
     {
-        double dist =this->get_pos().distance(this->future_position_of(robots[i], Player::DT));
+        double dist =this->get_pos().distance(this->future_position_relative_to(robots[i], Player::DT));
 
         // get min dist of robot that isn't the same robot
         if (dist < min_dist && dist != 0) {
@@ -96,7 +113,7 @@ fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> r
  */
 double Player::univec_repulsion_field(fira_message::Robot obstacle)
 {
-    ctrl::vec2 fut_obstacle = this->future_position_of(obstacle, Player::DT);
+    ctrl::vec2 fut_obstacle = this->future_position_relative_to(obstacle, Player::DT);
     double phi = (this->get_pos() - fut_obstacle).theta();
     return phi;
 }
@@ -119,9 +136,40 @@ double Player::univec_composite_field(double repulsion_phi, double spiral_phi, d
 
 // --------------------> PUBLIC FUNCS <--------------------
 
+/**
+ * @brief robots position
+ * 
+ * @return ctrl::vec2 
+ */
 ctrl::vec2 Player::get_pos()
 {
     return ctrl::vec2(this->robot);
+}
+
+/**
+ * @brief Players future distance to ball
+ * 
+ * @param ball 
+ * @return double
+ */
+double Player::future_dist_to(fira_message::Ball &ball) 
+{
+    ctrl::vec2 target_fut_pos = this->future_position_relative_to(ball, Player::DT);
+    ctrl::vec2 robot_fut_pos = this->future_position();
+    return robot_fut_pos.distance(target_fut_pos);
+}
+
+/**
+ * @brief Players future distance to robot
+ * 
+ * @param robot 
+ * @return double
+ */
+double Player::future_dist_to(fira_message::Robot &robot) 
+{
+    ctrl::vec2 target_fut_pos = this->future_position_relative_to(robot, Player::DT);
+    ctrl::vec2 robot_fut_pos = this->future_position();
+    return robot_fut_pos.distance(target_fut_pos);
 }
 
 /**
@@ -156,10 +204,10 @@ bool Player::is_locked(unsigned int &stopped_count)
 {
     ctrl::vec2 robot_vel(this->robot.vx(), this->robot.vy());
 
-    if (robot_vel.abs() > 0.1 || stopped_count >= 70) stopped_count = 0;
+    if (robot_vel.abs() > Player::MIN_MOVING_VEL || stopped_count >= Player::N_FRAMES_STOP_SPIN) stopped_count = 0;
     else ++stopped_count;
 
-    return (stopped_count >= 60);
+    return (stopped_count >= Player::N_FRAMES_IS_STOPPED);
 }
 
 /**
@@ -173,8 +221,7 @@ ctrl::vec2 Player::spin(bool cw)
     ctrl::vec2 motors_speeds;
 
     motors_speeds = cw ? ctrl::vec2(Player::SPIN_SPEED, -Player::SPIN_SPEED)
-                      : ctrl::vec2(-Player::SPIN_SPEED, Player::SPIN_SPEED);
+                       : ctrl::vec2(-Player::SPIN_SPEED, Player::SPIN_SPEED);
 
     return motors_speeds;
 }
-

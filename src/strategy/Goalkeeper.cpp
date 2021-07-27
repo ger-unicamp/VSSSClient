@@ -1,5 +1,6 @@
 #include "Goalkeeper.h"
 
+Goalkeeper::Goalkeeper(): Player() { }
 Goalkeeper::Goalkeeper(fira_message::Robot &robot): Player(robot) {}
 
 /**
@@ -38,7 +39,7 @@ ctrl::vec2 Goalkeeper::play(fira_message::Ball &ball)
 {
     ctrl::vec2 univec, motors_speeds, ball_fut_pos;
 
-    ball_fut_pos = this->future_position_of(ball, Goalkeeper::DT_GKP);
+    ball_fut_pos = this->future_position_relative_to(ball, Goalkeeper::DT_GKP);
 
     if (this->get_pos().distance(ball_fut_pos) <= Goalkeeper::KICK_DIST)
     {

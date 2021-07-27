@@ -1,5 +1,6 @@
 #include "Midfielder.h"
 
+Midfielder::Midfielder(): Player() {}
 Midfielder::Midfielder(fira_message::Robot &robot): Player(robot) {}
 
 ctrl::vec2 Midfielder::play(fira_message::Ball &ball, std::vector<fira_message::Robot> robots)

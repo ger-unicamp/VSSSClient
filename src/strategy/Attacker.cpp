@@ -1,5 +1,6 @@
 #include "Attacker.h"
 
+Attacker::Attacker(): Player() {}
 Attacker::Attacker(fira_message::Robot &robot): Player(robot) {}
 
  /** @brief Calculates a spiral field arround (0, 0)
@@ -85,7 +86,7 @@ ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Ro
     ctrl::vec2 univec, motors_speeds, ball_fut_pos;
     double spiral_phi, repulsion_phi, phi;
 
-    ball_fut_pos = this->future_position_of(ball, Player::DT);
+    ball_fut_pos = this->future_position_relative_to(ball, Player::DT);
 
     if (this->get_pos().x < -Attacker::FRIENDLY_GOAL_X_LIMIT)
     {

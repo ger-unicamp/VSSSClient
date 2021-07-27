@@ -7,6 +7,10 @@
 
 Game::Game(int argc, char *argv[]) 
 {
+    this->goalkeeper = Goalkeeper();
+    this->attacker = Attacker();
+    this->midfielder = Midfielder();
+
     this->startup(argc, argv);
 }
 
@@ -62,7 +66,7 @@ fira_message::Ball Game::detect_ball(fira_message::Frame frame)
  * 
  * @param is_yellow 
  * @param frame 
- * @return vector<Robot> 
+ * @return vector<Robot>
  */
 vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Frame frame) 
 {
@@ -92,6 +96,31 @@ void Game::detect_objects(fira_message::Frame frame)
     this->robots.insert(robots.end(), enemy_robots.begin(), enemy_robots.end());
 }
 
+/**
+ * @brief return closest robot to ball
+ * 
+ * @return fira_message::Robot 
+ */
+fira_message::Robot Game::robot_next_to_ball()
+{
+    double atk_ball_dist = attacker.future_dist_to(ball);
+    double mid_ball_dist = midfielder.future_dist_to(ball);
+
+    return (mid_ball_dist < atk_ball_dist) ? midfielder.get_robot() : attacker.get_robot();
+}
+
+/**
+ * @brief switch atk and mid depending on which one is closer to ball
+ * @todo dynamic robot
+ */
+void Game::select_roles() 
+{
+    fira_message::Robot new_atk = robot_next_to_ball();
+    this->goalkeeper.set_robot(my_robots[0]); // gkp is always robot 0
+    this->attacker.set_robot(new_atk);
+    this->midfielder.set_robot(my_robots[3 - new_atk.robot_id()]);
+}
+
 void Game::run()
 {
     RoboCupSSLClient client(this->conf.vision_port, this->conf.multicast_ip);
@@ -109,7 +138,6 @@ void Game::run()
     {
         if (referee.receive(ref_packet))
         {
-
             referee.send(cmd);
         }
 
@@ -119,13 +147,15 @@ void Game::run()
 
             detect_objects(detection);
 
-            Goalkeeper gkp(this->my_robots[0]);
-            Attacker atk(this->my_robots[1]);
-            Midfielder mid(this->my_robots[2]);
+            goalkeeper.set_robot(my_robots[0]);
+            attacker.set_robot(my_robots[1]);
+            midfielder.set_robot(my_robots[2]);
 
-            ctrl::vec2 gkp_command = gkp.play(this->ball);
-            ctrl::vec2 atk_command = atk.play(this->ball, this->robots);
-            ctrl::vec2 mid_command = mid.play(this->ball, this->robots);
+            select_roles();
+        
+            ctrl::vec2 gkp_command = goalkeeper.play(this->ball);
+            ctrl::vec2 atk_command = attacker.play(this->ball, this->robots);
+            ctrl::vec2 mid_command = midfielder.play(this->ball, this->robots);
 
             vector<ctrl::vec2> commands = {gkp_command, atk_command, mid_command};
             sim_client.sendCommand(commands);

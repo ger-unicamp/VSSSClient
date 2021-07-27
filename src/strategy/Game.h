@@ -14,6 +14,10 @@
 
 #include "util/timer.h"
 
+#include "Goalkeeper.h"
+#include "Attacker.h"
+#include "Midfielder.h"
+
 struct net_config
 {
     std::string multicast_ip;
@@ -36,10 +40,16 @@ private:
     vector<fira_message::Robot> enemy_robots;
     vector<fira_message::Robot> robots;
 
+    Goalkeeper goalkeeper;
+    Attacker attacker;
+    Midfielder midfielder;
+
     void startup(int argc, char **argv);
     vector<fira_message::Robot> detect_robots(bool is_yellow, fira_message::Frame frame);
     fira_message::Ball detect_ball(fira_message::Frame frame);
     void detect_objects(fira_message::Frame frame);
+    fira_message::Robot robot_next_to_ball();
+    void select_roles();
 
 public:
     Game(int argc, char *argv[]);
