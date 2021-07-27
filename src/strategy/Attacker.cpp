@@ -3,6 +3,8 @@
 Attacker::Attacker(): Player() {}
 Attacker::Attacker(fira_message::Robot &robot): Player(robot) {}
 
+unsigned int Attacker::lock_count = 0;
+
  /** @brief Calculates a spiral field arround (0, 0)
  * 
  * @param cw char indicating spiral orientation ('+' to counterclockwise and '-' to clockwise)
@@ -82,6 +84,12 @@ double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
 
 ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Robot> &robots)
 {
+    if (is_locked(this->lock_count))
+    {
+        bool cw = this->robot.y() < ball.y();
+        return spin(cw);
+    }
+
     fira_message::Robot closest_robot;
     ctrl::vec2 univec, motors_speeds, ball_fut_pos;
     double spiral_phi, repulsion_phi, phi;

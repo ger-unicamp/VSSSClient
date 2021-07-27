@@ -5,6 +5,9 @@
 
 class Midfielder: public Player
 {
+private:
+    static unsigned int lock_count;
+    
 public:
     Midfielder();
     Midfielder(fira_message::Robot &robot);

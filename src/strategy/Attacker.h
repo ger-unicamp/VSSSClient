@@ -12,6 +12,8 @@ private:
     static constexpr bool CW = true;
     static constexpr bool CCW = false;
 
+    static unsigned int lock_count;
+
     double univec_spiral_field(ctrl::vec2 pos, bool is_cw);
     double univec_spiral_field_to_target(ctrl::vec2 target);
     double univec_horizontal_sigmoid_field(ctrl::vec2 target);

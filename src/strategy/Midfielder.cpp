@@ -3,8 +3,16 @@
 Midfielder::Midfielder(): Player() {}
 Midfielder::Midfielder(fira_message::Robot &robot): Player(robot) {}
 
+unsigned int Midfielder::lock_count = 0;
+
 ctrl::vec2 Midfielder::play(fira_message::Ball &ball, std::vector<fira_message::Robot> robots)
 {
+    if (is_locked(this->lock_count))
+    {
+        bool cw = this->robot.y() < ball.y();
+        return spin(cw);
+    }
+    
     fira_message::Robot closest_robot;
     ctrl::vec2 target, univec, motors_speeds;
     double repulsion_phi, sigmoid_phi, phi;

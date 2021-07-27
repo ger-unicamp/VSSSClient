@@ -12,6 +12,8 @@ private:
     static constexpr double DT_GKP = 0.245;
     static constexpr double KICK_DIST = 0.08;
 
+    static unsigned int lock_count;
+
     ctrl::vec2 defend_goal_from(ctrl::vec2 ball_pos);
 
 public:

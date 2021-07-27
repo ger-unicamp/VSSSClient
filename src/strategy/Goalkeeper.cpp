@@ -3,6 +3,8 @@
 Goalkeeper::Goalkeeper(): Player() { }
 Goalkeeper::Goalkeeper(fira_message::Robot &robot): Player(robot) {}
 
+unsigned int Goalkeeper::lock_count = 0;
+
 /**
  * @brief defend our goal by following ball y projection using a vertical line univector field
  * 
@@ -37,6 +39,12 @@ ctrl::vec2 Goalkeeper::defend_goal_from(ctrl::vec2 ball_pos)
  */
 ctrl::vec2 Goalkeeper::play(fira_message::Ball &ball)
 {
+    if (is_locked(this->lock_count))
+    {
+        bool cw = this->robot.y() < ball.y();
+        return spin(cw);
+    }
+    
     ctrl::vec2 univec, motors_speeds, ball_fut_pos;
 
     ball_fut_pos = this->future_position_relative_to(ball, Goalkeeper::DT_GKP);

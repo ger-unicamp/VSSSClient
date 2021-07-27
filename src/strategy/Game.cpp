@@ -128,7 +128,7 @@ void Game::run()
     RefereeClient referee(this->conf.referee_port, this->conf.replacer_port, this->conf.multicast_ip);
 
     client.open(false); // opens client
-    referee.open(); // opens referee
+    referee.open(); // opens referee client
 
     fira_message::sim_to_ref::Environment packet;
     VSSRef::ref_to_team::VSSRef_Command ref_packet;
@@ -150,8 +150,6 @@ void Game::run()
             goalkeeper.set_robot(my_robots[0]);
             attacker.set_robot(my_robots[1]);
             midfielder.set_robot(my_robots[2]);
-
-            select_roles();
         
             ctrl::vec2 gkp_command = goalkeeper.play(this->ball);
             ctrl::vec2 atk_command = attacker.play(this->ball, this->robots);
