@@ -1,18 +1,8 @@
 #ifndef GAME_HEADER
 #define GAME_HEADER
 
-#include <iostream>
-#include <algorithm>
-
-#include "pb/command.pb.h"
-#include "pb/common.pb.h"
-#include "pb/packet.pb.h"
-#include "pb/replacement.pb.h"
-
 #include "net/robocup_ssl_client.h"
-#include "net/referee_client.h"
-
-#include "util/timer.h"
+#include "net/vss_client.h"
 
 #include "strategy/Goalkeeper.h"
 #include "strategy/Attacker.h"

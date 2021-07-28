@@ -1,5 +1,7 @@
-#include "util/argparse.h"
+#include <iostream>
 #include "strategy/Game.h"
+#include "util/argparse.h"
+#include "net/referee_client.h"
 
 Game::Game(int argc, char *argv[]) 
 {
@@ -121,9 +123,7 @@ void Game::send_commands(VSSClient &sim_client)
     Midfielder mid(my_robots[2]);
 
     select_roles(gkp, atk, mid);
-
-    cout << "id do atacante: " << atk.get_robot().robot_id() << std::endl;
-
+    
     ctrl::vec2 gkp_command = gkp.play(this->ball);
     ctrl::vec2 atk_command = atk.play(this->ball, this->robots);
     ctrl::vec2 mid_command = mid.play(this->ball, this->robots);

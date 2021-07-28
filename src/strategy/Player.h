@@ -1,7 +1,7 @@
 #ifndef PLAYER_HEADER
 #define PLAYER_HEADER
 
-#include "net/vss_client.h"
+#include "pb/common.pb.h"
 #include "util/vec2.h"
  
 class Player
