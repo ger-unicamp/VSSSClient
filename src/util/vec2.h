@@ -1,13 +1,9 @@
-#ifndef VSSS
-#define VSSS
+#ifndef VEC2_HEADER
+#define VEC2_HEADER
 
-#include "pb/command.pb.h"
-#include "pb/common.pb.h"
-#include "pb/packet.pb.h"
-#include "pb/replacement.pb.h"
+#include <cmath>
 
 #include "util/mathutil.h"
-#include <cmath>
 
 namespace ctrl
 {
@@ -133,11 +129,6 @@ namespace ctrl
         
         double distance(const vec2 &p) { return ((*this - p).abs()); }
     };
-
-    ctrl::vec2 move_robot(fira_message::Robot &robot, ctrl::vec2 vector, double k, double v);
-    ctrl::vec2 future_position(fira_message::Robot &r1, fira_message::Robot &r2, double dt);
-    ctrl::vec2 future_position(fira_message::Ball &b, fira_message::Robot &r, double dt);
-
-}; // namespace ctrl
+}
 
 #endif

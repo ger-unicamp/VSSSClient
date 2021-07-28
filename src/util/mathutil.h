@@ -4,9 +4,7 @@
 #include <cmath>
 
 #define PI (3.14159265358979323846)
-
 #define TWO_PI (6.28318530717958647692)
-
 #define HALF_PI (1.57079632679489661923)
 
 namespace math

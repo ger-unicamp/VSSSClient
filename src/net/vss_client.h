@@ -1,15 +1,15 @@
 #ifndef SIM_CLIENT
 #define SIM_CLIENT
 
+#include <vector>
+
 #include "net/udpsocket.h"
 #include "pb/command.pb.h"
 #include "pb/common.pb.h"
 #include "pb/packet.pb.h"
 #include "pb/replacement.pb.h"
 
-#include "strategy/controller.h"
-#include <vector>
-
+#include "util/vec2.h"
 
 class VSSClient
 {
