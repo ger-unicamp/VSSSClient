@@ -19,8 +19,7 @@ protected:
     static constexpr int N_FRAMES_IS_STOPPED = 60;
     static constexpr int N_FRAMES_STOP_SPIN = 70;
 
-    // protected constructors
-    Player();
+    // protected constructor
     Player(fira_message::Robot &robot);
 
     fira_message::Robot robot;

@@ -17,7 +17,6 @@ private:
     ctrl::vec2 defend_goal_from(ctrl::vec2 ball_pos);
 
 public:
-    Goalkeeper();
     Goalkeeper(fira_message::Robot &robot);
     ctrl::vec2 play(fira_message::Ball &ball);
 };

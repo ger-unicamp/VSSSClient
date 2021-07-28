@@ -1,6 +1,5 @@
 #include "Player.h"
 
-Player::Player(): robot(fira_message::Robot()) {}
 Player::Player(fira_message::Robot &robot): robot(robot) {}
 
 fira_message::Robot Player::get_robot()

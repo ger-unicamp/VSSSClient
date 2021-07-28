@@ -19,7 +19,6 @@ private:
     double univec_horizontal_sigmoid_field(ctrl::vec2 target);
 
 public:
-    Attacker();
     Attacker(fira_message::Robot &robot);
 
     ctrl::vec2 play(fira_message::Ball &ball, std::vector<fira_message::Robot> &robots);
