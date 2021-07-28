@@ -6,6 +6,8 @@
 class Midfielder: public Player
 {
 private:
+    static constexpr double MID_LIMIT = 0.4;
+
     static unsigned int lock_count;
     
 public:

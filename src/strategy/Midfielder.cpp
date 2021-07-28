@@ -18,14 +18,14 @@ ctrl::vec2 Midfielder::play(fira_message::Ball &ball, std::vector<fira_message::
 
     target = ctrl::vec2(ball);
 
-    target.y = math::bound(target.y, -0.4, 0.4);
+    target.y = math::bound(target.y, -Midfielder::MID_LIMIT, Midfielder::MID_LIMIT);
     if (target.x >= 0)
     { 
-        target.x = math::bound(target.x - 0.4, -0.4, 0.4);
+        target.x = math::bound(target.x - Midfielder::MID_LIMIT, -Midfielder::MID_LIMIT, Midfielder::MID_LIMIT);
     }
     else 
     {
-        target.x = math::bound(target.x + 0.4, -0.4, 0.4);
+        target.x = math::bound(target.x + Midfielder::MID_LIMIT, -Midfielder::MID_LIMIT, Midfielder::MID_LIMIT);
     }
 
     closest_robot = this->get_closest_robot(robots);
