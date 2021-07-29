@@ -50,9 +50,34 @@ void Game::startup(int argc, char **argv)
               << "Color team: " << (this->is_yellow ? "yellow":"blue") << std::endl;
 }
 
-fira_message::Ball Game::detect_ball(fira_message::Frame frame) 
+void Game::invert_ball()
 {
-    return frame.ball();
+    ball.set_x(-ball.x());
+    ball.set_y(-ball.y());
+    ball.set_vx(-ball.vx());
+    ball.set_vy(-ball.vy());
+}
+
+void Game::invert_robots()
+{
+    for (auto robot : robots) 
+    {
+        robot.set_x(-robot.x());
+        robot.set_y(-robot.y());
+        robot.set_vx(-robot.vx());
+        robot.set_vy(-robot.vy());
+        robot.set_orientation(math::wrap_to_pi(robot.orientation() + PI));
+        robot.set_vorientation(-robot.vorientation());
+    }
+}
+
+void Game::invert_field_if_yellow()
+{
+    if (is_yellow)
+    {
+        invert_ball();
+        invert_robots();
+    }
 }
 
 /**
@@ -83,11 +108,12 @@ vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Fr
  */
 void Game::detect_objects(fira_message::Frame frame) 
 {
-    this->ball = detect_ball(frame);
+    this->ball = frame.ball();
     this->my_robots = detect_robots(this->is_yellow, frame);
     this->enemy_robots = detect_robots(!this->is_yellow, frame);
     this->robots = my_robots;
     this->robots.insert(robots.end(), enemy_robots.begin(), enemy_robots.end());
+    invert_field_if_yellow();
 }
 
 /**
@@ -100,8 +126,9 @@ unsigned int Game::robot_next_to_ball(Attacker &atk, Midfielder &mid)
     double atk_ball_dist = atk.future_dist_to(ball);
     double mid_ball_dist = mid.future_dist_to(ball);
 
-    return (mid_ball_dist < atk_ball_dist) ? mid.get_robot().robot_id() : 
-                                             atk.get_robot().robot_id();
+    return (mid_ball_dist < atk_ball_dist) ? 
+            mid.get_robot().robot_id() : 
+            atk.get_robot().robot_id();
 }
 
 /**
@@ -152,6 +179,8 @@ void Game::run()
             fira_message::Frame detection = packet.frame();
 
             detect_objects(detection);
+
+            cout << my_robots[0].x() << endl;
         
             send_commands(sim_client);
         }
