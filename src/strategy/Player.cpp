@@ -86,7 +86,7 @@ double Player::univec_vertical_sigmoid_field(ctrl::vec2 target)
  * @param enemy_robots 
  * @return fira_message::Robot 
  */
-fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> robots)
+fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> &robots)
 {
     double min_dist = Player::INF;
     int idx = -1;
@@ -110,7 +110,7 @@ fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> r
  * @param obstacle 
  * @return double 
  */
-double Player::univec_repulsion_field(fira_message::Robot obstacle)
+double Player::univec_repulsion_field(fira_message::Robot &obstacle)
 {
     ctrl::vec2 fut_obstacle = this->future_position_relative_to(obstacle, Player::DT);
     double phi = (this->get_pos() - fut_obstacle).theta();

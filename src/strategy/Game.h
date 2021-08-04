@@ -32,10 +32,10 @@ private:
 
     void startup(int argc, char **argv);
     void invert_ball();
-    void invert_robots();
+    fira_message::Robot invert_robot(fira_message::Robot &robot);
     void invert_field_if_yellow();
     vector<fira_message::Robot> detect_robots(bool is_yellow, fira_message::Frame frame);
-    void detect_objects(fira_message::Frame frame);
+    void detect_objects(fira_message::Frame &frame);
     unsigned int robot_next_to_ball(Attacker &atk, Midfielder &mid);
     void select_roles(Goalkeeper &gkp, Attacker &atk, Midfielder &mid);
     void send_commands(VSSClient &sim_client);

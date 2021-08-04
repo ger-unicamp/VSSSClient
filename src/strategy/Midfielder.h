@@ -12,7 +12,7 @@ private:
     
 public:
     Midfielder(fira_message::Robot &robot);
-    ctrl::vec2 play(fira_message::Ball &ball, std::vector<fira_message::Robot> robots);
+    ctrl::vec2 play(fira_message::Ball &ball, std::vector<fira_message::Robot> &robots);
 };
 
 #endif

@@ -58,17 +58,16 @@ void Game::invert_ball()
     ball.set_vy(-ball.vy());
 }
 
-void Game::invert_robots()
+fira_message::Robot Game::invert_robot(fira_message::Robot &robot)
 {
-    for (auto robot : robots) 
-    {
-        robot.set_x(-robot.x());
-        robot.set_y(-robot.y());
-        robot.set_vx(-robot.vx());
-        robot.set_vy(-robot.vy());
-        robot.set_orientation(math::wrap_to_pi(robot.orientation() + PI));
-        robot.set_vorientation(-robot.vorientation());
-    }
+    robot.set_x(-robot.x());
+    robot.set_y(-robot.y());
+    robot.set_vx(-robot.vx());
+    robot.set_vy(-robot.vy());
+    robot.set_orientation(math::wrap_to_pi(robot.orientation() + PI));
+    robot.set_vorientation(-robot.vorientation());
+    
+    return robot;
 }
 
 void Game::invert_field_if_yellow()
@@ -76,12 +75,19 @@ void Game::invert_field_if_yellow()
     if (is_yellow)
     {
         invert_ball();
-        invert_robots();
+        std::for_each(my_robots.begin(), my_robots.end(),
+                     [this](fira_message::Robot &robot) {
+                           robot = invert_robot(robot);
+                      });
+        std::for_each(enemy_robots.begin(), enemy_robots.end(),
+                     [this](fira_message::Robot &robot) {
+                           robot = invert_robot(robot);
+                      });
     }
 }
 
 /**
- * @brief returns blue or yellow vector of robots
+ * @brief returns vector of blue or yellow robots
  * 
  * @param is_yellow 
  * @param frame 
@@ -92,7 +98,6 @@ vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Fr
     vector<fira_message::Robot> robots;
     uint robots_size = is_yellow ? frame.robots_yellow_size() : frame.robots_blue_size();
     robots.resize(robots_size);
-
     for (uint i = 0; i < robots_size; ++i) 
     {
         robots[i] = is_yellow ? frame.robots_yellow(i) : frame.robots_blue(i);
@@ -103,17 +108,19 @@ vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Fr
 
 /**
  * @brief stores state of current game objects into Game attributes
- * (Robot) 
+ * 
  * @param frame current game frame
  */
-void Game::detect_objects(fira_message::Frame frame) 
+void Game::detect_objects(fira_message::Frame &frame) 
 {
     this->ball = frame.ball();
     this->my_robots = detect_robots(this->is_yellow, frame);
     this->enemy_robots = detect_robots(!this->is_yellow, frame);
+
+    invert_field_if_yellow();
+
     this->robots = my_robots;
     this->robots.insert(robots.end(), enemy_robots.begin(), enemy_robots.end());
-    invert_field_if_yellow();
 }
 
 /**
@@ -179,8 +186,6 @@ void Game::run()
             fira_message::Frame detection = packet.frame();
 
             detect_objects(detection);
-
-            cout << my_robots[0].x() << endl;
         
             send_commands(sim_client);
         }

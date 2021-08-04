@@ -23,11 +23,11 @@ protected:
     Player(fira_message::Robot &robot);
 
     fira_message::Robot robot;
-    fira_message::Robot get_closest_robot(std::vector<fira_message::Robot> robots);
+    fira_message::Robot get_closest_robot(std::vector<fira_message::Robot> &robots);
     ctrl::vec2 future_position_relative_to(fira_message::Robot &r, double dt);
     ctrl::vec2 future_position_relative_to(fira_message::Ball &b, double dt);
     ctrl::vec2 future_position();
-    double univec_repulsion_field(fira_message::Robot obstacle);
+    double univec_repulsion_field(fira_message::Robot &obstacle);
     double univec_vertical_sigmoid_field(ctrl::vec2 target);
     double univec_composite_field(double repulsion_phi, double spiral_phi, double closest_obstacle_dist);
 

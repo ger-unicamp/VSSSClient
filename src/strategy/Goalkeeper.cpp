@@ -5,7 +5,7 @@ Goalkeeper::Goalkeeper(fira_message::Robot &robot): Player(robot) {}
 unsigned int Goalkeeper::lock_count = 0;
 
 /**
- * @brief defend our goal by following ball y projection using a vertical line univector field
+ * @brief defend our goal by following ball y projection using a vertical sigmoid univector field
  * 
  * @param ball_pos predicted position of ball on current frame
  * @return ctrl::vec2 
