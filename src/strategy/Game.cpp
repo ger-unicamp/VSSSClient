@@ -75,6 +75,8 @@ void Game::invert_field_if_yellow()
     if (is_yellow)
     {
         invert_ball();
+
+        // DOES THIS REALLY NEED TO USE LAMBDA
         std::for_each(my_robots.begin(), my_robots.end(),
                      [this](fira_message::Robot &robot) {
                            robot = invert_robot(robot);
@@ -117,8 +119,8 @@ void Game::detect_objects(fira_message::Frame &frame)
     this->my_robots = detect_robots(this->is_yellow, frame);
     this->enemy_robots = detect_robots(!this->is_yellow, frame);
 
+    // TODO MOVE THIS
     invert_field_if_yellow();
-
     this->robots = my_robots;
     this->robots.insert(robots.end(), enemy_robots.begin(), enemy_robots.end());
 }
@@ -150,12 +152,14 @@ void Game::select_roles(Goalkeeper &gkp, Attacker &atk, Midfielder &mid)
     mid.set_robot(my_robots[3 - new_atk_id]);
 }
 
+// TODO POLYMORPHISM WITH PLAYER
 void Game::send_commands(VSSClient &sim_client) 
 {
     Goalkeeper gkp(my_robots[0]);
     Attacker atk(my_robots[1]);
     Midfielder mid(my_robots[2]);
 
+    // FUNCTION HAS MORE THAN ONE FUNCTIONALITY
     select_roles(gkp, atk, mid);
     
     ctrl::vec2 gkp_command = gkp.play(this->ball);

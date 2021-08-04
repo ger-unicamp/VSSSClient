@@ -201,10 +201,16 @@ ctrl::vec2 Player::move(ctrl::vec2 vector)
  */
 bool Player::is_locked(unsigned int &lock_count)
 {
-    ctrl::vec2 robot_vel(this->robot.vx(), this->robot.vy());
+    ctrl::vec2 vel(this->robot.vx(), this->robot.vy());
 
-    if (robot_vel.abs() > Player::MIN_MOVING_VEL || lock_count >= Player::N_FRAMES_STOP_SPIN) lock_count = 0;
-    else ++lock_count;
+    if (vel.abs() > Player::MIN_MOVING_VEL || lock_count >= Player::N_FRAMES_STOP_SPIN) 
+    {
+        lock_count = 0;
+    }
+    else 
+    {
+        ++lock_count;
+    }
 
     return (lock_count >= Player::N_FRAMES_IS_STOPPED);
 }

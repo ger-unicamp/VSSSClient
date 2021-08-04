@@ -50,7 +50,7 @@ ctrl::vec2 Goalkeeper::play(fira_message::Ball &ball)
 
     if (this->get_pos().distance(ball_fut_pos) <= Goalkeeper::KICK_DIST)
     {
-        motors_speeds = this->spin((this->robot.y() < ball_fut_pos.y));
+        motors_speeds = this->spin((this->robot.y() < ball_fut_pos.y)); // kick ball
     }
     else
     {

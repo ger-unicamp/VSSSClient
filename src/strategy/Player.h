@@ -23,6 +23,7 @@ protected:
     Player(fira_message::Robot &robot);
 
     fira_message::Robot robot;
+
     fira_message::Robot get_closest_robot(std::vector<fira_message::Robot> &robots);
     ctrl::vec2 future_position_relative_to(fira_message::Robot &r, double dt);
     ctrl::vec2 future_position_relative_to(fira_message::Ball &b, double dt);
