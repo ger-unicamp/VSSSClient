@@ -126,6 +126,14 @@ namespace ctrl
             sincos(this->theta(), &s, &c);
             return vec2(c, s);
         }
+
+        vec2 rotate(double theta) 
+        {
+            double new_x = x * cos(theta) - y * sin(theta);
+            double new_y = x * sin(theta) + y * cos(theta);
+
+            return vec2(new_x, new_y);
+        }
         
         double distance(const vec2 &p) { return ((*this - p).abs()); }
     };

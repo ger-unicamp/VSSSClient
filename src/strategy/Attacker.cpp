@@ -81,6 +81,13 @@ double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
     return phi;
 }
 
+double Attacker::univec_rotate(fira_message::Ball &ball, double phi)
+{
+    double theta = atan2(-ball.y(), Attacker::ENEMY_GOAL_X_CENTER - ball.x());
+
+    return phi + theta;
+}
+
 ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Robot> &robots)
 {
     if (is_locked(this->lock_count))
@@ -104,6 +111,7 @@ ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Ro
     else
     {
         spiral_phi = this->univec_spiral_field_to_target(ball_fut_pos);
+        spiral_phi = this->univec_rotate(ball, spiral_phi);
     }
     
     closest_robot = this->get_closest_robot(robots);
