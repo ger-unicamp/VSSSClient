@@ -50,6 +50,7 @@ void Game::startup(int argc, char **argv)
               << "Color team: " << (this->is_yellow ? "yellow":"blue") << std::endl;
 }
 
+//There's no need to invert after assignement. This doensn't need to be so complex
 void Game::invert_ball()
 {
     ball.set_x(-ball.x());
@@ -58,6 +59,7 @@ void Game::invert_ball()
     ball.set_vy(-ball.vy());
 }
 
+//There's no need to invert after assignement. This doensn't need to be so complex
 fira_message::Robot Game::invert_robot(fira_message::Robot &robot)
 {
     robot.set_x(-robot.x());
@@ -70,6 +72,7 @@ fira_message::Robot Game::invert_robot(fira_message::Robot &robot)
     return robot;
 }
 
+//There's no need to invert after assignement. This doensn't need to be so complex
 void Game::invert_field_if_yellow()
 {
     if (is_yellow)
