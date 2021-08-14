@@ -25,6 +25,7 @@ ctrl::vec2 Player::future_position_relative_to(fira_message::Ball &b, double dt)
     if (dist < fut_pos.abs())
         fut_pos = dist * fut_pos.normalized();
     
+    //HARDCODED VALUES -> USE MORE DESCRIPTIVE STATIC CONSTANTS INSTEAD.
     fut_pos = ctrl::vec2(b) + fut_pos;
     fut_pos.y = math::bound(fut_pos.y, -0.65, 0.65);
     fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
@@ -45,6 +46,8 @@ ctrl::vec2 Player::future_position_relative_to(fira_message::Robot &r, double dt
     if (dist < fut_pos.abs())
         fut_pos = dist * fut_pos.normalized();
     
+    
+    //HARDCODED VALUES -> USE MORE DESCRIPTIVE STATIC CONSTANTS INSTEAD.
     fut_pos = ctrl::vec2(r) + fut_pos;
     fut_pos.y = math::bound(fut_pos.y, -0.65, 0.65);
     fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
@@ -72,6 +75,7 @@ double Player::univec_vertical_sigmoid_field(ctrl::vec2 target)
     ctrl::vec2 translated = this->get_pos() - target;
 
     if (translated.y <= 0.0)
+        //This could be a expression declared as #DEFINE
         phi = PI * (1.0 / (1.0 + std::exp(-1.0 * Player::K_LINE * translated.x)));
     else
         phi = PI * (-1.0 / (1.0 + std::exp(-1.0 * Player::K_LINE * translated.x)));
@@ -92,7 +96,8 @@ fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> &
     int idx = -1;
     for (uint i = 0; i < robots.size(); ++i)
     {
-        double dist =this->get_pos().distance(this->future_position_relative_to(robots[i], Player::DT));
+        //line too long, maybe write this in a more elegant way.
+        double dist = this->get_pos().distance(this->future_position_relative_to(robots[i], Player::DT));
 
         // get min dist of robot that isn't the same robot
         if (dist < min_dist && dist != 0) {
@@ -113,6 +118,8 @@ fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> &
 double Player::univec_repulsion_field(fira_message::Robot &obstacle)
 {
     ctrl::vec2 fut_obstacle = this->future_position_relative_to(obstacle, Player::DT);
+    
+    //This could be a function or a #DEFINE statement
     double phi = (this->get_pos() - fut_obstacle).theta();
     return phi;
 }
@@ -128,8 +135,10 @@ double Player::univec_composite_field(double repulsion_phi, double spiral_phi, d
 {
     double gauss = math::gaussian(closest_obstacle_dist - Player::D_MIN, Player::SIGMA);
     if (closest_obstacle_dist <= Player::D_MIN)
+        //This could be a function or a #DEFINE statement
         return repulsion_phi;
     else
+        //This could be a function or a #DEFINE statement
         return (repulsion_phi * gauss + spiral_phi * (1-gauss));
 }
 
@@ -166,6 +175,7 @@ double Player::future_dist_to(fira_message::Ball &ball)
  */
 double Player::future_dist_to(fira_message::Robot &robot) 
 {
+    //Is that being recomputed too many times? If that's that case, consider using an attribute instead.
     ctrl::vec2 target_fut_pos = this->future_position_relative_to(robot, Player::DT);
     ctrl::vec2 robot_fut_pos = this->future_position();
     return robot_fut_pos.distance(target_fut_pos);
@@ -182,7 +192,7 @@ ctrl::vec2 Player::move(ctrl::vec2 vector)
     // k is the turning gain constant and v is the velocity constant
     double vel = Player::K_VEL * vector.abs();
     double angle_diff = math::wrap_to_pi(vector.theta() - this->robot.orientation());
-
+    
     ctrl::vec2 motors_speeds = vel * cos(angle_diff) * ctrl::vec2(1.0);
     if (angle_diff >= HALF_PI || angle_diff <= -HALF_PI)
         motors_speeds += vel * Player::K_TURNING * sin(angle_diff) * ctrl::vec2(1.0, -1.0);
@@ -203,14 +213,8 @@ bool Player::is_locked(unsigned int &lock_count)
 {
     ctrl::vec2 vel(this->robot.vx(), this->robot.vy());
 
-    if (vel.abs() > Player::MIN_MOVING_VEL || lock_count >= Player::N_FRAMES_STOP_SPIN) 
-    {
-        lock_count = 0;
-    }
-    else 
-    {
-        ++lock_count;
-    }
+    lock_count = (vel.abs() > Player::MIN_MOVING_VEL || lock_count >= Player::N_FRAMES_STOP_SPIN) ? 0
+                                                                                                  : lock_count+1;
 
     return (lock_count >= Player::N_FRAMES_IS_STOPPED);
 }
@@ -221,6 +225,8 @@ bool Player::is_locked(unsigned int &lock_count)
  * @param cw rotate clockwise or counterclockwise
  * @return ctrl::vec2 
  */
+
+//CW could be an attribute that is actually a vector. Example: Direction = (1, -1). That would indicate if it is CW or CCW. 
 ctrl::vec2 Player::spin(bool cw)
 {
     ctrl::vec2 motors_speeds;
