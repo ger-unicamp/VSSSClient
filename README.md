@@ -146,3 +146,4 @@ Descreve métodos relacionados aos campos vetoriais. Define e combina os campos 
     ╚██████╔╝███████╗██║  ██║
      ╚═════╝ ╚══════╝╚═╝  ╚═╝
  ```
+:)
