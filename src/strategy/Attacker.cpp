@@ -5,7 +5,7 @@ Attacker::Attacker(fira_message::Robot &robot): Player(robot) {}
 unsigned int Attacker::lock_count = 0;
 
  /** @brief Calculates a spiral field arround (0, 0)
- * Combination of two hyperbolic unit spiral fields are used.
+ * Combination of two hyperbolic unitary spiral fields are used.
  * @param cw char indicating spiral orientation ('+' to counterclockwise and '-' to clockwise)
  * @return double 
  */
