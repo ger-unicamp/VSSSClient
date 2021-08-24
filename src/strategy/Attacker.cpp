@@ -93,8 +93,7 @@ ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Ro
 
     fira_message::Robot closest_robot;
   /**
- * @brief Define which robot will be the attacker within a limited distance.
- * The closest to the ball will be chosen
+ * @brief The attacker robot can't inside in the area goalkeeper
  * 
  * @param robot,ball
  * @return double 
@@ -103,7 +102,8 @@ ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Ro
     double spiral_phi, repulsion_phi, phi;
 
     ball_fut_pos = this->future_position_relative_to(ball, Player::DT);
-
+    // The constant FRIENDLY_GOAL_X_LIMIT is a limit for the attacking robot.
+    // It doesn't exceed this limit, he stops before.
     if (this->get_pos().x < -Attacker::FRIENDLY_GOAL_X_LIMIT)
     {
         ball_fut_pos.x = math::bound(ball_fut_pos.x, -Attacker::FRIENDLY_GOAL_X_LIMIT, Player::INF);
@@ -114,7 +114,7 @@ ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Ro
     {
         spiral_phi = this->univec_spiral_field_to_target(ball_fut_pos);
     }
-    /// Get composition of vectors returned from the closest robot
+    // Get composition of vectors returned from the closest robot
     closest_robot = this->get_closest_robot(robots);
     repulsion_phi = this->univec_repulsion_field(closest_robot);
     phi = this->univec_composite_field(repulsion_phi, spiral_phi, this->get_pos().distance(closest_robot));
