@@ -15,6 +15,8 @@ private:
     static unsigned int lock_count;
 
     ctrl::vec2 defend_goal_from(ctrl::vec2 ball_pos);
+    double get_bisector_slope(ctrl::vec2 ball_pos);
+    double get_Y_position(ctrl::vec2 ball_pos, double slope);
 
 public:
     Goalkeeper(fira_message::Robot &robot);
