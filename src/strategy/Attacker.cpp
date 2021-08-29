@@ -73,7 +73,8 @@ double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
     // Univector always operate over translated points
     ctrl::vec2 translated = this->get_pos() - target;
     double e = std::exp(Player::K_LINE * translated.y);
-
+    
+    // Conditional for the case that the robot's position is smaller or larger than that of the target
     if (translated.x <= 0.0)
         phi = HALF_PI * ((1 - e) / (1 + e));
     else
