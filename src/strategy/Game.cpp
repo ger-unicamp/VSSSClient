@@ -8,12 +8,12 @@ Game::Game(int argc, char *argv[])
     this->startup(argc, argv);
 }
 
-/**
+/* **********************************************
  * @brief Set network config and team color
  * 
  * @param argc 
  * @param argv 
- */
+ * *********************************************/
 void Game::startup(int argc, char **argv) 
 {
     ArgParse::ArgumentParser parser(argv[0], "GER VSSS FIRASim strategy server");
@@ -50,24 +50,39 @@ void Game::startup(int argc, char **argv)
               << "Color team: " << (this->is_yellow ? "yellow":"blue") << std::endl;
 }
 
-//There's no need to invert after assignement. This doensn't need to be so complex
+/* *********************************************************
+ * @brief takes the ball's positions x and y, 
+ *        as well as its vx and vy velocities
+ *        and multiply both of them by (-1) 
+ * 
+ * @obs   There's no need to invert after assignement.
+ *        This doensn't need to be so complex
+ * *********************************************************/
 void Game::invert_ball()
 {
-    ball.set_x(-ball.x());
-    ball.set_y(-ball.y());
-    ball.set_vx(-ball.vx());
-    ball.set_vy(-ball.vy());
+    ball.set_x(-ball.x());      // invert positon x
+    ball.set_y(-ball.y());      // invert positon y
+    ball.set_vx(-ball.vx());    // invert speed   vx
+    ball.set_vy(-ball.vy());    // invert speed   vy
 }
 
-//There's no need to invert after assignement. This doensn't need to be so complex
+/* *********************************************************
+ * @brief takes the robot's positions x and y, 
+ *        as well as its vx and vy velocities and its 
+ *        orientation on the field and multiply both of
+ *        them by (-1) 
+ * 
+ * @obs   There's no need to invert after assignement.
+ *        This doensn't need to be so complex
+ * *********************************************************/
 fira_message::Robot Game::invert_robot(fira_message::Robot &robot)
 {
-    robot.set_x(-robot.x());
-    robot.set_y(-robot.y());
-    robot.set_vx(-robot.vx());
-    robot.set_vy(-robot.vy());
-    robot.set_orientation(math::wrap_to_pi(robot.orientation() + PI));
-    robot.set_vorientation(-robot.vorientation());
+    robot.set_x(-robot.x());     // invert positon x
+    robot.set_y(-robot.y());     // invert positon y
+    robot.set_vx(-robot.vx());   // invert speed   vx
+    robot.set_vy(-robot.vy());   // invert speed   vy
+    robot.set_orientation(math::wrap_to_pi(robot.orientation() + PI));  // invert orientation
+    robot.set_vorientation(-robot.vorientation());                      // invert speed orientation
     
     return robot;
 }
@@ -91,18 +106,23 @@ void Game::invert_field_if_yellow()
     }
 }
 
-/**
+/* ****************************************************************
  * @brief returns vector of blue or yellow robots
  * 
  * @param is_yellow 
  * @param frame 
  * @return vector<Robot>
- */
+ * ***************************************************************/
 vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Frame frame) 
 {
     vector<fira_message::Robot> robots;
-    uint robots_size = is_yellow ? frame.robots_yellow_size() : frame.robots_blue_size();
+
+// Ternary command: If the identified robot is yellow, it will mark the robots_size as team yellow.
+// Else, it will mark the robots_size as team blue.
+    uint robots_size = is_yellow ? frame.robots_yellow_size() : frame.robots_blue_size(); 
     robots.resize(robots_size);
+
+// Runs a for command to assign each robots_size prevviously marked to its respective robot
     for (uint i = 0; i < robots_size; ++i) 
     {
         robots[i] = is_yellow ? frame.robots_yellow(i) : frame.robots_blue(i);
@@ -111,16 +131,16 @@ vector<fira_message::Robot> Game::detect_robots(bool is_yellow, fira_message::Fr
     return robots;
 }
 
-/**
+/* *****************************************************************************
  * @brief stores state of current game objects into Game attributes
  * 
  * @param frame current game frame
- */
+ * *****************************************************************************/
 void Game::detect_objects(fira_message::Frame &frame) 
 {
-    this->ball = frame.ball();
-    this->my_robots = detect_robots(this->is_yellow, frame);
-    this->enemy_robots = detect_robots(!this->is_yellow, frame);
+    this->ball = frame.ball();                                        // detect ball
+    this->my_robots = detect_robots(this->is_yellow, frame);          // detect my robot
+    this->enemy_robots = detect_robots(!this->is_yellow, frame);      // detect enemy robot
 
     // TODO MOVE THIS
     invert_field_if_yellow();
@@ -128,25 +148,25 @@ void Game::detect_objects(fira_message::Frame &frame)
     this->robots.insert(robots.end(), enemy_robots.begin(), enemy_robots.end());
 }
 
-/**
+/* ***********************************************************************
  * @brief return closest robots index to ball
  * 
  * @return int
- */
+ * ************************************************************************/
 unsigned int Game::robot_next_to_ball(Attacker &atk, Midfielder &mid)
 {
-    double atk_ball_dist = atk.future_dist_to(ball);
-    double mid_ball_dist = mid.future_dist_to(ball);
+    double atk_ball_dist = atk.future_dist_to(ball);  // distance between ball and attacker
+    double mid_ball_dist = mid.future_dist_to(ball);  // distance between ball and midfielder
 
-    return (mid_ball_dist < atk_ball_dist) ? 
-            mid.get_robot().robot_id() : 
-            atk.get_robot().robot_id();
+    return (mid_ball_dist < atk_ball_dist) ?          // ternary question:
+            mid.get_robot().robot_id() :              // if midfielder is closest,  return midfielder's ID
+            atk.get_robot().robot_id();               // else, attacker is closest, return attacker's   ID
 }
 
-/**
+/* **************************************************************************
  * @brief switch atk and mid depending on which one is closer to ball
  * @todo dynamic gkp
- */
+ * **************************************************************************/
 void Game::select_roles(Goalkeeper &gkp, Attacker &atk, Midfielder &mid) 
 {
     int new_atk_id = robot_next_to_ball(atk, mid);
@@ -158,9 +178,9 @@ void Game::select_roles(Goalkeeper &gkp, Attacker &atk, Midfielder &mid)
 // TODO POLYMORPHISM WITH PLAYER
 void Game::send_commands(VSSClient &sim_client) 
 {
-    Goalkeeper gkp(my_robots[0]);
-    Attacker atk(my_robots[1]);
-    Midfielder mid(my_robots[2]);
+    Goalkeeper gkp(my_robots[0]); // goalkeeper is robot number 0
+    Attacker atk(my_robots[1]);   // attacker   is robot number 1
+    Midfielder mid(my_robots[2]); // midfielder is robot number 2
 
     // FUNCTION HAS MORE THAN ONE FUNCTIONALITY
     select_roles(gkp, atk, mid);
@@ -169,9 +189,9 @@ void Game::send_commands(VSSClient &sim_client)
     ctrl::vec2 atk_command = atk.play(this->ball, this->robots);
     ctrl::vec2 mid_command = mid.play(this->ball, this->robots);
 
-    sim_client.sendCommand(gkp.get_robot().robot_id(), gkp_command.x, gkp_command.y);
-    sim_client.sendCommand(atk.get_robot().robot_id(), atk_command.x, atk_command.y);
-    sim_client.sendCommand(mid.get_robot().robot_id(), mid_command.x, mid_command.y);
+    sim_client.sendCommand(gkp.get_robot().robot_id(), gkp_command.x, gkp_command.y); // goalkeeper receives its command from strategy 
+    sim_client.sendCommand(atk.get_robot().robot_id(), atk_command.x, atk_command.y); // attacker   receives its command from strategy 
+    sim_client.sendCommand(mid.get_robot().robot_id(), mid_command.x, mid_command.y); // midfielder receives its command from strategy 
 }
 
 void Game::run()
@@ -186,7 +206,7 @@ void Game::run()
 
     fira_message::sim_to_ref::Environment packet;
 
-    while (true) 
+    while (true)  // this while detect objets in real time and then send commands 
     {
         if (client.receive(packet) && packet.has_frame())
         {
