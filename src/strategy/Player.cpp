@@ -25,7 +25,7 @@ ctrl::vec2 Player::future_position_relative_to(fira_message::Ball &b, double dt)
     if (dist < fut_pos.abs())
         fut_pos = dist * fut_pos.normalized();
     
-    //HARDCODED VALUES -> USE MORE DESCRIPTIVE STATIC CONSTANTS INSTEAD.
+    // HARDCODED VALUES -> USE MORE DESCRIPTIVE STATIC CONSTANTS INSTEAD.
     fut_pos = ctrl::vec2(b) + fut_pos;
     fut_pos.y = math::bound(fut_pos.y, -0.65, 0.65);
     fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
@@ -47,7 +47,7 @@ ctrl::vec2 Player::future_position_relative_to(fira_message::Robot &r, double dt
         fut_pos = dist * fut_pos.normalized();
     
     
-    //HARDCODED VALUES -> USE MORE DESCRIPTIVE STATIC CONSTANTS INSTEAD.
+    // HARDCODED VALUES -> USE MORE DESCRIPTIVE STATIC CONSTANTS INSTEAD.
     fut_pos = ctrl::vec2(r) + fut_pos;
     fut_pos.y = math::bound(fut_pos.y, -0.65, 0.65);
     fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
@@ -226,7 +226,7 @@ bool Player::is_locked(unsigned int &lock_count)
  * @return ctrl::vec2 
  */
 
-//CW could be an attribute that is actually a vector. Example: Direction = (1, -1). That would indicate if it is CW or CCW. 
+// CW could be an attribute that is actually a vector. Example: Direction = (1, -1). That would indicate if it is CW or CCW. 
 ctrl::vec2 Player::spin(bool cw)
 {
     ctrl::vec2 motors_speeds;

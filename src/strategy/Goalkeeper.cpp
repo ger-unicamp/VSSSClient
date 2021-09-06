@@ -38,7 +38,7 @@ ctrl::vec2 Goalkeeper::defend_goal_from(ctrl::vec2 ball_pos)
  */
 ctrl::vec2 Goalkeeper::play(fira_message::Ball &ball)
 {
-    //handle robot locked
+    // handle locked robot
     if (is_locked(this->lock_count))
     {
         bool cw = this->robot.y() < ball.y();
@@ -49,7 +49,7 @@ ctrl::vec2 Goalkeeper::play(fira_message::Ball &ball)
 
     ball_fut_pos = this->future_position_relative_to(ball, Goalkeeper::DT_GKP);
 
-    //if ball is close enought to the goalkeeper, we should spin in order to kick it 
+    // if ball is close enought to the goalkeeper, we should spin in order to kick it 
     if (this->get_pos().distance(ball_fut_pos) <= Goalkeeper::KICK_DIST)
     {
         motors_speeds = this->spin((this->robot.y() < ball_fut_pos.y)); // kick ball

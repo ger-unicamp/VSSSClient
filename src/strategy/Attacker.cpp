@@ -69,7 +69,7 @@ double Attacker::univec_spiral_field_to_target(ctrl::vec2 target)
 double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
 {
     double phi;
-    // Univector always operate over translated points
+    // univector always operate over translated points
     ctrl::vec2 translated = this->get_pos() - target;
     double e = std::exp(Player::K_LINE * translated.y);
 
