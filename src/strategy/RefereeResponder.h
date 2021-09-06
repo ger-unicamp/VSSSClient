@@ -9,23 +9,23 @@
 
 typedef std::array<ctrl::vec2, 3> placement;
 
-namespace placements
+namespace plcmnts
 {
-    constexpr placement FB_Q23_B = {{}, {}, {}}; // Free Ball Quadrants 2, 3 - Blue answer
-    constexpr placement FB_Q14_B = {{}, {}, {}}; // Free Ball Quadrants 1, 4 - Blue answer
-    constexpr placement PK_B_B = {{}, {}, {}}; // Blue Penalty Kick - Blue answer
-    constexpr placement PK_Y_B = {{}, {}, {}}; // Yellow Penalty Kick - Blue answer
-    constexpr placement KO_B = {{}, {}, {}}; // Kick Off - Blue answer
-    constexpr placement GK_B_B = {{}, {}, {}}; // Blue Goal Kick - Blue answer
-    constexpr placement GK_Y_B = {{}, {}, {}}; // Yellow Goal Kick - Blue answer
+    const placement FB_Q23_B = {{{}, {}, {}}}; // Free Ball Quadrants 2, 3 - Blue answer
+    const placement FB_Q14_B = {{{}, {}, {}}}; // Free Ball Quadrants 1, 4 - Blue answer
+    const placement PK_B_B = {{{}, {}, {}}}; // Blue Penalty Kick - Blue answer
+    const placement PK_Y_B = {{{}, {}, {}}}; // Yellow Penalty Kick - Blue answer
+    const placement KO_B = {{{}, {}, {}}}; // Kick Off - Blue answer
+    const placement GK_B_B = {{{}, {}, {}}}; // Blue Goal Kick - Blue answer
+    const placement GK_Y_B = {{{}, {}, {}}}; // Yellow Goal Kick - Blue answer
 
-    constexpr placement FB_Q23_Y = {{}, {}, {}}; // Free Ball Quadrants 2, 3 - Yellow answer
-    constexpr placement FB_Q14_Y = {{}, {}, {}}; // Free Ball Quadrants 1, 4 - Yellow answer
-    constexpr placement PK_B_Y = {{}, {}, {}}; // Blue Penalty Kick - Yellow answer
-    constexpr placement PK_Y_Y = {{}, {}, {}}; // Yellow Penalty Kick - Yellow answer
-    constexpr placement KO_Y = {{}, {}, {}}; // Kick Off - Yellow answer
-    constexpr placement GK_B_Y = {{}, {}, {}}; // Blue Goal Kick - Yellow answer
-    constexpr placement GK_Y_Y = {{}, {}, {}}; // Yellow Goal Kick - Yellow answer
+    const placement FB_Q23_Y = {{{}, {}, {}}}; // Free Ball Quadrants 2, 3 - Yellow answer
+    const placement FB_Q14_Y = {{{}, {}, {}}}; // Free Ball Quadrants 1, 4 - Yellow answer
+    const placement PK_B_Y = {{{}, {}, {}}}; // Blue Penalty Kick - Yellow answer
+    const placement PK_Y_Y = {{{}, {}, {}}}; // Yellow Penalty Kick - Yellow answer
+    const placement KO_Y = {{{}, {}, {}}}; // Kick Off - Yellow answer
+    const placement GK_B_Y = {{{}, {}, {}}}; // Blue Goal Kick - Yellow answer
+    const placement GK_Y_Y = {{{}, {}, {}}}; // Yellow Goal Kick - Yellow answer
 };
 
 class RefereeResponder 

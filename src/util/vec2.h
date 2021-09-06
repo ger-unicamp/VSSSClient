@@ -23,19 +23,23 @@ namespace ctrl
          * @param _y y coordinate
          */
         vec2(double _x, double _y) : x(_x), y(_y) {}
+
         /**
          * @param r x and y coordinates
          */
         vec2(double r) : x(r), y(r) {}
+
         /**
          * @brief Construct a new vec2 object at (0.0,0.0)
          * 
          */
         vec2() : x(0.0), y(0.0) {}
+
         /**
          * @param b fira_message::Ball position x,y
          */
         vec2(const fira_message::Ball &b) : x(b.x()), y(b.y()) {}
+        
         /**
          * @param r fira_message::Robot position x,y
          */
