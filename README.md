@@ -32,6 +32,12 @@ Para compilar o projeto utilizamos uma _makefile_ para simplificar os comandos d
 
 - ```make clean_train``` - remove o arquivo train.exe
 
+Em caso de erro, execute o seguinte comando:
+
+``` 
+cd src/pb/proto && sudo chmod +x compile.sh && ./compile.sh
+```
+
 ## Execução
 
 Para executar o projeto, utilize os seguintes comandos:
