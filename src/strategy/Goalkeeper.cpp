@@ -1,6 +1,8 @@
 #include "Goalkeeper.h"
 
-Goalkeeper::Goalkeeper(fira_message::Robot &robot): Player(robot) {}
+Goalkeeper::Goalkeeper(fira_message::Robot &robot)
+    : Player(robot) 
+{}
 
 unsigned int Goalkeeper::lock_count = 0;
 

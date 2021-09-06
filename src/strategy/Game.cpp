@@ -178,16 +178,21 @@ void Game::run()
 {
     RoboCupSSLClient client(this->conf.vision_port, this->conf.multicast_ip);
     VSSClient sim_client(this->conf.command_port, this->conf.command_ip, this->is_yellow);
-
-    // TODO: REFEREE
     RefereeClient referee(this->conf.referee_port, this->conf.replacer_port, this->conf.multicast_ip);
 
     client.open(false); // opens client
+    referee.open();     // opens referee client
 
     fira_message::sim_to_ref::Environment packet;
+    VSSRef::ref_to_team::VSSRef_Command ref_packet;
 
     while (true) 
     {
+        if (referee.receive(ref_packet))
+        {
+
+        }
+
         if (client.receive(packet) && packet.has_frame())
         {
             fira_message::Frame detection = packet.frame();
