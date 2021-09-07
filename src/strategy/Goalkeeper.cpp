@@ -36,8 +36,10 @@ ctrl::vec2 Goalkeeper::defend_goal_from(ctrl::vec2 ball_pos)
  * @param ball 
  * @return ctrl::vec2 
  */
-ctrl::vec2 Goalkeeper::play(fira_message::Ball &ball)
+ctrl::vec2 Goalkeeper::play() //some things are repeating across different kinds of players, consider only adding a function for the different parts
 {
+    fira_message::Ball ball = Game::ball;
+    
     if (is_locked(this->lock_count))
     {
         bool cw = this->robot.y() < ball.y();
@@ -46,7 +48,8 @@ ctrl::vec2 Goalkeeper::play(fira_message::Ball &ball)
     
     ctrl::vec2 univec, motors_speeds, ball_fut_pos;
 
-    ball_fut_pos = this->future_position_relative_to(ball, Goalkeeper::DT_GKP);
+    //all of this could be inside one other function -> REFACTOR
+    ball_fut_pos = this->future_position_relative_to_ball();
 
     if (this->get_pos().distance(ball_fut_pos) <= Goalkeeper::KICK_DIST)
     {

@@ -81,18 +81,28 @@ double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
     return phi;
 }
 
-double Attacker::univec_rotate(fira_message::Ball &ball, double phi)
+/**
+ * @brief rotates the spiral field directing the ball to the center of the enemy goal
+ * 
+ * 
+ * @param phi 
+ * @return double 
+ */
+double Attacker::univec_rotate(double phi)
 {
-    double theta = atan2(-ball.y(), Attacker::ENEMY_GOAL_X_CENTER - ball.x());
+    ctrl::vec2 ball_future_position = Game::get_ball_future_position(this->DT);
+    double theta = atan2(-ball_future_position.y, Game::FIELD_LIMIT_X - ball_future_position.x);
 
     return phi + theta;
 }
 
-ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Robot> &robots)
+ctrl::vec2 Attacker::play(std::vector<fira_message::Robot> &robots)
 {
+    fira_message::Ball ball = Game::ball;
+
     if (is_locked(this->lock_count))
     {
-        bool cw = this->robot.y() < ball.y();
+        bool cw = this->robot.y() < ball.y(); //is this future position or not?
         return spin(cw);
     }
 
@@ -100,18 +110,18 @@ ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Ro
     ctrl::vec2 univec, motors_speeds, ball_fut_pos;
     double spiral_phi, repulsion_phi, phi;
 
-    ball_fut_pos = this->future_position_relative_to(ball, Player::DT);
+    ball_fut_pos = this->future_position_relative_to_ball();
 
-    if (this->get_pos().x < -Attacker::FRIENDLY_GOAL_X_LIMIT)
+    if (this->get_pos().x < -Game::ATTACKER_LINE_X)
     {
-        ball_fut_pos.x = math::bound(ball_fut_pos.x, -Attacker::FRIENDLY_GOAL_X_LIMIT, Player::INF);
+        ball_fut_pos.x = math::bound(ball_fut_pos.x, -Game::ATTACKER_LINE_X, Player::INF);
         spiral_phi = this->univec_horizontal_sigmoid_field(ball_fut_pos);
     }
 
     else
     {
         spiral_phi = this->univec_spiral_field_to_target(ball_fut_pos);
-        spiral_phi = this->univec_rotate(ball, spiral_phi);
+        spiral_phi = this->univec_rotate(spiral_phi);
     }
     
     closest_robot = this->get_closest_robot(robots);

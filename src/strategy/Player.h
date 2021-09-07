@@ -25,8 +25,8 @@ protected:
     fira_message::Robot robot;
 
     fira_message::Robot get_closest_robot(std::vector<fira_message::Robot> &robots);
-    ctrl::vec2 future_position_relative_to(fira_message::Robot &r, double dt);
-    ctrl::vec2 future_position_relative_to(fira_message::Ball &b, double dt);
+    ctrl::vec2 future_position_relative_to(fira_message::Robot &r);
+    ctrl::vec2 future_position_relative_to_ball();
     ctrl::vec2 future_position();
     double univec_repulsion_field(fira_message::Robot &obstacle);
     double univec_vertical_sigmoid_field(ctrl::vec2 target);
@@ -36,7 +36,7 @@ public:
     fira_message::Robot get_robot();
     void set_robot(fira_message::Robot &robot);
     ctrl::vec2 get_pos();
-    double future_dist_to(fira_message::Ball &ball);
+    double future_dist_to_ball();
     double future_dist_to(fira_message::Robot &robot);
     ctrl::vec2 move( ctrl::vec2 vector);
     ctrl::vec2 spin(bool cw);

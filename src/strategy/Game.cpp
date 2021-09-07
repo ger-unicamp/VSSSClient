@@ -132,8 +132,8 @@ void Game::detect_objects(fira_message::Frame &frame)
  */
 unsigned int Game::robot_next_to_ball(Attacker &atk, Midfielder &mid)
 {
-    double atk_ball_dist = atk.future_dist_to(ball);
-    double mid_ball_dist = mid.future_dist_to(ball);
+    double atk_ball_dist = atk.future_dist_to_ball();
+    double mid_ball_dist = mid.future_dist_to_ball();
 
     return (mid_ball_dist < atk_ball_dist) ? 
             mid.get_robot().robot_id() : 
@@ -162,9 +162,9 @@ void Game::send_commands(VSSClient &sim_client)
     // FUNCTION HAS MORE THAN ONE FUNCTIONALITY
     select_roles(gkp, atk, mid);
     
-    ctrl::vec2 gkp_command = gkp.play(this->ball);
-    ctrl::vec2 atk_command = atk.play(this->ball, this->robots);
-    ctrl::vec2 mid_command = mid.play(this->ball, this->robots);
+    ctrl::vec2 gkp_command = gkp.play();
+    ctrl::vec2 atk_command = atk.play(this->robots);
+    ctrl::vec2 mid_command = mid.play(this->robots);
 
     sim_client.sendCommand(gkp.get_robot().robot_id(), gkp_command.x, gkp_command.y);
     sim_client.sendCommand(atk.get_robot().robot_id(), atk_command.x, atk_command.y);
@@ -194,4 +194,15 @@ void Game::run()
             send_commands(sim_client);
         }
     }
+}
+
+/**
+ * @brief Returns ball exact future position
+ * 
+ * @return ctrl::vec2 
+ */
+ctrl::vec2 get_ball_future_position(double DT)
+{
+    ctrl::vec2 fut_pos = DT * ctrl::vec2(Game::ball.vx(), Game::ball.vy());
+    return fut_pos;
 }

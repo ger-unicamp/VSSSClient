@@ -25,7 +25,7 @@ private:
 
     net_config conf;
 
-    fira_message::Ball ball;
+    
     vector<fira_message::Robot> my_robots;
     vector<fira_message::Robot> enemy_robots;
     vector<fira_message::Robot> robots;
@@ -41,6 +41,13 @@ private:
     void send_commands(VSSClient &sim_client);
 
 public:
+    static constexpr double FRAMERATE = 1/60;
+    static constexpr double ATTACKER_LINE_X = 0.5;
+    static constexpr double FIELD_LIMIT_X = 0.75;
+    static constexpr double FIELD_LIMIT_Y = 0.65;
+    static fira_message::Ball ball;
+    static ctrl::vec2 get_ball_future_position(double DT);
+    
     Game(int argc, char *argv[]);
     void run();
 };

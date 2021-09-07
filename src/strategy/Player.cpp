@@ -18,16 +18,17 @@ void Player::set_robot(fira_message::Robot &robot)
  * @param b 
  * @return ctrl::vec2 
  */
-ctrl::vec2 Player::future_position_relative_to(fira_message::Ball &b, double dt)
+ctrl::vec2 Player::future_position_relative_to_ball()
 {
-    ctrl::vec2 fut_pos = dt * ctrl::vec2(b.vx(), b.vy());
+    fira_message::Ball b = Game::ball;
+    ctrl::vec2 fut_pos = this->DT * ctrl::vec2(b.vx(), b.vy());
     double dist = ctrl::vec2(b).distance(ctrl::vec2(this->robot));
     if (dist < fut_pos.abs())
         fut_pos = dist * fut_pos.normalized();
     
     fut_pos = ctrl::vec2(b) + fut_pos;
-    fut_pos.y = math::bound(fut_pos.y, -0.65, 0.65);
-    fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
+    fut_pos.y = math::bound(fut_pos.y, -Game::FIELD_LIMIT_Y, Game::FIELD_LIMIT_Y);
+    fut_pos.x = math::bound(fut_pos.x, -Game::FIELD_LIMIT_X, Game::FIELD_LIMIT_X);
     
     return fut_pos;
 }
@@ -38,16 +39,16 @@ ctrl::vec2 Player::future_position_relative_to(fira_message::Ball &b, double dt)
  * @param r
  * @return ctrl::vec2 
  */
-ctrl::vec2 Player::future_position_relative_to(fira_message::Robot &r, double dt)
+ctrl::vec2 Player::future_position_relative_to(fira_message::Robot &r)
 {
-    ctrl::vec2 fut_pos = dt * ctrl::vec2(r.vx() - this->robot.vx(), r.vy() - this->robot.vy());
+    ctrl::vec2 fut_pos = this->DT * ctrl::vec2(r.vx() - this->robot.vx(), r.vy() - this->robot.vy());
     double dist = ctrl::vec2(r).distance(ctrl::vec2(this->robot));
     if (dist < fut_pos.abs())
         fut_pos = dist * fut_pos.normalized();
     
     fut_pos = ctrl::vec2(r) + fut_pos;
-    fut_pos.y = math::bound(fut_pos.y, -0.65, 0.65);
-    fut_pos.x = math::bound(fut_pos.x, -0.75, 0.75);
+    fut_pos.y = math::bound(fut_pos.y, -Game::FIELD_LIMIT_Y, Game::FIELD_LIMIT_Y);
+    fut_pos.x = math::bound(fut_pos.x, -Game::FIELD_LIMIT_X, Game::FIELD_LIMIT_X);
 
     return fut_pos;
 }
@@ -92,7 +93,7 @@ fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> &
     int idx = -1;
     for (uint i = 0; i < robots.size(); ++i)
     {
-        double dist =this->get_pos().distance(this->future_position_relative_to(robots[i], Player::DT));
+        double dist =this->get_pos().distance(this->future_position_relative_to(robots[i]));
 
         // get min dist of robot that isn't the same robot
         if (dist < min_dist && dist != 0) {
@@ -112,7 +113,7 @@ fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> &
  */
 double Player::univec_repulsion_field(fira_message::Robot &obstacle)
 {
-    ctrl::vec2 fut_obstacle = this->future_position_relative_to(obstacle, Player::DT);
+    ctrl::vec2 fut_obstacle = this->future_position_relative_to(obstacle);
     double phi = (this->get_pos() - fut_obstacle).theta();
     return phi;
 }
@@ -151,9 +152,9 @@ ctrl::vec2 Player::get_pos()
  * @param ball 
  * @return double
  */
-double Player::future_dist_to(fira_message::Ball &ball) 
+double Player::future_dist_to_ball() 
 {
-    ctrl::vec2 target_fut_pos = this->future_position_relative_to(ball, Player::DT);
+    ctrl::vec2 target_fut_pos = this->future_position_relative_to_ball();
     ctrl::vec2 robot_fut_pos = this->future_position();
     return robot_fut_pos.distance(target_fut_pos);
 }
@@ -166,7 +167,7 @@ double Player::future_dist_to(fira_message::Ball &ball)
  */
 double Player::future_dist_to(fira_message::Robot &robot) 
 {
-    ctrl::vec2 target_fut_pos = this->future_position_relative_to(robot, Player::DT);
+    ctrl::vec2 target_fut_pos = this->future_position_relative_to(robot);
     ctrl::vec2 robot_fut_pos = this->future_position();
     return robot_fut_pos.distance(target_fut_pos);
 }
