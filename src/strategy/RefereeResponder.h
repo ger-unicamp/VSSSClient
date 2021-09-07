@@ -4,12 +4,14 @@
 #include <array>
 
 #include "pb/replacement.pb.h"
+#include "pb/vssref_command.pb.h"
+#include "pb/vssref_placement.pb.h"
 
 #include "util/vec2.h"
 
 typedef std::array<ctrl::vec2, 3> placement;
 
-namespace plcmnts
+namespace plc
 {
     const placement FB_Q23_B = {{{}, {}, {}}}; // Free Ball Quadrants 2, 3 - Blue answer
     const placement FB_Q14_B = {{{}, {}, {}}}; // Free Ball Quadrants 1, 4 - Blue answer
@@ -31,25 +33,29 @@ namespace plcmnts
 class RefereeResponder 
 {
 private:
+    bool game_on;
     bool is_yellow;
     VSSRef::ref_to_team::VSSRef_Command ref_packet;
     VSSRef::team_to_ref::VSSRef_Placement cmd;
     VSSRef::Frame *replacement;
 
+    placement answer_placement;
+
     void set_replacement();
 
     int check_foul();
     void answer_stop();
-
     void answer_free_ball();
     void answer_penalty_kick();
     void answer_kick_off();
     void answer_goal_kick();
-
-    void send_command(VSSRef::team_to_ref::VSSRef_Placement cmd);
+    void set_answer_placement();
 
 public:
-    RefereeResponder(bool is_yellow, VSSRef::ref_to_team::VSSRef_Command &ref_packet);
+    RefereeResponder(bool is_yellow);
+
+    void set_ref_packet(VSSRef::ref_to_team::VSSRef_Command &ref_packet);
+    bool get_game_on();
     VSSRef::team_to_ref::VSSRef_Placement answer();
 };
 

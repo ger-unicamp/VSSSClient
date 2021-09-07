@@ -21,6 +21,7 @@ struct Net_config
 class Game 
 { 
 private:
+    bool game_on;
     bool is_yellow;
 
     Net_config conf;

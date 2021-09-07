@@ -1,10 +1,12 @@
 #include <iostream>
 #include "strategy/Game.h"
+#include "strategy/RefereeResponder.h"
 #include "util/argparse.h"
 #include "net/referee_client.h"
 
 Game::Game(int argc, char *argv[]) 
 {
+    this->game_on = false;
     this->startup(argc, argv);
 }
 
@@ -165,9 +167,9 @@ void Game::send_commands(VSSClient &sim_client)
     // FUNCTION HAS MORE THAN ONE FUNCTIONALITY
     select_roles(gkp, atk, mid);
     
-    ctrl::vec2 gkp_command = gkp.play(this->ball);
-    ctrl::vec2 atk_command = atk.play(this->ball, this->robots);
-    ctrl::vec2 mid_command = mid.play(this->ball, this->robots);
+    ctrl::vec2 gkp_command = game_on ? gkp.play(this->ball) : ctrl::vec2();
+    ctrl::vec2 atk_command = game_on ? atk.play(this->ball, this->robots) : ctrl::vec2();
+    ctrl::vec2 mid_command = game_on ? mid.play(this->ball, this->robots) : ctrl::vec2();
 
     sim_client.sendCommand(gkp.get_robot().robot_id(), gkp_command.x, gkp_command.y);
     sim_client.sendCommand(atk.get_robot().robot_id(), atk_command.x, atk_command.y);
@@ -180,17 +182,22 @@ void Game::run()
     VSSClient sim_client(this->conf.command_port, this->conf.command_ip, this->is_yellow);
     RefereeClient referee(this->conf.referee_port, this->conf.replacer_port, this->conf.multicast_ip);
 
-    client.open(false); // opens client
-    referee.open();     // opens referee client
-
     fira_message::sim_to_ref::Environment packet;
     VSSRef::ref_to_team::VSSRef_Command ref_packet;
+
+    RefereeResponder referee_responder(is_yellow);
+
+    client.open(false); // opens client
+    referee.open();     // opens referee client
 
     while (true) 
     {
         if (referee.receive(ref_packet))
         {
-
+            referee_responder.set_ref_packet(ref_packet);
+            VSSRef::team_to_ref::VSSRef_Placement cmd = referee_responder.answer();
+            referee.send(cmd);
+            game_on = referee_responder.get_game_on();
         }
 
         if (client.receive(packet) && packet.has_frame())
@@ -198,7 +205,7 @@ void Game::run()
             fira_message::Frame detection = packet.frame();
 
             detect_objects(detection);
-        
+
             send_commands(sim_client);
         }
     }
