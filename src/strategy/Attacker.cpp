@@ -1,6 +1,8 @@
 #include "Attacker.h"
 
-Attacker::Attacker(fira_message::Robot &robot): Player(robot) {}
+Attacker::Attacker(fira_message::Robot &robot)
+    : Player(robot) 
+{}
 
 unsigned int Attacker::lock_count = 0;
 

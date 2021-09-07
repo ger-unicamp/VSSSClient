@@ -1,6 +1,8 @@
 #include "Midfielder.h"
 
-Midfielder::Midfielder(fira_message::Robot &robot): Player(robot) {}
+Midfielder::Midfielder(fira_message::Robot &robot)
+    : Player(robot) 
+{}
 
 unsigned int Midfielder::lock_count = 0;
 

@@ -8,7 +8,7 @@
 #include "strategy/Attacker.h"
 #include "strategy/Midfielder.h"
 
-struct net_config
+struct Net_config
 {
     std::string multicast_ip;
     std::string command_ip;
@@ -21,9 +21,10 @@ struct net_config
 class Game 
 { 
 private:
+    bool game_on;
     bool is_yellow;
 
-    net_config conf;
+    Net_config conf;
 
     fira_message::Ball ball;
     vector<fira_message::Robot> my_robots;
