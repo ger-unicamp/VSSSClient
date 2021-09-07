@@ -1,7 +1,6 @@
 #include "Player.h"
 
-Player::Player(fira_message::Robot &robot): robot(robot) 
-{}
+Player::Player(fira_message::Robot &robot): robot(robot) {}
 
 fira_message::Robot Player::get_robot()
 {
@@ -111,7 +110,7 @@ fira_message::Robot Player::get_closest_robot(std::vector<fira_message::Robot> &
 }
 
 /**
- * @brief calculates final univector repulsion field created by obstacle
+ * @brief 
  * 
  * @param obstacle 
  * @return double 
