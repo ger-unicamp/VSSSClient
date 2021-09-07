@@ -1,4 +1,5 @@
 #include "Goalkeeper.h"
+#include "strategy/Game.h"
 
 Goalkeeper::Goalkeeper(fira_message::Robot &robot): Player(robot) {}
 

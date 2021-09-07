@@ -1,4 +1,5 @@
 #include "Attacker.h"
+#include "strategy/Game.h"
 
 Attacker::Attacker(fira_message::Robot &robot): Player(robot) {}
 
