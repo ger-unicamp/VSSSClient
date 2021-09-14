@@ -18,12 +18,13 @@ protected:
     static constexpr double MIN_MOVING_VEL = 0.1;
     static constexpr int N_FRAMES_IS_STOPPED = 60;
     static constexpr int N_FRAMES_STOP_SPIN = 70;
+    
+    static unsigned int stuck_count;
 
     // protected constructor
     Player(fira_message::Robot &robot);
 
     fira_message::Robot robot;
-
     fira_message::Robot get_closest_robot(std::vector<fira_message::Robot> &robots);
     ctrl::vec2 future_position_relative_to(fira_message::Robot &r);
     ctrl::vec2 future_position_relative_to_ball();
@@ -31,7 +32,9 @@ protected:
     double univec_repulsion_field(fira_message::Robot &obstacle);
     double univec_vertical_sigmoid_field(ctrl::vec2 target);
     double univec_composite_field(double repulsion_phi, double spiral_phi, double closest_obstacle_dist);
-
+    ctrl::vec2 spin(bool cw);
+    bool is_stuck(unsigned int &stuck_count);
+    
 public:
     fira_message::Robot get_robot();
     void set_robot(fira_message::Robot &robot);
@@ -39,8 +42,8 @@ public:
     double future_dist_to_ball();
     double future_dist_to(fira_message::Robot &robot);
     ctrl::vec2 move( ctrl::vec2 vector);
-    ctrl::vec2 spin(bool cw);
-    bool is_locked(unsigned int &lock_count);
+    ctrl::vec2 play();
+    ctrl::vec2 behaviour();
 };
 
 #endif
