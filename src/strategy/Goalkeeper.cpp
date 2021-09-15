@@ -12,38 +12,35 @@ unsigned int Goalkeeper::lock_count = 0;
  */
 double Goalkeeper::get_bisector_slope(ctrl::vec2 ball_pos)
 {
-    ctrl::vec2 top_goal_limit = ctrl::vec2( 0 , 0.2);
-    ctrl::vec2 bottom_goal_limit = ctrl::vec2( 0 , -0.2);
+    double y_half_size_goal = 0.2;
+    double x_goal_position = -0.75;
+
+    ctrl::vec2 top_goal_limit = ctrl::vec2( x_goal_position , y_half_size_goal);
+    ctrl::vec2 bottom_goal_limit = ctrl::vec2( x_goal_position , -y_half_size_goal);
 
     double dist_ball_top = top_goal_limit.distance(ball_pos);
     double dist_ball_bottom = bottom_goal_limit.distance(ball_pos);
 
-    double theta = acos( (pow(dist_ball_top , 2) + pow(dist_ball_bottom , 2) - 0.16)/(2 * dist_ball_top * dist_ball_bottom));
+    double theta = acos( (pow(dist_ball_top , 2) + pow(dist_ball_bottom , 2) - pow(2*y_half_size_goal, 2))/(2 * dist_ball_top * dist_ball_bottom));
     double bisector = theta/2;
 
     double alpha, slope;
     if (ball_pos.y > 0)
     {
-        alpha = asin(abs(ball_pos.y - 0.2)/dist_ball_top);
+        alpha = asin(abs(ball_pos.y - y_half_size_goal)/dist_ball_top);
     }
     else
     {
         //y position is negative
-        alpha = asin(abs(ball_pos.y + 0.2)/dist_ball_bottom);
+        alpha = asin(abs(ball_pos.y + y_half_size_goal)/dist_ball_bottom);
     }
 
     //if vertical position of the ball is inside the goal limits
-    if (ball_pos.y < 0.2 && ball_pos.y > -0.2)
+    if (ball_pos.y < y_half_size_goal && ball_pos.y > -y_half_size_goal)
     {   
         slope = tan(bisector - alpha);
     }
     else{
-        printf("aplha: %f\n", alpha);
-        printf("top: %f\n", dist_ball_top);
-        printf("bot: %f\n", dist_ball_bottom);
-        printf("conta: %f\n", (pow(dist_ball_top , 2) + pow(dist_ball_bottom , 2) - 0.16)/(2 * dist_ball_top * dist_ball_bottom));
-        printf("tetha: %f\n", theta);
-        printf("bisector: %f\n", bisector);
 
         slope = tan(bisector + alpha);
         
@@ -68,9 +65,8 @@ double Goalkeeper::get_Y_position(ctrl::vec2 ball_pos, double slope)
 {
     //intersection between X_LIMIT_GPK and bisector line
     double linear_b = ball_pos.y - slope * ball_pos.x;
-    //FAIL TO ACCESS X_LIMIT_GKP
-    double target_y = slope * -0.66  + linear_b;
-    printf("%f\n", linear_b);
+    
+    double target_y = slope * Goalkeeper::X_LIMIT_GKP + linear_b;
 
     return target_y;
 
@@ -97,9 +93,8 @@ ctrl::vec2 Goalkeeper::defend_goal_from(ctrl::vec2 ball_pos)
     else
     {
         //defense chages
-        //y_target = math::bound(ball_pos.y, -Goalkeeper::Y_LIMIT_GKP, Goalkeeper::Y_LIMIT_GKP);
         slope = this->get_bisector_slope(ball_pos);
-        printf("%f\n", slope);
+       
         y_target = this->get_Y_position(ball_pos, slope);
     }
 

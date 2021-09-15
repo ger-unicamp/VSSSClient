@@ -6,6 +6,7 @@
 class Goalkeeper: public Player
 {
 private:
+    
     static constexpr double X_LIMIT_GKP = -0.66;
     static constexpr double Y_LIMIT_GKP = 0.28;
     static constexpr double X_LIMIT_BALL = -0.55;
