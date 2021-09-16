@@ -3,18 +3,6 @@
 
 Midfielder::Midfielder(fira_message::Robot &robot): Player(robot) {}
 
-ctrl::vec2 Midfielder::play(){
-
-    if (this->is_stuck(this->stuck_count))
-    {
-        bool cw = this->robot.y() < Game::ball.y();
-        return this->spin(cw);
-    }
-
-    return Midfielder::behaviour(std::vector<fira_message::Robot> &robots);
-
-}
-
 /**
  * @brief Midfielder behaviour - returns goalkeeper final motors speeds
  * 

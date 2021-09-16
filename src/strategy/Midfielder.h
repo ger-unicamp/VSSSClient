@@ -11,7 +11,6 @@ private:
 public:
     Midfielder(fira_message::Robot &robot);
     ctrl::vec2 behaviour(std::vector<fira_message::Robot> &robots);
-    ctrl::vec2 play();
 };
 
 #endif

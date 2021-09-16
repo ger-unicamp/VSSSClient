@@ -21,8 +21,7 @@ private:
     double univec_rotate(double phi);
 
 public:
-    Attacker(fira_message::Robot &robot);
-    
+    Attacker(fira_message::Robot &robots);
     ctrl::vec2 behaviour(std::vector<fira_message::Robot> &robots);
 };
 
