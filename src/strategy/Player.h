@@ -19,8 +19,6 @@ protected:
     static constexpr int N_FRAMES_IS_STOPPED = 60;
     static constexpr int N_FRAMES_STOP_SPIN = 70;
     
-    static unsigned int stuck_count;
-
     // protected constructor
     Player(fira_message::Robot &robot);
 

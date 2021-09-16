@@ -3,8 +3,6 @@
 
 Player::Player(fira_message::Robot &robot): robot(robot) {}
 
-unsigned int Player::stuck_count = 0;
-
 fira_message::Robot Player::get_robot()
 {
     return this->robot;
@@ -242,23 +240,11 @@ ctrl::vec2 Player::spin(bool cw)
  */
 ctrl::vec2 Player::play(){
 
-    if (this->is_stuck(this->stuck_count))
-    {
-        bool cw = this->robot.y() < Game::ball.y();
-        return this->spin(cw);
-    }
-
     return this->behaviour();
 
 }
 
 ctrl::vec2 Player::play(std::vector<fira_message::Robot> &robots){
-
-    if (this->is_stuck(this->stuck_count))
-    {
-        bool cw = this->robot.y() < Game::ball.y();
-        return this->spin(cw);
-    }
 
     return this->behaviour(robots);
 
