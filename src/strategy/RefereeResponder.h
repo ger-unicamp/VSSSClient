@@ -13,11 +13,11 @@ typedef std::array<ctrl::vec2, 3> placement;
 
 namespace plc
 {
-    const placement FB_Q23_B = {{{}, {}, {}}}; // Free Ball Quadrants 2, 3 - Blue answer
+    const placement FB_Q23_B = {{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}}; // Free Ball Quadrants 2, 3 - Blue answer
     const placement FB_Q14_B = {{{}, {}, {}}}; // Free Ball Quadrants 1, 4 - Blue answer
     const placement PK_B_B = {{{}, {}, {}}}; // Blue Penalty Kick - Blue answer
     const placement PK_Y_B = {{{}, {}, {}}}; // Yellow Penalty Kick - Blue answer
-    const placement KO_B = {{{}, {}, {}}}; // Kick Off - Blue answer
+    const placement KO_B = {{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}}; // Kick Off - Blue answer
     const placement GK_B_B = {{{}, {}, {}}}; // Blue Goal Kick - Blue answer
     const placement GK_Y_B = {{{}, {}, {}}}; // Yellow Goal Kick - Blue answer
 
