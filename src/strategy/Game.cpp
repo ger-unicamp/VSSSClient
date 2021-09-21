@@ -188,7 +188,7 @@ void Game::run()
     RefereeResponder referee_responder(is_yellow);
 
     client.open(false); // opens client
-    referee.open();     // opens referee client
+    referee.open();
 
     while (true) 
     {
