@@ -91,8 +91,15 @@ double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
 double Attacker::univec_rotate(double phi)
 {
     ctrl::vec2 ball_future_position = Game::get_ball_future_position(this->DT);
-    double theta = atan2(ball_future_position.y, (Game::FIELD_LIMIT_X-0.15) - ball_future_position.x); //tirar o 5, transformar o 0.15 numa constante, e talvez a posicao do meio do gol tb
-    std::cout << ((2*Game::FIELD_LIMIT_X)-1.8) - ball_future_position.x << "\n";
+    double theta = atan2(ball_future_position.y, (Game::FIELD_LIMIT_X-5-0.15) - ball_future_position.x); //tirar o 5, transformar o 0.15 numa constante, e talvez a posicao do meio do gol tb
+
+    std::cout << "\n\n\n--------\n";
+    std::cout << "cateto adjacente" << (Game::FIELD_LIMIT_X-5-0.15) - ball_future_position.x << "\n";
+    std::cout << "ball_future_position.x:" << ball_future_position.x << "\n";
+    std::cout << "ball_future_position.y:" << ball_future_position.y << "\n";
+    std::cout << "Phi:" << phi*(180/3.14) << "\n";
+    std::cout << "Theta:" << theta*(180/3.14) << "\n";
+    std::cout << "Attack-Angle:" << (phi + theta)*(180/3.14) << "\n";
     return phi + theta;
 }
 
