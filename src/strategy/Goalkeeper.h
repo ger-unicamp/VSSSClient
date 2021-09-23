@@ -12,11 +12,13 @@ private:
     static constexpr double DT = 0.245;
     static constexpr double KICK_DIST = 0.075;
 
+    static unsigned int lock_count;
+
     ctrl::vec2 defend_goal_from(ctrl::vec2 ball_pos);
 
 public:
     Goalkeeper(fira_message::Robot &robot);
-    ctrl::vec2 behaviour();
+    ctrl::vec2 play();
 };
 
 #endif

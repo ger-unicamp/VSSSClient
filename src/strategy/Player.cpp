@@ -3,8 +3,6 @@
 
 Player::Player(fira_message::Robot &robot): robot(robot) {}
 
-unsigned int Player::stuck_count = 0;
-
 fira_message::Robot Player::get_robot()
 {
     return this->robot;
@@ -197,32 +195,32 @@ ctrl::vec2 Player::move(ctrl::vec2 vector)
 }
 
 /**
- * @brief checks if Player robot is stuck and should spin to get free
+ * @brief checks if Player robot is locked and should spin to get free
  * 
  * @param stopped_count 
- * @return true robot is stuck
- * @return false robot isn't stuck
+ * @return true robot is locked
+ * @return false robot isn't locked
  */
-bool Player::is_stuck(unsigned int &stuck_count)
+bool Player::is_locked(unsigned int &lock_count)
 {
     ctrl::vec2 vel(this->robot.vx(), this->robot.vy());
 
-    if (vel.abs() > Player::MIN_MOVING_VEL || stuck_count >= Player::N_FRAMES_STOP_SPIN) 
+    if (vel.abs() > Player::MIN_MOVING_VEL || lock_count >= Player::N_FRAMES_STOP_SPIN) 
     {
-        stuck_count = 0;
+        lock_count = 0;
     }
     else 
     {
-        ++stuck_count;
+        ++lock_count;
     }
 
-    return (stuck_count >= Player::N_FRAMES_IS_STOPPED);
+    return (lock_count >= Player::N_FRAMES_IS_STOPPED);
 }
 
 /**
- * @brief spin Player robot to kick ball or get free from stuck position
+ * @brief spin Player robot to kick ball or get free from locked position
  * 
- * @param cw rotate cstuckwise or countercstuckwise
+ * @param cw rotate clockwise or counterclockwise
  * @return ctrl::vec2 
  */
 ctrl::vec2 Player::spin(bool cw)
@@ -234,22 +232,3 @@ ctrl::vec2 Player::spin(bool cw)
 
     return motors_speeds;
 }
-
-/**
- * @brief A wrapper method that implements a behaviour
- * 
- * @return ctrl::vec2 
- */
-ctrl::vec2 Player::play(){
-
-    if (this->is_stuck(this->stuck_count))
-    {
-        bool cw = this->robot.y() < Game::ball.y();
-        return this->spin(cw);
-    }
-
-    return this->behaviour();
-
-}
-
-ctrl::vec2 Player::behaviour(){}

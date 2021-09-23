@@ -3,6 +3,8 @@
 
 Attacker::Attacker(fira_message::Robot &robot): Player(robot) {}
 
+unsigned int Attacker::lock_count = 0;
+
  /** @brief Calculates a spiral field arround (0, 0)
  * 
  * @param cw char indicating spiral orientation ('+' to counterclockwise and '-' to clockwise)
@@ -95,13 +97,16 @@ double Attacker::univec_rotate(double phi)
     return phi + theta;
 }
 
-/**
- * @brief Attacker behaviour - returns attacker final motors speed
- * 
- * @param robots 
- * @return ctrl::vec2 
- */
-ctrl::vec2 Attacker::behaviour(std::vector<fira_message::Robot> &robots){
+ctrl::vec2 Attacker::play(std::vector<fira_message::Robot> &robots)
+{
+    fira_message::Ball ball = Game::ball;
+
+    if (is_locked(this->lock_count))
+    {
+        bool cw = this->robot.y() < ball.y(); //is this future position or not?
+        return spin(cw);
+    }
+
     fira_message::Robot closest_robot;
     ctrl::vec2 univec, motors_speeds, ball_fut_pos;
     double spiral_phi, repulsion_phi, phi;

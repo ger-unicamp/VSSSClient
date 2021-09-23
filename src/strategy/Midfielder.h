@@ -3,15 +3,17 @@
 
 #include "Player.h"
 
+
 class Midfielder: public Player
 {
 private:
     static constexpr double MID_LIMIT = 0.4;
+
+    static unsigned int lock_count;
     
 public:
     Midfielder(fira_message::Robot &robot);
-    ctrl::vec2 behaviour(std::vector<fira_message::Robot> &robots);
-    ctrl::vec2 play();
+    ctrl::vec2 play(std::vector<fira_message::Robot> &robots);
 };
 
 #endif

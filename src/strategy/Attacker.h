@@ -13,7 +13,7 @@ private:
     static constexpr bool CW = true;
     static constexpr bool CCW = false;
 
-    ctrl::vec2 vec;
+    static unsigned int lock_count;ctrl::vec2 vec;
 
     double univec_spiral_field(ctrl::vec2 pos, bool is_cw);
     double univec_spiral_field_to_target(ctrl::vec2 target);
@@ -22,8 +22,8 @@ private:
 
 public:
     Attacker(fira_message::Robot &robot);
-    
-    ctrl::vec2 behaviour(std::vector<fira_message::Robot> &robots);
+
+    ctrl::vec2 play(std::vector<fira_message::Robot> &robots);
 };
 
 #endif

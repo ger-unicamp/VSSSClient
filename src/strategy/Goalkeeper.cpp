@@ -3,6 +3,8 @@
 
 Goalkeeper::Goalkeeper(fira_message::Robot &robot): Player(robot) {}
 
+unsigned int Goalkeeper::lock_count = 0;
+
 /**
  * @brief defend our goal by following ball y projection using a vertical sigmoid univector field
  * 
@@ -30,13 +32,21 @@ ctrl::vec2 Goalkeeper::defend_goal_from(ctrl::vec2 ball_pos)
 }
 
 /**
- * @brief Goalkeeper behaviour - returns goalkeeper final motors speed
+ * @brief returns goalkeeper final motors speed
  * 
  * @param ball 
  * @return ctrl::vec2 
  */
-ctrl::vec2 Goalkeeper::behaviour()
+ctrl::vec2 Goalkeeper::play() //some things are repeating across different kinds of players, consider only adding a function for the different parts
 {
+    fira_message::Ball ball = Game::ball;
+    
+    if (is_locked(this->lock_count))
+    {
+        bool cw = this->robot.y() < ball.y();
+        return spin(cw);
+    }
+    
     ctrl::vec2 univec, motors_speeds, ball_fut_pos;
 
     //all of this could be inside one other function -> REFACTOR
