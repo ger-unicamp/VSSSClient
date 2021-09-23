@@ -34,8 +34,11 @@ double Attacker::univec_spiral_field(ctrl::vec2 pos, bool is_cw)
 double Attacker::univec_spiral_field_to_target(ctrl::vec2 target)
 {
     double phi;
+
+    ctrl::vec2 rotated_pos =  this->univec_rotate(); //always makes the robot aim for the goal, rotates a virtual robot around the vector field and grabs its position
+
     // univec always operate over translated points
-    ctrl::vec2 translated = this->get_pos() - target;
+    ctrl::vec2 translated = rotated_pos - target;
     double yl = translated.y + Attacker::RADIUS;
     double yr = translated.y - Attacker::RADIUS;
     ctrl::vec2 posl = translated - ctrl::vec2(0, Attacker::RADIUS);
@@ -46,7 +49,7 @@ double Attacker::univec_spiral_field_to_target(ctrl::vec2 target)
         double sin_phi, cos_phi;
         double phicw = this->univec_spiral_field(posr, Attacker::CW);
         double phiccw = this->univec_spiral_field(posl, Attacker::CCW);
-        sincos(phicw, &sin_phi, &cos_phi); // Get sin & cosin at once
+        sincos(phicw, &sin_phi, &cos_phi); // Get sin & cos at once
         ctrl::vec2 Ncw = ctrl::vec2(cos_phi, sin_phi);
         sincos(phiccw, &sin_phi, &cos_phi);
         ctrl::vec2 Nccw = ctrl::vec2(cos_phi, sin_phi);
@@ -89,12 +92,29 @@ double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
  * @param phi 
  * @return double 
  */
-double Attacker::univec_rotate(double phi)
+ctrl::vec2 Attacker::univec_rotate()
 {
+    double arc_length_sin, arc_length_cos;
     ctrl::vec2 ball_future_position = Game::get_ball_future_position(this->DT);
-    double theta = atan2(-ball_future_position.y, Game::GOAL_LINE_X - ball_future_position.x);
+    ctrl::vec2 robot_pos = this->get_pos();
 
-    return phi + theta;
+    //theta is the angle that the ball makes with the goal
+    double theta = atan2(-ball_future_position.y, Game::GOAL_LINE_X - ball_future_position.x);
+    
+    //radius is the distance from the attacker to the ball
+    double radius = robot_pos.distance(ball_future_position);
+
+    //arc_length is the arc_length of the virtual robot that rotates around the ball to return us a vector
+    double arc_length = -theta * PI * radius;
+
+    sincos(arc_length, &arc_length_sin, &arc_length_cos); //this is faster than calculating sin and cos separated
+
+    double virtual_x = robot_pos.x + (radius * arc_length_cos);
+    double virtual_y = robot_pos.y + (radius * arc_length_sin);
+
+    ctrl::vec2 rotated_virtual_pos = ctrl::vec2(virtual_x, virtual_y);
+
+    return rotated_virtual_pos;
 }
 
 ctrl::vec2 Attacker::play(std::vector<fira_message::Robot> &robots)
@@ -122,7 +142,6 @@ ctrl::vec2 Attacker::play(std::vector<fira_message::Robot> &robots)
     else
     {
         spiral_phi = this->univec_spiral_field_to_target(ball_fut_pos);
-        spiral_phi = this->univec_rotate(spiral_phi);
     }
     
     closest_robot = this->get_closest_robot(robots);

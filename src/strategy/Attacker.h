@@ -18,7 +18,7 @@ private:
     double univec_spiral_field(ctrl::vec2 pos, bool is_cw);
     double univec_spiral_field_to_target(ctrl::vec2 target);
     double univec_horizontal_sigmoid_field(ctrl::vec2 target);
-    double univec_rotate(double phi);
+    ctrl::vec2 univec_rotate();
 
 public:
     Attacker(fira_message::Robot &robot);
