@@ -41,11 +41,9 @@ public:
     ctrl::vec2 get_pos();
     double future_dist_to_ball();
     double future_dist_to(fira_message::Robot &robot);
-    ctrl::vec2 move(ctrl::vec2 vector);
+    ctrl::vec2 move( ctrl::vec2 vector);
     ctrl::vec2 play();
-    ctrl::vec2 play(std::vector<fira_message::Robot> &robots);
-    virtual ctrl::vec2 behaviour();
-    virtual ctrl::vec2 behaviour(std::vector<fira_message::Robot> &robots);
+    ctrl::vec2 behaviour();
 };
 
 #endif

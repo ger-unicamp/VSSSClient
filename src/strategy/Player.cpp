@@ -252,22 +252,4 @@ ctrl::vec2 Player::play(){
 
 }
 
-ctrl::vec2 Player::play(std::vector<fira_message::Robot> &robots){
-
-    if (this->is_stuck(this->stuck_count))
-    {
-        bool cw = this->robot.y() < Game::ball.y();
-        return this->spin(cw);
-    }
-
-    return this->behaviour(robots);
-
-}
-
-ctrl::vec2 Player::behaviour(){
-    return ctrl::vec2();
-}
-
-ctrl::vec2 Player::behaviour(std::vector<fira_message::Robot> &robots){
-    return ctrl::vec2();
-};
+ctrl::vec2 Player::behaviour(){}
