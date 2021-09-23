@@ -8,15 +8,19 @@ unsigned int Midfielder::stuck_count = 0;
 ctrl::vec2 Midfielder::play(std::vector<fira_message::Robot> &robots)
 {
     fira_message::Ball ball = Game::ball;
+    fira_message::Robot closest_robot;
+    ctrl::vec2 target, univec, motors_speeds, ball_fut_pos;
+    double repulsion_phi, sigmoid_phi, phi;
+
+    ball_fut_pos = this->future_position_relative_to_ball();
+
     if (is_stuck(this->stuck_count))
     {
-        bool cw = this->robot.y() < ball.y();
+        bool cw = this->robot.y() < ball_fut_pos.y;
         return spin(cw);
     }
 
-    fira_message::Robot closest_robot;
-    ctrl::vec2 target, univec, motors_speeds;
-    double repulsion_phi, sigmoid_phi, phi;
+    
 
     target = ctrl::vec2(ball);
 

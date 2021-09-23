@@ -39,15 +39,15 @@ ctrl::vec2 Goalkeeper::defend_goal_from(ctrl::vec2 ball_pos)
  */
 ctrl::vec2 Goalkeeper::play() //some things are repeating across different kinds of players, consider only adding a function for the different parts
 {
-    fira_message::Ball ball = Game::ball;
-    
+    ctrl::vec2 univec, motors_speeds, ball_fut_pos;
+
+    ball_fut_pos = this->future_position_relative_to_ball();
+
     if (is_stuck(this->stuck_count))
     {
-        bool cw = this->robot.y() < ball.y();
+        bool cw = this->robot.y() < ball_fut_pos.y; //is this future position or not?
         return spin(cw);
     }
-    
-    ctrl::vec2 univec, motors_speeds, ball_fut_pos;
 
     //all of this could be inside one other function -> REFACTOR
     ball_fut_pos = this->future_position_relative_to_ball();
