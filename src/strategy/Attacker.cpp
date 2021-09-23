@@ -1,8 +1,8 @@
 #include "Attacker.h"
+#include "strategy/Game.h"
+#include <iostream>
 
 Attacker::Attacker(fira_message::Robot &robot): Player(robot) {}
-
-unsigned int Attacker::lock_count = 0;
 
  /** @brief Calculates a spiral field arround (0, 0)
  * 
@@ -91,21 +91,18 @@ double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
 double Attacker::univec_rotate(double phi)
 {
     ctrl::vec2 ball_future_position = Game::get_ball_future_position(this->DT);
-    double theta = atan2(-ball_future_position.y, Game::FIELD_LIMIT_X - ball_future_position.x);
-
+    double theta = atan2(ball_future_position.y, (Game::FIELD_LIMIT_X-0.15) - ball_future_position.x); //tirar o 5, transformar o 0.15 numa constante, e talvez a posicao do meio do gol tb
+    std::cout << ((2*Game::FIELD_LIMIT_X)-1.8) - ball_future_position.x << "\n";
     return phi + theta;
 }
 
-ctrl::vec2 Attacker::play(std::vector<fira_message::Robot> &robots)
-{
-    fira_message::Ball ball = Game::ball;
-
-    if (is_locked(this->lock_count))
-    {
-        bool cw = this->robot.y() < ball.y(); //is this future position or not?
-        return spin(cw);
-    }
-
+/**
+ * @brief Attacker behaviour - returns attacker final motors speed
+ * 
+ * @param robots 
+ * @return ctrl::vec2 
+ */
+ctrl::vec2 Attacker::behaviour(std::vector<fira_message::Robot> &robots){
     fira_message::Robot closest_robot;
     ctrl::vec2 univec, motors_speeds, ball_fut_pos;
     double spiral_phi, repulsion_phi, phi;
