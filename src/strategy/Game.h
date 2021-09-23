@@ -43,7 +43,8 @@ private:
 public:
     static constexpr double FRAMERATE = 1/60;
     static constexpr double ATTACKER_LINE_X = 0.5;
-    static constexpr double FIELD_LIMIT_X = 0.75;
+    static constexpr double GOAL_LINE_X = 0.75;
+    static constexpr double FIELD_LIMIT_X = 0.90;
     static constexpr double FIELD_LIMIT_Y = 0.65;
     static fira_message::Ball ball;
     static ctrl::vec2 get_ball_future_position(double DT);

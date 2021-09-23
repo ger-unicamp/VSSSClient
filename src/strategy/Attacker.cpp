@@ -92,7 +92,7 @@ double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
 double Attacker::univec_rotate(double phi)
 {
     ctrl::vec2 ball_future_position = Game::get_ball_future_position(this->DT);
-    double theta = atan2(-ball_future_position.y, Game::FIELD_LIMIT_X - ball_future_position.x);
+    double theta = atan2(-ball_future_position.y, Game::GOAL_LINE_X - ball_future_position.x);
 
     return phi + theta;
 }

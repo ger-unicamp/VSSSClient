@@ -206,6 +206,6 @@ fira_message::Ball Game::ball = fira_message::Ball();
 
 ctrl::vec2 Game::get_ball_future_position(double DT)
 {
-    ctrl::vec2 fut_pos = DT * ctrl::vec2(Game::ball.vx(), Game::ball.vy());
+    ctrl::vec2 fut_pos = ctrl::vec2(Game::ball.vx() + (DT * Game::ball.vx()), Game::ball.vy() + (DT * Game::ball.vy()));
     return fut_pos;
 }
