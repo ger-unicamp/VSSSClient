@@ -1,5 +1,4 @@
 #include "Player.h"
-#include "strategy/Game.h"
 
 Player::Player(fira_message::Robot &robot): robot(robot) {}
 

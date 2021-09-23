@@ -196,15 +196,12 @@ void Game::run()
     }
 }
 
-fira_message::Ball Game::ball = fira_message::Ball();
-
 /**
  * @brief Returns ball exact future position
  * 
  * @return ctrl::vec2 
  */
-
-ctrl::vec2 Game::get_ball_future_position(double DT)
+ctrl::vec2 get_ball_future_position(double DT)
 {
     ctrl::vec2 fut_pos = ctrl::vec2(Game::ball.vx() + (DT * Game::ball.vx()), Game::ball.vy() + (DT * Game::ball.vy()));
     return fut_pos;

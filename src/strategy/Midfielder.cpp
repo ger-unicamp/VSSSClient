@@ -1,5 +1,4 @@
 #include "Midfielder.h"
-#include "strategy/Game.h"
 
 Midfielder::Midfielder(fira_message::Robot &robot): Player(robot) {}
 
