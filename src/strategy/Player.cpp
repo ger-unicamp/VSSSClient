@@ -195,30 +195,30 @@ ctrl::vec2 Player::move(ctrl::vec2 vector)
 }
 
 /**
- * @brief checks if Player robot is locked and should spin to get free
+ * @brief checks if Player robot is stuck and should spin to get free
  * 
  * @param stopped_count 
- * @return true robot is locked
- * @return false robot isn't locked
+ * @return true robot is stuck
+ * @return false robot isn't stuck
  */
-bool Player::is_locked(unsigned int &lock_count)
+bool Player::is_stuck(unsigned int &stuck_count)
 {
     ctrl::vec2 vel(this->robot.vx(), this->robot.vy());
 
-    if (vel.abs() > Player::MIN_MOVING_VEL || lock_count >= Player::N_FRAMES_STOP_SPIN) 
+    if (vel.abs() > Player::MIN_MOVING_VEL || stuck_count >= Player::N_FRAMES_STOP_SPIN) 
     {
-        lock_count = 0;
+        stuck_count = 0;
     }
     else 
     {
-        ++lock_count;
+        ++stuck_count;
     }
 
-    return (lock_count >= Player::N_FRAMES_IS_STOPPED);
+    return (stuck_count >= Player::N_FRAMES_IS_STOPPED);
 }
 
 /**
- * @brief spin Player robot to kick ball or get free from locked position
+ * @brief spin Player robot to kick ball or get free from stuck position
  * 
  * @param cw rotate clockwise or counterclockwise
  * @return ctrl::vec2 

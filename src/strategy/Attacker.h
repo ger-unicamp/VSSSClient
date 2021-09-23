@@ -13,7 +13,7 @@ private:
     static constexpr bool CW = true;
     static constexpr bool CCW = false;
 
-    static unsigned int lock_count;ctrl::vec2 vec;
+    static unsigned int stuck_count;ctrl::vec2 vec;
 
     double univec_spiral_field(ctrl::vec2 pos, bool is_cw);
     double univec_spiral_field_to_target(ctrl::vec2 target);

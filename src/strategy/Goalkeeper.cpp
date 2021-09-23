@@ -3,7 +3,7 @@
 
 Goalkeeper::Goalkeeper(fira_message::Robot &robot): Player(robot) {}
 
-unsigned int Goalkeeper::lock_count = 0;
+unsigned int Goalkeeper::stuck_count = 0;
 
 /**
  * @brief defend our goal by following ball y projection using a vertical sigmoid univector field
@@ -41,7 +41,7 @@ ctrl::vec2 Goalkeeper::play() //some things are repeating across different kinds
 {
     fira_message::Ball ball = Game::ball;
     
-    if (is_locked(this->lock_count))
+    if (is_stuck(this->stuck_count))
     {
         bool cw = this->robot.y() < ball.y();
         return spin(cw);

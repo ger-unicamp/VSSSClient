@@ -40,7 +40,7 @@ public:
     double future_dist_to(fira_message::Robot &robot);
     ctrl::vec2 move( ctrl::vec2 vector);
     ctrl::vec2 spin(bool cw);
-    bool is_locked(unsigned int &lock_count);
+    bool is_stuck(unsigned int &lock_count);
 };
 
 #endif

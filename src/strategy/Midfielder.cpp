@@ -3,12 +3,12 @@
 
 Midfielder::Midfielder(fira_message::Robot &robot): Player(robot) {}
 
-unsigned int Midfielder::lock_count = 0;
+unsigned int Midfielder::stuck_count = 0;
 
 ctrl::vec2 Midfielder::play(std::vector<fira_message::Robot> &robots)
 {
     fira_message::Ball ball = Game::ball;
-    if (is_locked(this->lock_count))
+    if (is_stuck(this->stuck_count))
     {
         bool cw = this->robot.y() < ball.y();
         return spin(cw);

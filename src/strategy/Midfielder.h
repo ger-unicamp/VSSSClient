@@ -9,7 +9,7 @@ class Midfielder: public Player
 private:
     static constexpr double MID_LIMIT = 0.4;
 
-    static unsigned int lock_count;
+    static unsigned int stuck_count;
     
 public:
     Midfielder(fira_message::Robot &robot);

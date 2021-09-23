@@ -3,7 +3,7 @@
 
 Attacker::Attacker(fira_message::Robot &robot): Player(robot) {}
 
-unsigned int Attacker::lock_count = 0;
+unsigned int Attacker::stuck_count = 0;
 
  /** @brief Calculates a spiral field arround (0, 0)
  * 
@@ -101,7 +101,7 @@ ctrl::vec2 Attacker::play(std::vector<fira_message::Robot> &robots)
 {
     fira_message::Ball ball = Game::ball;
 
-    if (is_locked(this->lock_count))
+    if (is_stuck(this->stuck_count))
     {
         bool cw = this->robot.y() < ball.y(); //is this future position or not?
         return spin(cw);
