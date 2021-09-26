@@ -1,7 +1,6 @@
 #ifndef ATTACKER_HEADER
 #define ATTACKER_HEADER
 
-
 #include "Player.h"
 
 class Attacker: public Player

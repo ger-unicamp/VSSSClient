@@ -1,5 +1,6 @@
 #include "Attacker.h"
 #include "strategy/Game.h"
+#include <iostream>
 
 Attacker::Attacker(fira_message::Robot &robot): Player(robot) {}
 
@@ -94,23 +95,26 @@ double Attacker::univec_horizontal_sigmoid_field(ctrl::vec2 target)
  */
 ctrl::vec2 Attacker::univec_rotate()
 {
-    double arc_length_sin, arc_length_cos;
-    ctrl::vec2 ball_future_position = Game::get_ball_future_position(this->DT);
+    double theta_sin, theta_cos;
+    ctrl::vec2 ball_future_position =  Game::get_ball_future_position(this->DT);
     ctrl::vec2 robot_pos = this->get_pos();
 
-    //theta is the angle that the ball makes with the goal
-    double theta = atan2(-ball_future_position.y, Game::GOAL_LINE_X - ball_future_position.x);
+    //cout << ball_future_position.y << "\n";
+    //cout << robot_pos.y << "\n";
     
+    //theta1 is the angle that the ball makes with the goal
+    double theta1 = atan2(-Game::get_ball_future_position(this->DT).y, Game::GOAL_LINE_X - Game::get_ball_future_position(this->DT).x);
+    
+    //theta2 is the angle that the ball makes with the robot
+    double theta2 = atan2(this->get_pos().y - Game::get_ball_future_position(this->DT).y, this->get_pos().x - Game::get_ball_future_position(this->DT).x);
+
     //radius is the distance from the attacker to the ball
-    double radius = robot_pos.distance(ball_future_position);
+    double radius = std::abs(this->get_pos().distance(Game::get_ball_future_position(this->DT)));
 
-    //arc_length is the arc_length of the virtual robot that rotates around the ball to return us a vector
-    double arc_length = -theta * PI * radius;
+    sincos(theta1 + theta2, &theta_sin, &theta_cos); //this is faster than calculating sin and cos separated
 
-    sincos(arc_length, &arc_length_sin, &arc_length_cos); //this is faster than calculating sin and cos separated
-
-    double virtual_x = robot_pos.x + (radius * arc_length_cos);
-    double virtual_y = robot_pos.y + (radius * arc_length_sin);
+    double virtual_x = Game::get_ball_future_position(this->DT).x + (radius * theta_cos);
+    double virtual_y = Game::get_ball_future_position(this->DT).y + (radius * theta_sin);
 
     ctrl::vec2 rotated_virtual_pos = ctrl::vec2(virtual_x, virtual_y);
 
@@ -131,10 +135,6 @@ ctrl::vec2 Attacker::play(std::vector<fira_message::Robot> &robots)
         bool cw = this->robot.y() < ball_fut_pos.y; //is this future position or not?
         return spin(cw);
     }
-
-    
-
-    
 
     if (this->get_pos().x < -Game::ATTACKER_LINE_X)
     {
