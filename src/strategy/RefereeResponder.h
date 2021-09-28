@@ -13,11 +13,12 @@ typedef std::array<ctrl::vec2, 3> placement;
 
 namespace plc
 {
-    const placement FB_Q23_B = {{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}}; // Free Ball Quadrants 2, 3 - Blue answer
+    const placement FB_Q23_B = {{{}, {}, {}}}; // Free Ball Quadrants 2, 3 - Blue answer
     const placement FB_Q14_B = {{{}, {}, {}}}; // Free Ball Quadrants 1, 4 - Blue answer
     const placement PK_B_B = {{{}, {}, {}}}; // Blue Penalty Kick - Blue answer
     const placement PK_Y_B = {{{}, {}, {}}}; // Yellow Penalty Kick - Blue answer
-    const placement KO_B = {{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}}; // Kick Off - Blue answer
+    const placement KO_Y_B = {{{-0.7, 0.0}, {-0.48, 0.0}, {-0.08, 0.0}}}; // Kick Off Yellow- Blue answer
+    const placement KO_B_B = {{{}, {}, {}}}; // Kick Off Blue - Blue answer
     const placement GK_B_B = {{{}, {}, {}}}; // Blue Goal Kick - Blue answer
     const placement GK_Y_B = {{{}, {}, {}}}; // Yellow Goal Kick - Blue answer
 
@@ -25,7 +26,8 @@ namespace plc
     const placement FB_Q14_Y = {{{}, {}, {}}}; // Free Ball Quadrants 1, 4 - Yellow answer
     const placement PK_B_Y = {{{}, {}, {}}}; // Blue Penalty Kick - Yellow answer
     const placement PK_Y_Y = {{{}, {}, {}}}; // Yellow Penalty Kick - Yellow answer
-    const placement KO_Y = {{{}, {}, {}}}; // Kick Off - Yellow answer
+    const placement KO_Y_Y = {{{}, {}, {}}}; // Kick Off Yellow - Yellow answer
+    const placement KO_B_Y = {{{}, {}, {}}}; // Kick Off Blue - Yellow answer
     const placement GK_B_Y = {{{}, {}, {}}}; // Blue Goal Kick - Yellow answer
     const placement GK_Y_Y = {{{}, {}, {}}}; // Yellow Goal Kick - Yellow answer
 };

@@ -69,7 +69,15 @@ void RefereeResponder::answer_penalty_kick()
 
 void RefereeResponder::answer_kick_off()
 {
-    answer_placement = is_yellow ? plc::KO_Y : plc::KO_B;
+    if (ref_packet.teamcolor() == VSSRef::BLUE)
+    {
+        answer_placement = is_yellow ? plc::KO_B_Y : plc::KO_B_B;
+    }
+
+    else if (ref_packet.teamcolor() == VSSRef::YELLOW)
+    {
+        answer_placement = is_yellow ? plc::PK_Y_Y : plc::PK_Y_B;
+    }
 }
 
 void RefereeResponder::answer_goal_kick()
