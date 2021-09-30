@@ -70,6 +70,7 @@ enum Foul {
   KICKOFF = 4,
   STOP = 5,
   GAME_ON = 6,
+  HALT = 7,
   Foul_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
   Foul_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
 };

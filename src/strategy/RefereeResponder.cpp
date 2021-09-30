@@ -110,6 +110,10 @@ void RefereeResponder::set_answer_placement()
         game_on = false;
         break;
 
+    case VSSRef::HALT:
+        game_on = false;
+        break;
+
     case VSSRef::FREE_BALL: 
         answer_free_ball();
         break;
