@@ -100,6 +100,7 @@ void RefereeResponder::answer_goal_kick()
  */
 void RefereeResponder::set_answer_placement()
 {
+    game_on = false;
     switch (check_foul())
     {
     case VSSRef::GAME_ON:
@@ -107,11 +108,9 @@ void RefereeResponder::set_answer_placement()
         break;
 
     case VSSRef::STOP:
-        game_on = false;
         break;
 
     case VSSRef::HALT:
-        game_on = false;
         break;
 
     case VSSRef::FREE_BALL: 
