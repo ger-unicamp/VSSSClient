@@ -6,6 +6,7 @@
 class Goalkeeper: public Player
 {
 private:
+    
     static constexpr double X_LIMIT_GKP = -0.66;
     static constexpr double Y_LIMIT_GKP = 0.28;
     static constexpr double X_LIMIT_BALL = -0.55;
@@ -15,6 +16,8 @@ private:
     static unsigned int lock_count;
 
     ctrl::vec2 defend_goal_from(ctrl::vec2 ball_pos);
+    double get_bisector_slope(ctrl::vec2 ball_pos);
+    double get_Y_position(ctrl::vec2 ball_pos, double slope);
 
 public:
     Goalkeeper(fira_message::Robot &robot);
