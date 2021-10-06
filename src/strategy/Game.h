@@ -10,6 +10,7 @@
 
 struct Net_config
 {
+    std::string vision_ip;
     std::string multicast_ip;
     std::string command_ip;
     unsigned int command_port;

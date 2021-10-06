@@ -19,7 +19,8 @@ Game::Game(int argc, char *argv[])
 void Game::startup(int argc, char **argv) 
 {
     ArgParse::ArgumentParser parser(argv[0], "GER VSSS FIRASim strategy server");
-    parser.add_argument('m', "multicast_ip", "Vision and Referee IP", ArgParse::value<std::string>("224.0.0.1"));
+    parser.add_argument('s', "vision_ip", "Vision IP", ArgParse::value<std::string>("224.0.0.1"));
+    parser.add_argument('m', "multicast_ip", "Referee and Replacer IP", ArgParse::value<std::string>("224.5.23.2"));
     parser.add_argument('c', "command_ip", "Command IP", ArgParse::value<std::string>("127.0.0.1"));
     parser.add_argument('d', "command_port", "Command port", ArgParse::value<unsigned int>(20011));
     parser.add_argument('e', "referee_port", "Referee foul port", ArgParse::value<unsigned int>(10003));
@@ -36,6 +37,7 @@ void Game::startup(int argc, char **argv)
         exit(0);
     }
 
+    this->conf.vision_ip = args["vision_ip"]->as<std::string>();
     this->conf.multicast_ip = args["multicast_ip"]->as<std::string>();
     this->conf.command_ip = args["command_ip"]->as<std::string>();
     this->conf.command_port = args["command_port"]->as<unsigned int>();
@@ -45,7 +47,7 @@ void Game::startup(int argc, char **argv)
     this->is_yellow = args["team_yellow"]->as<bool>();
 
     // Print startup configuration
-    std::cout << "Vision server at " << this->conf.multicast_ip << ":" << this->conf.vision_port << std::endl
+    std::cout << "Vision server at " << this->conf.vision_ip << ":" << this->conf.vision_port << std::endl
               << "Command listen to " << this->conf.command_ip << ":" << this->conf.command_port << std::endl
               << "Referee server at " << this->conf.multicast_ip << ":" << this->conf.referee_port << std::endl
               << "Replacer listen to " << this->conf.multicast_ip << ":" << this->conf.replacer_port << std::endl
@@ -178,7 +180,7 @@ void Game::send_commands(VSSClient &sim_client)
 
 void Game::run()
 {
-    RoboCupSSLClient client(this->conf.vision_port, this->conf.multicast_ip);
+    RoboCupSSLClient client(this->conf.vision_port, this->conf.vision_ip);
     VSSClient sim_client(this->conf.command_port, this->conf.command_ip, this->is_yellow);
     RefereeClient referee(this->conf.referee_port, this->conf.replacer_port, this->conf.multicast_ip);
 
@@ -187,7 +189,7 @@ void Game::run()
 
     RefereeResponder referee_responder(is_yellow);
 
-    client.open(false); // opens client
+    client.open(); // opens client
     referee.open();
 
     while (true) 
@@ -196,8 +198,9 @@ void Game::run()
         {
             referee_responder.set_ref_packet(ref_packet);
             VSSRef::team_to_ref::VSSRef_Placement cmd = referee_responder.answer();
-            referee.send(cmd);
             game_on = referee_responder.get_game_on();
+
+            referee.send(cmd);
         }
 
         if (client.receive(packet) && packet.has_frame())

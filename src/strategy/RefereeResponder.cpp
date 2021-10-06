@@ -15,13 +15,12 @@ void RefereeResponder::set_replacement()
     replacement->set_teamcolor(is_yellow ? VSSRef::YELLOW : VSSRef::BLUE);
     
     auto robot0 = replacement->add_robots();
-    auto robot1 = replacement->add_robots();
-    auto robot2 = replacement->add_robots();
-
     robot0->set_robot_id(0);
+    auto robot1 = replacement->add_robots();
     robot1->set_robot_id(1);
-    robot2->set_robot_id(2);
-
+    auto robot2 = replacement->add_robots();
+    robot2->set_robot_id(2);    
+    
     robot0->set_x(answer_placement[0].x);
     robot0->set_y(answer_placement[0].y);
     robot0->set_orientation(90); // think how to better set robot orientations
@@ -76,7 +75,8 @@ void RefereeResponder::answer_kick_off()
 
     else if (ref_packet.teamcolor() == VSSRef::YELLOW)
     {
-        answer_placement = is_yellow ? plc::PK_Y_Y : plc::PK_Y_B;
+
+        answer_placement = is_yellow ? plc::KO_Y_Y : plc::KO_Y_B;
     }
 }
 
@@ -146,6 +146,7 @@ bool RefereeResponder::get_game_on()
 
 VSSRef::team_to_ref::VSSRef_Placement RefereeResponder::answer()
 {
+    VSSRef::team_to_ref::VSSRef_Placement cmd;
     set_answer_placement();
     set_replacement();
     cmd.set_allocated_world(replacement);
