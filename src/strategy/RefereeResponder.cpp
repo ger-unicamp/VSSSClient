@@ -23,7 +23,7 @@ void RefereeResponder::set_replacement()
     
     robot0->set_x(answer_placement[0].x);
     robot0->set_y(answer_placement[0].y);
-    robot0->set_orientation(answer_placement[0].angle); // think how to better set robot orientations
+    robot0->set_orientation(answer_placement[0].angle);
     robot1->set_x(answer_placement[1].x);
     robot1->set_y(answer_placement[1].y);
     robot1->set_orientation(answer_placement[1].angle);
@@ -58,6 +58,9 @@ void RefereeResponder::answer_free_ball()
 
     case VSSRef::QUADRANT_4:
         answer_placement = is_yellow ? plc::FB_Q4_Y : plc::FB_Q4_B;
+        break;
+
+    default:
         break;
     }
 }

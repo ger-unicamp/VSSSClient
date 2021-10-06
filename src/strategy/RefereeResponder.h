@@ -21,7 +21,7 @@ typedef std::array<placement, 3> placements;
 
 namespace plc
 {
-    const placements FB_Q1_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 1 - Blue answer
+    const placements FB_Q1_B = {{{-0.4, 0.3, 90}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 1 - Blue answer
     const placements FB_Q2_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 2 - Blue answer
     const placements FB_Q3_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 3 - Blue answer
     const placements FB_Q4_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 4 - Blue answer
