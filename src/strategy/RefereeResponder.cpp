@@ -23,13 +23,13 @@ void RefereeResponder::set_replacement()
     
     robot0->set_x(answer_placement[0].x);
     robot0->set_y(answer_placement[0].y);
-    robot0->set_orientation(90); // think how to better set robot orientations
+    robot0->set_orientation(answer_placement[0].angle); // think how to better set robot orientations
     robot1->set_x(answer_placement[1].x);
     robot1->set_y(answer_placement[1].y);
-    robot1->set_orientation(0);
+    robot1->set_orientation(answer_placement[1].angle);
     robot2->set_x(answer_placement[2].x);
     robot2->set_y(answer_placement[2].y);
-    robot2->set_orientation(0);
+    robot2->set_orientation(answer_placement[2].angle);
 }
 
 int RefereeResponder::check_foul() 
@@ -42,14 +42,23 @@ int RefereeResponder::check_foul()
 
 void RefereeResponder::answer_free_ball()
 {
-    if (ref_packet.foulquadrant() == VSSRef::QUADRANT_2 || ref_packet.foulquadrant() == VSSRef::QUADRANT_3)
+    switch (ref_packet.foulquadrant()) 
     {
-        answer_placement = is_yellow ? plc::FB_Q23_Y : plc::FB_Q23_B;
-    }
+    case VSSRef::QUADRANT_1:
+        answer_placement = is_yellow ? plc::FB_Q1_Y : plc::FB_Q1_B;
+        break;
 
-    else if (ref_packet.foulquadrant() == VSSRef::QUADRANT_1 || ref_packet.foulquadrant() == VSSRef::QUADRANT_4)
-    {
-        answer_placement = is_yellow ? plc::FB_Q14_Y : plc::FB_Q14_B;
+    case VSSRef::QUADRANT_2:
+        answer_placement = is_yellow ? plc::FB_Q2_Y : plc::FB_Q2_B;
+        break;
+
+    case VSSRef::QUADRANT_3:
+        answer_placement = is_yellow ? plc::FB_Q3_Y : plc::FB_Q3_B;
+        break;
+
+    case VSSRef::QUADRANT_4:
+        answer_placement = is_yellow ? plc::FB_Q4_Y : plc::FB_Q4_B;
+        break;
     }
 }
 

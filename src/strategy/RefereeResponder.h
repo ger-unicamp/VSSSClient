@@ -2,6 +2,7 @@
 #define REFEREE_RESPONDER_HEADER
 
 #include <array>
+#include <map>
 
 #include "pb/replacement.pb.h"
 #include "pb/vssref_command.pb.h"
@@ -9,27 +10,38 @@
 
 #include "util/vec2.h"
 
-typedef std::array<ctrl::vec2, 3> placement;
+struct placement {
+    double x;
+    double y;
+    double angle;
+};
+
+
+typedef std::array<placement, 3> placements;
 
 namespace plc
 {
-    const placement FB_Q23_B = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Free Ball Quadrants 2, 3 - Blue answer
-    const placement FB_Q14_B = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Free Ball Quadrants 1, 4 - Blue answer
-    const placement PK_B_B = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Blue Penalty Kick - Blue answer
-    const placement PK_Y_B = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Yellow {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}Penalty Kick - Blue answer
-    const placement KO_Y_B = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Kick Off Yellow - Blue answer
-    const placement KO_B_B = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Kick Off Blue - Blue answer
-    const placement GK_B_B = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Blue Goal Kick - Blue answer
-    const placement GK_Y_B = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Yellow Goal Kick - Blue answer
+    const placements FB_Q1_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 1 - Blue answer
+    const placements FB_Q2_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 2 - Blue answer
+    const placements FB_Q3_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 3 - Blue answer
+    const placements FB_Q4_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 4 - Blue answer
+    const placements PK_B_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Blue Penalty Kick - Blue answer
+    const placements PK_Y_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Yellow Penalty Kick - Blue answer
+    const placements KO_Y_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Kick Off Yellow - Blue answer
+    const placements KO_B_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Kick Off Blue - Blue answer
+    const placements GK_B_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Blue Goal Kick - Blue answer
+    const placements GK_Y_B = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Yellow Goal Kick - Blue answer
 
-    const placement FB_Q23_Y = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Free Ball Quadrants 2, 3 - Yellow answer
-    const placement FB_Q14_Y = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Free Ball Quadrants 1, 4 - Yellow answer
-    const placement PK_B_Y = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Blue Penalty Kick - Yellow answer
-    const placement PK_Y_Y = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Yellow Penalty Kick - Yellow answer
-    const placement KO_Y_Y = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Kick Off Yellow - Yellow answer
-    const placement KO_B_Y = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Kick Off Blue - Yellow answer
-    const placement GK_B_Y = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Blue Goal Kick - Yellow answer
-    const placement GK_Y_Y = {{{-0.4, 0.3}, {-0.4, 0.0}, {-0.4, -0.3}}}; // Yellow Goal Kick - Yellow answer
+    const placements FB_Q1_Y = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 1 - Yellow answer
+    const placements FB_Q2_Y = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 2 - Yellow answer
+    const placements FB_Q3_Y = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 3 - Yellow answer
+    const placements FB_Q4_Y = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Free Ball Quadrant 4 - Yellow answer
+    const placements PK_B_Y = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Blue Penalty Kick - Yellow answer
+    const placements PK_Y_Y = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Yellow Penalty Kick - Yellow answer
+    const placements KO_Y_Y = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Kick Off Yellow - Yellow answer
+    const placements KO_B_Y = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Kick Off Blue - Yellow answer
+    const placements GK_B_Y = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Blue Goal Kick - Yellow answer
+    const placements GK_Y_Y = {{{-0.4, 0.3, 0.0}, {-0.4, 0.0, 0.0}, {-0.4, -0.3, 0.0}}}; // Yellow Goal Kick - Yellow answer
 };
 
 class RefereeResponder 
@@ -40,7 +52,7 @@ private:
     VSSRef::ref_to_team::VSSRef_Command ref_packet;
     VSSRef::Frame *replacement;
 
-    placement answer_placement;
+    placements answer_placement;
 
     void set_replacement();
 
