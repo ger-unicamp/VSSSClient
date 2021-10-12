@@ -16,7 +16,6 @@ struct placement {
     double angle;
 };
 
-
 typedef std::array<placement, 3> placements;
 
 namespace plc
