@@ -101,15 +101,18 @@ ctrl::vec2 Attacker::play(fira_message::Ball &ball, std::vector<fira_message::Ro
  * @param robot,ball
  * @return double 
  */
-    ctrl::vec2 univec, motors_speeds, ball_fut_pos;
+    ctrl::vec2 univec, motors_speeds, ball_fut_pos, my_pos;
     double spiral_phi, repulsion_phi, phi;
 
     ball_fut_pos = this->future_position_relative_to(ball, Player::DT);
-    // The constant FRIENDLY_GOAL_X_LIMIT is a limit for the attacking robot.
+    // The constants FRIENDLY_GOAL_X_LIMIT and FRIENDLY_GOAL_Y_LIMIT is a limit for the attacking robot.
     // It doesn't exceed this limit, he stops before.
-    if (this->get_pos().x < -Attacker::FRIENDLY_GOAL_X_LIMIT)
+    my_pos = this->get_pos();
+
+    if (my_pos.x < Attacker::FRIENDLY_GOAL_X_LIMIT && std::abs(my_pos.y) < Attacker::FRIENDLY_GOAL_Y_LIMIT)
     {
-        ball_fut_pos.x = math::bound(ball_fut_pos.x, -Attacker::FRIENDLY_GOAL_X_LIMIT, Player::INF);
+        ball_fut_pos.x = math::bound(ball_fut_pos.x, Attacker::FRIENDLY_GOAL_X_LIMIT, Player::INF);
+        ball_fut_pos.y = math::bound(ball_fut_pos.y, -Attacker::FRIENDLY_GOAL_Y_LIMIT, Player::INF);
         spiral_phi = this->univec_horizontal_sigmoid_field(ball_fut_pos);
     }
 

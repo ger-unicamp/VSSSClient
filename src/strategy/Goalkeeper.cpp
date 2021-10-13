@@ -86,21 +86,15 @@ ctrl::vec2 Goalkeeper::defend_goal_from(ctrl::vec2 ball_pos)
     ctrl::vec2 target, univec;
     double y_target, phi, slope;
 
-    // if ball is too close, goalkeeper can get out of y limit to reach ball
-    // if (ball_pos.x < Goalkeeper::X_LIMIT_BALL) 
-    // {
-    //     y_target = ball_pos.y;
-    // }
-    // else
-    // {
-        //defense chages
-        slope = this->get_bisector_slope(ball_pos);
-       
-        y_target = this->get_Y_position(ball_pos, slope);
-    // }
+    //defense changes
+    slope = this->get_bisector_slope(ball_pos);
+    
+    y_target = this->get_Y_position(ball_pos, slope);
+
+    // The Goalkeeper has a Y limit
+    y_target = math::bound(y_target, -Goalkeeper::Y_LIMIT_GKP, Goalkeeper::Y_LIMIT_GKP);
 
     // if ball is behind goalkeeper x limit, he follows ball x position
-    y_target = math::bound(y_target, -0.350, 0.350);
     target = ctrl::vec2(std::min(Goalkeeper::X_LIMIT_GKP, ball_pos.x), y_target);
     phi = this->univec_vertical_sigmoid_field(target);
 

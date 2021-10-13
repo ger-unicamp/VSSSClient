@@ -8,7 +8,8 @@ class Attacker: public Player
 private:
     static constexpr double RADIUS = 0.0755485;
     static constexpr double K_SPIRAL = 0.0691405;
-    static constexpr double FRIENDLY_GOAL_X_LIMIT = 0.5;
+    static constexpr double FRIENDLY_GOAL_X_LIMIT = -0.525;
+    static constexpr double FRIENDLY_GOAL_Y_LIMIT = 0.425;
     static constexpr bool CW = true;
     static constexpr bool CCW = false;
 
