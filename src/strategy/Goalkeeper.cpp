@@ -41,15 +41,25 @@ ctrl::vec2 Goalkeeper::play(fira_message::Ball &ball)
 
 
         //If the keeper is out of its lane, it reajusts itself
-        double tolerance = 0.1; //the keeper's lane has a margin of tolerance
+        double x_tolerance = 0.05; //the keeper's lane has a margin of tolerance
 
-        if(this->robot.x() <= Goalkeeper::GKP_X_AXIS - tolerance){
-            phi = ((this->robot.y() < target.y ? 70 : 110)* PI)/180;
+        if(this->robot.x() <= Goalkeeper::GKP_X_AXIS - x_tolerance){ //is behind lane
+            if(this->robot.y() >= 0){ //upper
+                phi = (20 * PI)/180;
+            }
+            else if(this->robot.y() < 0){ //lower
+                phi = (-20 * PI)/180;
+            }
         }
-        else if(this->robot.x() > Goalkeeper::GKP_X_AXIS + tolerance){
-            phi = ((this->robot.y() < target.y ? -70 : -110)* PI)/180;
+        else if(this->robot.x() > Goalkeeper::GKP_X_AXIS + x_tolerance){ //is in front of lane
+            if(this->robot.y() >= 0){ //upper
+                phi = (200 * PI)/180;
+            }
+            else if(this->robot.y() < 0){ //lower
+                phi = (160 * PI)/180;
+            }
         }
-        else{
+        else{ //is in the right position
             phi = ((this->robot.y() < target.y ? 90 : -90)* PI)/180;
         }
 
