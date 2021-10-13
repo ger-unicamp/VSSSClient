@@ -22,6 +22,7 @@ private:
 public:
     Goalkeeper(fira_message::Robot &robot);
     ctrl::vec2 play(fira_message::Ball &ball);
+    ctrl::vec2 move(ctrl::vec2 vector);
 };
 
 #endif

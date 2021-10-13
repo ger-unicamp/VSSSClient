@@ -7,6 +7,28 @@ Goalkeeper::Goalkeeper(fira_message::Robot &robot)
 unsigned int Goalkeeper::lock_count = 0;
 
 /**
+ * @brief Returns Player robot speed (left, right) to move into vector (x,y) direction
+ * 
+ * @param vector Indicates speed and orientation to follow
+ * @return ctrl::vec2 
+ */
+ctrl::vec2 Goalkeeper::move(ctrl::vec2 vector)
+{
+    // k is the turning gain constant and v is the velocity constant
+    double vel = Player::K_VEL * vector.abs();
+    double angle_diff = math::wrap_to_pi(vector.theta() - this->robot.orientation());
+    
+    ctrl::vec2 motors_speeds = vel * 2.5 * cos(angle_diff) * ctrl::vec2(1.0);
+    if (angle_diff >= HALF_PI || angle_diff <= -HALF_PI)
+        motors_speeds += vel * Player::K_TURNING * sin(angle_diff) * ctrl::vec2(1.0, -1.0);
+    else
+        motors_speeds += vel * Player::K_TURNING * sin(angle_diff) * ctrl::vec2(-1.0, 1.0);
+
+    return motors_speeds;
+}
+
+
+/**
  * @brief Get the slope of bisector line of the triangle formed between the ball and the goal
  * 
  * @param ball_pos 
