@@ -25,7 +25,7 @@ namespace plc
    const placements FB_Q2_B = {{{-0.7, 0.1, 90}, {-0.5, 0.0, 0.0}, {-0.6, 0.4, 0.0}}}; // Free Ball Quadrant 2 - Blue answer
    const placements FB_Q3_B = {{{-0.7, -0.1, 90}, {-0.5, 0.0, 0.0}, {-0.6, -0.4, 0.0}}}; // Free Ball Quadrant 3 - Blue answer
    const placements FB_Q4_B = {{{-0.7, 0.0, 90}, {-0.05, -0.4, 0.0}, {0.2, -0.4, 0.0}}}; // Free Ball Quadrant 4 - Blue answer
-   const placements PK_B_B = {{{-0.7, 0.0, 90.0}, {-0.05, -0.2, 0.0}, {0.3, -0.03, 25}}}; // Blue Penalty Kick - Blue answer
+   const placements PK_B_B = {{{-0.7, 0.0, 90.0}, {-0.05, -0.4, 0.0}, {0.3, -0.03, 25}}}; // Blue Penalty Kick - Blue answer
    const placements PK_Y_B = {{{-0.75, 0.0, 0}, {0.05, 0.3, 0}, {0.05, -0.3 , 0}}}; // Yellow Penalty Kick - Blue answer
    const placements KO_Y_B = {{{-0.7, 0.0, 90}, {-0.4, -0.15, 0}, {-0.25, 0.0, 0}}}; // Kick Off Yellow - Blue answer
    const placements KO_B_B = {{{-0.7, 0.0, 90}, {-0.3, -0.02, 0}, {-0.08, -0.02, 20}}}; // Kick Off Blue - Blue answer
