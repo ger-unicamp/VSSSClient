@@ -135,8 +135,16 @@ void Game::detect_objects(fira_message::Frame &frame)
  */
 unsigned int Game::robot_next_to_ball(Attacker &atk, Midfielder &mid)
 {
+
     double atk_ball_dist = atk.future_dist_to(ball);
     double mid_ball_dist = mid.future_dist_to(ball);
+
+    if (atk.get_pos().x > ball.x()){
+        atk_ball_dist *= 0.6;    
+    }
+    if (mid.get_pos().x > ball.x()) { 
+        mid_ball_dist *= 0.6;
+    }
 
     return (mid_ball_dist < atk_ball_dist) ? 
             mid.get_robot().robot_id() : 
@@ -148,7 +156,7 @@ unsigned int Game::robot_next_to_ball(Attacker &atk, Midfielder &mid)
  * @todo dynamic gkp
  */
 void Game::select_roles(Goalkeeper &gkp, Attacker &atk, Midfielder &mid) 
-{
+{   
     int new_atk_id = robot_next_to_ball(atk, mid);
     gkp.set_robot(my_robots[0]); // gkp is always robot 0
     atk.set_robot(my_robots[new_atk_id]);
