@@ -39,7 +39,7 @@ namespace plc
    const placements FB_Q3_Y = {{{0.7, 0.0, 90.0}, {0.05, -0.4, 0.0}, {-0.2, -0.4, 0.0}}}; // Free Ball Quadrant 3 - Yellow answer
    const placements FB_Q4_Y = {{{0.7, -0.1, 90.0}, {0.5, 0.0, 0.0}, {0.6, -0.4, 0.0}}}; // Free Ball Quadrant 4 - Yellow answer
    const placements PK_B_Y = {{{0.75, 0.0, 0.0}, {-0.05, 0.3, 0.0}, {-0.05, -0.3, 0}}}; // Blue Penalty Kick - Yellow answer
-   const placements PK_Y_Y = {{{0.7, 0.0, 90.0}, {0.05, -0.4, 0.0}, {-0.4, 0.05, 25}}}; // Yellow Penalty Kick - Yellow answer
+   const placements PK_Y_Y = {{{0.7, 0.0, 90.0}, {0.03, -0.4, 0.0}, {-0.4, 0.05, 25}}}; // Yellow Penalty Kick - Yellow answer
    const placements KO_Y_Y = {{{0.7, 0.0, 90.0}, {0.3, 0.0, 0.0}, {0.08, 0.02, 20}}}; // Kick Off Yellow - Yellow answer
    const placements KO_B_Y = {{{0.7, 0.0, 90.0}, {0.4, 0.15, 0.0}, {0.25, 0.0, 0.0}}}; // Kick Off Blue - Yellow answer
    const placements GK_B_Y = {{{0.7, 0.0, 90.0}, {-0.4, 0.45, 0.0}, {-0.4, -0.45, 0.0}}}; // Blue Goal Kick - Yellow answer
