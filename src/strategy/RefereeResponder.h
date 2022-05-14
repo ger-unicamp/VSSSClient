@@ -46,8 +46,6 @@ namespace plc
    const placements GK_Y_Y = {{{0.65, 0.3, -40}, {0.1, 0.4, 0.0}, {0.50, 0.35, 75}}}; // Yellow Goal Kick - Yellow answer
 
 
-
-
 };
 
 class RefereeResponder 
