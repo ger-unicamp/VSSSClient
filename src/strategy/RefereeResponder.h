@@ -21,7 +21,7 @@ typedef std::array<placement, 3> placements;
 namespace plc
 {
     //                                 ROBÔ 0             ROBÔ 1            ROBÔ 2
-      const placements FB_Q1_B = {{{-0.7, 0, 90}, {-0.05, 0.4, 0.0}, {0.2, 0.4, 0.0}}}; // Free Ball Quadrant 1 - Blue answer
+   const placements FB_Q1_B = {{{-0.7, 0, 90}, {-0.05, 0.4, 0.0}, {0.2, 0.4, 0.0}}}; // Free Ball Quadrant 1 - Blue answer
    const placements FB_Q2_B = {{{-0.7, 0.1, 90}, {-0.5, 0.0, 0.0}, {-0.6, 0.4, 0.0}}}; // Free Ball Quadrant 2 - Blue answer
    const placements FB_Q3_B = {{{-0.7, -0.1, 90}, {-0.5, 0.0, 0.0}, {-0.6, -0.4, 0.0}}}; // Free Ball Quadrant 3 - Blue answer
    const placements FB_Q4_B = {{{-0.7, 0.0, 90}, {-0.05, -0.4, 0.0}, {0.2, -0.4, 0.0}}}; // Free Ball Quadrant 4 - Blue answer
@@ -44,6 +44,8 @@ namespace plc
    const placements KO_B_Y = {{{0.7, 0.0, 90.0}, {0.4, 0.15, 0.0}, {0.25, 0.0, 0.0}}}; // Kick Off Blue - Yellow answer
    const placements GK_B_Y = {{{0.7, 0.0, 90.0}, {-0.4, 0.45, 0.0}, {-0.4, -0.45, 0.0}}}; // Blue Goal Kick - Yellow answer
    const placements GK_Y_Y = {{{0.65, 0.3, -40}, {0.1, 0.4, 0.0}, {0.50, 0.35, 75}}}; // Yellow Goal Kick - Yellow answer
+
+
 
  Yellow answer
 
