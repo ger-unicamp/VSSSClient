@@ -47,7 +47,6 @@ namespace plc
 
 
 
- Yellow answer
 
 
 };
